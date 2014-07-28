@@ -14,6 +14,8 @@ public interface GenericClient {
 	
 	public String GET( String resource ) ;
 	
+	public String GET( String resource, String JSON) ;
+	
 	public String PUT( String resource, String JSON ) ;
 	
 	public String POST( String resource, String JSON ) ;

@@ -51,7 +51,8 @@ public class GenericJSONClient implements GenericClient {
 	
 	@Override
 	public String GET( String resource, Map<String, String> params ) {
-		//TODO exception params = null
+		if (params == null) return GET( resource ) ;
+	
 		WebTarget target = client.target(URL).path(resource);
 		//adding parameters
 		for ( Map.Entry<String, String> param : params.entrySet() ) 
@@ -63,8 +64,8 @@ public class GenericJSONClient implements GenericClient {
 		//response.toString() tiene la informacion de la respuesta de la peticion... por ejemplo si fue un 404
 		// TODO excepciones para respuestas invalidas
 		return response.readEntity(String.class) ;
-
 	}
+	
 	
 	@Override
 	public String GET( String resource) {
@@ -72,11 +73,25 @@ public class GenericJSONClient implements GenericClient {
 		Response response =	client
 							.target(URL)
 							.path(resource)
-							.request(JSONMediaType).get();
+							.request(JSONMediaType)
+							.get();
 				
 		//response.toString() tiene la informacion de la respuesta de la peticion... por ejemplo si fue un 404
 		// TODO excepciones para respuestas invalidas
 		return response.readEntity(String.class) ;
+
+	}
+	
+	@Override
+	public String GET(String resource, String JSON) {
+		
+	    Response response = client
+	    					.target(URL)
+	    					.path(resource)
+	    					.request(JSONMediaType)
+	    					.post(Entity.entity(JSON, JSONMediaType));
+
+	    return response.readEntity(String.class);
 
 	}
 	
@@ -108,7 +123,7 @@ public class GenericJSONClient implements GenericClient {
 	
 	@Override	
 	public String DELETE( String resource ) {
-
+		
 		Response response =	client
 							.target(URL)
 							.path(resource)
@@ -117,6 +132,8 @@ public class GenericJSONClient implements GenericClient {
 	
 		return response.toString() ;
 	}
+	
+
 	
 	
 }
