@@ -9,19 +9,19 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.tesys.connectors.tracking.jira.GenericJSONClient;
+import org.tesys.util.SearchJSONClient;
 
 
 @Path("/db")
 @Singleton
 public class DatabaseFacade {
 
-  GenericJSONClient client;
-
+  SearchJSONClient client;
+  //TODO hacer todos los return piola
 
   @PostConstruct
   public void init() {
-    client = new GenericJSONClient("http://localhost:8080/core/");
+    client = new SearchJSONClient("http://localhost:8080/core/");
   }
 
   @PUT
@@ -34,7 +34,7 @@ public class DatabaseFacade {
 
   @PUT
   @Path("{index}/{dtype}/{id}")
-  public String store(@PathParam("index") String index, @PathParam("dtype") String dtype,
+  public String PUT(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("dtype") String id, String data) {
 
     client.PUT(index + "/" + dtype + "/" + id, data);
@@ -43,22 +43,30 @@ public class DatabaseFacade {
 
   @DELETE
   @Path("{index}/{dtype}/{id}")
-  public String delete(@PathParam("index") String index, @PathParam("dtype") String dtype,
+  public String DELETE(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("dtype") String id) {
 
-    client.DELETE( index + "/" + dtype + "/"  );
+    client.DELETE( index + "/" + dtype + "/" + id );
     return "Supuestamente hubiera borrado el dato";
   }
 
 
   @GET
   @Path("{index}/{dtype}/{id}")
-  public String get(@PathParam("index") String index, @PathParam("dtype") String dtype,
+  public String GET(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("dtype") String id) {
 
+    client.GET( index + "/" + dtype + "/" + id );
     return "Supuestamente hubiera devuelto el dato";
   }
+  
+  
+  @GET
+  @Path("{index}/{dtype}")
+  public String SEARCH(@PathParam("index") String index, @PathParam("dtype") String dtype, String query) {
 
-
+    client.SEARCH( index + "/" + dtype + "/", query );
+    return "Supuestamente hubiera devuelto el dato";
+  }
 
 }

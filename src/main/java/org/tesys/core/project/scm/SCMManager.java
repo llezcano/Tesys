@@ -6,13 +6,17 @@ import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.tesys.core.db.DatabaseFacade;
 import org.tesys.core.project.tracking.ProjectTracking;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Path("/scm")
@@ -22,19 +26,22 @@ public class SCMManager {
   private Pattern issuePattern;
   private Pattern userPattern;
   private Matcher matcher;
+  private DatabaseFacade db;
   
   @PostConstruct
   public void init() {
     issuePattern = Pattern.compile("#issue='(.*?)'"); 
     userPattern = Pattern.compile("#user='(.*?)'");
+    db = new DatabaseFacade();
   }
 
-
-  @POST
+  
+  @GET
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String isCommitAllowed(SvnPreCommitDataPOJO svnData) {
 
+    //-----------Se obtine el issue del mesaje---------------
     String issue;
       
     matcher = issuePattern.matcher( svnData.getMessage() );
@@ -52,17 +59,28 @@ public class SCMManager {
     
     //TODO preguntarle el project.tracking si existe issue en jira
     ProjectTracking pt;
-    //TODO
-    /*if( !pt.existIssue( issue ) ) {
-      return "El issue: " + issue + "No coincide con un issue existente";
-    }*/
+    //if( !pt.existIssue( issue ) ) {
+    //  return "El issue: " + issue + "No coincide con un issue existente";
+    //}
+    //-----------Se obtuvo el issue del mesaje---------------
     
     
-    //TODO preguntar a la base de datos si existe el autor mappeado
+    //-----------Se mapea el usuario con el project tracking---------------
     //TODO esto tranquilamente puede ser un thread aparte
-    //al nombre del jira(o el que sea)
-    //svnData.getAuthor()  svnData.getRepository()
-    if( true ) {
+    //TODO este JSON se tiene que generar con JsonNode
+    String query = "{ "
+                      + "\"query\": { "
+                      + "\"bool\": { "
+                        + "\"must\": ["
+                          + " { \"match\": { \"svn_user\": \""+ svnData.getAuthor() +"\" }},"
+                          + " { \"match\": { \"repository\": \""+ svnData.getRepository() +"\" }}"
+                        + "]"
+                      + "}"
+                    + "}"
+                  + "}";
+
+    String result = db.SEARCH("svn", "users", query );               
+    if( result.equals("CAMBIAME") ) { //TODO
       matcher = userPattern.matcher( svnData.getMessage() );
       if (matcher.find()) {
           String user = matcher.group(1);
@@ -73,44 +91,60 @@ public class SCMManager {
               return "Solo se puede referenciar un unico issue";
             }
             //TODO
-            /*if( !pt.existUser( user ) ) {
-              return "El user: " + user + "No coincide con un user existente";
-            }*/
+            //if( !pt.existUser( user ) ) {
+            //  return "El user: " + user + "No coincide con un user existente";
+            //}
             
-
-            
-          //TODO guardar user(jira) repo y author(svn) en base de datos
+            //TODO generar id
+            //TODO hacer el json en un JsonNode
+            String data = "{\"jira_user\":\""+user+"\",\"svn_user\":\""+svnData.getAuthor()+"\",\"repository\":\""+svnData.getRepository()+"\"}";
+            db.PUT("svn", "users", "1", data);
       } else {
         return "Como es la primer vez que este usuario hace un commit debe indicar su nombre en el"
             + "poject tracking que se este usando de la forma #user='bar'";
       }
     }
+    //-----------Se mapeo el usuario con el project tracking---------------
 
-    /* TODO
-     * Guardar todo el svnData en la base de datos
-     */  
-    
-    
-    return "asd";
+    return "1";
   }
 
+  
+  
+  /**
+   * Este metodo es el encargado de guardar toda la informacion importante de cada commit
+   * Debe ser llamado principalmente con un hook post commit, aunque puede ser llamado en
+   * cualquier momento
+   * 
+   * La informacion que hay que suministrale es: revision, mensaje, fecha, repo, usuario
+   * Del mesaje se extrae la tarea del project tracking para almacenar, no se almacena
+   * El mensaje completo.
+   * 
+   * La fecha debe estar en un formato predeterminado que es el siguinte:
+   * yyyy-MM-dd HH:mm:ss
+   * 
+   * @param svnData
+   * @return
+   */
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String storeCommit(SvnPostCommitDataPOJO svnData) {
-    
     String issue;
+    
+    //TODO, ver como hacer para que si falla un parametro el hook avise, y validar
+    
     
     matcher = issuePattern.matcher( svnData.getMessage() );
     if (matcher.find()) {
         issue = matcher.group(1);
     }
     
-    //new SvnPostCommitDataPOJO ??
-    
-    //TODO Guardar los datos en la DB
-    //el valor de retorno se puede usar para indicar un error pero no se
-    //puede 
+    //TODO generar el id (tener en cuanta revision y repositorio)
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode data = objectMapper.valueToTree(svnData);
+    db.PUT("svn", "revisions", "1", data.toString());
+
     return "1";
   }
   

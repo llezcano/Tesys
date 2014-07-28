@@ -5,6 +5,15 @@ public class SvnPostCommitDataPOJO {
   private String message;
   private String repository;
   private String revision;
+  private String date;
+
+  public String getDate() {
+    return date;
+  }
+
+  public void setDate(String date) {
+    this.date = date;
+  }
 
   public String getRevision() {
     return revision;
@@ -17,7 +26,7 @@ public class SvnPostCommitDataPOJO {
   @Override
   public String toString() {
     return "SvnPostCommitDataPOJO [author=" + author + ", message=" + message + ", repository="
-        + repository + ", revision=" + revision + "]";
+        + repository + ", revision=" + revision + ", date=" + date + "]";
   }
 
   public String getAuthor() {
