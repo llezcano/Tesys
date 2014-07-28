@@ -10,26 +10,25 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.tesys.util.SearchJSONClient;
+import org.tesys.util.GenericJSONClient;
 
 
 @Path("/db")
 @Singleton
 public class DatabaseFacade {
 
-  SearchJSONClient client;
+  GenericJSONClient client;
 
   @PostConstruct
   public void init() {
-    client = new SearchJSONClient("http://localhost:8080/core/");
+    client = new GenericJSONClient("http://localhost:8080/core/");
   }
 
   @PUT
   @Path("/config")
-  // TODO un response
   public String changeConnectorLocation(String url) {
     client.setURL(url);
-    return "Supuestamentese cambio la direccion del conector";
+    return "Done";
   }
 
 
@@ -61,10 +60,10 @@ public class DatabaseFacade {
 
   @POST
   @Path("{index}/{dtype}")
-  public String SEARCH(@PathParam("index") String index, @PathParam("dtype") String dtype,
+  public String POST(@PathParam("index") String index, @PathParam("dtype") String dtype,
       String query) {
 
-    return client.SEARCH(index + "/" + dtype + "/", query);
+    return client.POST(index + "/" + dtype + "/", query);
   }
 
 }
