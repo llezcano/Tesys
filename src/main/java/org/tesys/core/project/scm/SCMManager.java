@@ -31,7 +31,6 @@ public class SCMManager {
 
 
   @POST
-  @Path("/hooks")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String isCommitAllowed(SvnPreCommitDataPOJO svnData) {
@@ -96,7 +95,6 @@ public class SCMManager {
   }
 
   @PUT
-  @Path("/hooks")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String storeCommit(SvnPostCommitDataPOJO svnData) {
