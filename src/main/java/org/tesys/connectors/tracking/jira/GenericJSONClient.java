@@ -20,6 +20,7 @@ public class GenericJSONClient {
 		System.out.println(client.GET("/atlassian-jira-6.0/rest/api/2/"));
 	}
 	
+	public GenericJSONClient() {}
 	
 	public GenericJSONClient( String url ) {
 		URL = url ;
@@ -55,7 +56,7 @@ public class GenericJSONClient {
 		//TODO POST
 	}
 	
-	public void DELETE( String resource, String Json ) {
+	public void DELETE( String resource ) {
 		//TODO 
 	}
 	
