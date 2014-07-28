@@ -9,7 +9,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.tesys.connectors.tracking.jira.GenericJSONClient;
+import org.tesys.util.GenericJSONClient;
 
 
 @Path("/db")
