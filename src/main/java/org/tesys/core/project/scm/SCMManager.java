@@ -1,8 +1,5 @@
 package org.tesys.core.project.scm;
 
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.db.DatabaseFacade;
 import org.tesys.util.GenericJSONClient;
-import org.tesys.util.SearchJSONClient;
+import org.tesys.util.MD5;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,29 +28,29 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Singleton
 public class SCMManager {
 
-  private static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user";
-  private static final String INVALID_ISSUE = "#user='";
-  private static final String INVALID_USER = "#issue='";
-  private static final String QUERY_QL = "query";
-  private static final String BOOL_QL = "bool";
-  private static final String MUST_QL = "must";
-  private static final String MATCH_QL = "match";
-  private static final String REPOSITORY_DATA_ID = "repository";
-  private static final String SCM_USER_DATA_ID = "scm_user";
-  private static final String USER_REGEX = "#user='(.*?)'";
-  private static final String ISSUE_REGEX = "#issue='(.*?)'";
-  private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-  private static final String OK_CODE = "1";
-  private static final String SCM_DTYPE_REVISIONS = "revisions";
-  private static final String SCM_DTYPE_USERS = "users";
-  private static final String SCM_DB_INDEX = "scm";
-  private static final String HASH_TYPE = "MD5";
+  private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
+  private static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
+  private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
+  private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
+  private static final String QUERY_QL = "query"; //$NON-NLS-1$
+  private static final String BOOL_QL = "bool"; //$NON-NLS-1$
+  private static final String MUST_QL = "must"; //$NON-NLS-1$
+  private static final String MATCH_QL = "match"; //$NON-NLS-1$
+  private static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
+  private static final String SCM_USER_DATA_ID = "scm_user"; //$NON-NLS-1$
+  private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
+  private static final String ISSUE_REGEX = "#issue='(.*?)'"; //$NON-NLS-1$
+  private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"; //$NON-NLS-1$
+  private static final String OK_CODE = "1"; //$NON-NLS-1$
+  private static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
+  private static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
+  private static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
+ 
 
   private Pattern issuePattern;
   private Pattern userPattern;
   private Matcher matcher;
   private DatabaseFacade db;
-  private MessageDigest md;
   private GenericJSONClient client;
 
 
@@ -67,9 +64,7 @@ public class SCMManager {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
     db = new DatabaseFacade();
-    client = new SearchJSONClient("http://localhost:8080/core/rest/connectors/svn/"); // default
-                                                                                      // value
-
+    client = new GenericJSONClient(DEFAULT_URL_SCM_CONNECTOR); 
   }
 
 
@@ -130,7 +125,7 @@ public class SCMManager {
 
     // Se sobre escribe el mensaje por el issue que es lo que importa
     scmData.setMessage(issue);
-    String id = generateId(scmData.getDate());
+    String id = MD5.generateId(scmData.getDate());
 
     ObjectMapper objectMapper = new ObjectMapper();
     JsonNode data = objectMapper.valueToTree(scmData);
@@ -165,7 +160,7 @@ public class SCMManager {
     ObjectNode data = om.createObjectNode();
     data.put(REPOSITORY_DATA_ID, repository);
 
-    if (client.PUT(revision, data.toString()).equals("true")) {
+    if (client.PUT(revision, data.toString()).equals("true")) { //$NON-NLS-1$
       return true;
     }
     return false;
@@ -186,7 +181,7 @@ public class SCMManager {
   @Path("/config")
   public String changeConnectorLocation(String url) {
     client.setURL(url);
-    return "Done";
+    return Messages.getString("SCMManager.urlchanged"); //$NON-NLS-1$
   }
 
 
@@ -208,10 +203,10 @@ public class SCMManager {
     if (matcher.find()) {
       issue = matcher.group(1);
       if (issue.contains(INVALID_ISSUE)) {
-        throw new Exception("El mensaje del commit es erroneo, falta una comilla?");
+        throw new Exception(Messages.getString("syntaxerrorcomilla")); //$NON-NLS-1$
       }
       if (matcher.find()) {
-        throw new Exception("Solo se puede referenciar un unico issue");
+        throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
       }
       // TODO preguntarle el project.tracking si existe issue en jira
       // ProjectTracking pt;
@@ -220,7 +215,7 @@ public class SCMManager {
       // }
     } else {
       throw new Exception(
-          "Se debe indicar el issue relacionado con el commit de la forma #issue='foo'");
+          Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
     }
     return issue;
   }
@@ -281,25 +276,26 @@ public class SCMManager {
     ObjectNode query = om.createObjectNode();
     query.put(QUERY_QL, bool);
     // fin generacion de query
-
-    // TODO analizar como va a ser el SEARCH final
+    
     String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
-    if (result.equals("CAMBIAME")) { // TODO
+    
+    
+    if ( !result.contains( scmData.getAuthor() )) {
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
         if (user.contains(INVALID_USER)) {
-          throw new Exception("El mensaje del commit es erroneo, falta una comilla?");
+          throw new Exception(Messages.getString("syntaxerrorcomilla")); //$NON-NLS-1$
         }
         if (matcher.find()) {
-          throw new Exception("Solo se puede referenciar un unico issue");
+          throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
         }
         // TODO
         // if( !pt.existUser( user ) ) {
         // throw new Exception("El user: " + user + "No coincide con un user existente");
         // }
 
-        String id = generateId(user + scmData.getAuthor() + scmData.getRepository());
+        String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
 
         ObjectNode data = om.createObjectNode();
         data.put(PROJECT_TRACKING_USER_DATA_ID, user);
@@ -309,34 +305,10 @@ public class SCMManager {
         db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
       } else {
         throw new Exception(
-            "Como es la primer vez que este usuario hace un commit debe indicar su nombre en el project tracking que se este usando de la forma #user='bar'");
+            Messages.getString("syntaxerroruser")); //$NON-NLS-1$
       }
     }
 
-  }
-
-
-
-  /**
-   * Este metodo genera el MD5 equivalente de un String dado. Si se quieren varios Strings hay que
-   * pasarlos concatenados o de alguna otra forma
-   * 
-   * @param input
-   * @return
-   */
-  private String generateId(String input) {
-    try {
-      md = MessageDigest.getInstance(HASH_TYPE);
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
-    }
-    md.update(input.getBytes());
-    byte[] digest = md.digest();
-    StringBuffer sb = new StringBuffer();
-    for (byte b : digest) {
-      sb.append(String.format("%02x", b & 0xff));
-    }
-    return sb.toString();
   }
 
 
