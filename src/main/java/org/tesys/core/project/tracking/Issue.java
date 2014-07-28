@@ -16,8 +16,8 @@ public interface Issue {
 	
 	public String getAggregatetimeestimate() ;
 
-	public UserPOJO getReporter() ;
+	public User getReporter() ;
 
-	public IssuePOJO[] getSubtasks() ;
+	public Issue[] getSubtasks() ;
 
 }
