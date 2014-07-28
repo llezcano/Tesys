@@ -40,10 +40,14 @@ public class GenericJSONClient {
 		Form form = new Form();
 		form.param("x", "foo");
 		form.param("y", "bar");
-		 
-		Response response =	target.request(JSONMediaType).get() ;
+		
+		//comentario 
+		Response response =	target
+								.request(JSONMediaType)
+								.get();
+				
 		return response.toString() ;
-		//response.
+		
 	}
 	
 	
@@ -55,7 +59,7 @@ public class GenericJSONClient {
 		//TODO POST
 	}
 	
-	public void DELETE( String resource, String Json ) {
+	public void DELETE( String resource ) {
 		//TODO 
 	}
 	
