@@ -18,14 +18,12 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
  */
 public class GenericJSONClient implements GenericClient {
 	
-	private static final MediaType JSONMediaType = MediaType.APPLICATION_JSON_TYPE ;
+	protected static final MediaType JSONMediaType = MediaType.APPLICATION_JSON_TYPE ;
 	
-	private String URL ;
+	protected String URL ;
 	private HttpAuthenticationFeature auth ;
-	private Client client ;
+	protected Client client ;
 	
-	
-	public GenericJSONClient() {}
 	
 	public GenericJSONClient( String url ) {
 		URL = url ;

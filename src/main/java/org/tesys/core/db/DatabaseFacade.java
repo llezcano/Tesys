@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,7 +18,6 @@ import org.tesys.util.SearchJSONClient;
 public class DatabaseFacade {
 
   SearchJSONClient client;
-  //TODO hacer todos los return piola
 
   @PostConstruct
   public void init() {
@@ -26,6 +26,7 @@ public class DatabaseFacade {
 
   @PUT
   @Path("/config")
+  // TODO un response
   public String changeConnectorLocation(String url) {
     client.setURL(url);
     return "Supuestamentese cambio la direccion del conector";
@@ -37,8 +38,7 @@ public class DatabaseFacade {
   public String PUT(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("dtype") String id, String data) {
 
-    client.PUT(index + "/" + dtype + "/" + id, data);
-    return "Supuestamente hubiera insertado el dato";
+    return client.PUT(index + "/" + dtype + "/" + id, data);
   }
 
   @DELETE
@@ -46,8 +46,7 @@ public class DatabaseFacade {
   public String DELETE(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("dtype") String id) {
 
-    client.DELETE( index + "/" + dtype + "/" + id );
-    return "Supuestamente hubiera borrado el dato";
+    return client.DELETE(index + "/" + dtype + "/" + id);
   }
 
 
@@ -56,18 +55,16 @@ public class DatabaseFacade {
   public String GET(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("dtype") String id) {
 
-    client.GET( index + "/" + dtype + "/" + id );
-    return "Supuestamente hubiera devuelto el dato";
+    return client.GET(index + "/" + dtype + "/" + id);
   }
-  
-  
-  @GET
-  @Path("{index}/{dtype}")
-  public String SEARCH(@PathParam("index") String index, @PathParam("dtype") String dtype, String query) {
 
-    client.SEARCH( index + "/" + dtype + "/", query );
-    return "Supuestamente hubiera devuelto el dato";
+
+  @POST
+  @Path("{index}/{dtype}")
+  public String SEARCH(@PathParam("index") String index, @PathParam("dtype") String dtype,
+      String query) {
+
+    return client.SEARCH(index + "/" + dtype + "/", query);
   }
 
 }
-
