@@ -1,172 +1,218 @@
 package org.tesys.connectors.tracking.jira;
-
+import org.tesys.core.project.tracking.IssuePOJO;
+import org.tesys.core.project.tracking.UserPOJO;
+import org.tesys.connectors.tracking.jira.model.*;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Iterator;/*
+import java.util.Iterator;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-*/
+import org.tesys.core.project.tracking.Issue;
+import org.tesys.core.project.tracking.User;
+import org.tesys.util.InputOutput;
+import org.tesys.util.JSONFilter;
 
-//import tesis.jsonfilter.JSONFilter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class App {
-	/*private static JiraFacade jira ;
+
+
+public class JiraAdaptation {
 	
+	private JsonNode issueSchema ;
 	
-	public static void main(String[] args) throws URISyntaxException, JSONException, IOException  {
-			
-		if (args[0].equals("help")) {
-			System.out.println("AYUDA");
-			System.out.println();
-			System.out.println("Argumentos");
-			System.out.println("Args[0] - Comando a ejecutar: ");
-			System.out.println("	'help': envia todos los usuarios de jira al sender");
-			System.out.println("	'issues': envia todos los usuarios de jira al sender");
-			System.out.println("	'users': envia todos los usuarios de jira al sender");		
-			
-		} else {
-			//TODO checkear si la URL, user y pass son validas
-			jira = new JiraFacade("http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/", "grodriguez", "654321") ;
-			if (args[0].equals("issues"))
-				sendIssues() ;
-			else if (args[0].equals("users"))
-				sendUsers() ;
-			else 
-				System.out.println("Commando invalido: '"+args[0]+"'") ;
+	private JsonNode userSchema ;
+	
+	private JiraRESTClient client ;
+	
+	private final static Integer MAX_SIZE_ISSUE_QUERY = 1000 ;
+	private final static Integer MAX_SIZE_USER_QUERY = 49 ;
+	
+	/** 
+	 * MAIN for testing
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main (String args[]) throws IOException {
+		JiraRESTClient client = new JiraRESTClient("http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/", "grodriguez", "654321") ;
+
+		String user = InputOutput.readFile( "userSchema", Charset.defaultCharset()) ;
+		String issue = InputOutput.readFile( "issueSchema", Charset.defaultCharset()) ;
 		
+		JiraAdaptation jira = new JiraAdaptation(client, user, issue ) ;
+		
+		
+	}
+	
+	public JiraAdaptation(JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema) throws JsonProcessingException, IOException {	
+		client = jiraClient ;
+		ObjectMapper mapper = new ObjectMapper();
+		issueSchema = mapper.readTree(issueJsonSchema) ;
+		userSchema = mapper.readTree(userJsonSchema) ;		
+	}
+		
+	/**
+	 * Realiza una consulta (con poco costo) para conocer la cantidad Issues en Jira
+	 * @return	Cantidad de Issues de Jira
+	 */
+	public Integer getIssuesSize() {
+		String response_form_client = client.getIssues("", 0, 1 ) ; // Esto es para consultar el tamaño maximo de issues
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readTree(response_form_client).path("total").asInt();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-	
-	}
-		
-	
-	static String readFile(String path, Charset encoding) throws IOException  {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded, encoding);
-			
+		return 0;
 	}
 	
 	
-	// TODO meterlo en alguna clase sacarle el hardcodeado
-	static void send(String app, String dtype, String key, String json) throws URISyntaxException, MalformedURLException, IOException {
-	// TODO rehacer con JERSEY
-		URI uri = new URIBuilder()
-	    .setScheme("http")
-	    .setHost("localhost")
-	    .setPort(8091)
-	    .setPath("/sender/SenderService")
-	    .addParameter("app", app)
-	    .addParameter("data", dtype)
-	    .addParameter("key", key)
-	    .build();
-		
-		
-		HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-		
-		conn.setDoOutput(true);
-		conn.setRequestMethod("POST");
-		conn.addRequestProperty("Content-Type", "application/json");
-		conn.setRequestProperty("Accept", "application/json");
-		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-		out.write(json);
-		out.flush();
-		out.close();
-		System.err.println(conn.getResponseCode());
-		
-	}
-
-	
-	static public void sendIssues() throws IOException, URISyntaxException {
-		
-		// Para probar las consultas JQL ingresar aqui http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/issues/ 
-		// y hacer click "Busqueda Avanzada"
-		// Parseo y envio los issues (tareas)
-		ObjectMapper m = new ObjectMapper();
+	/**
+	 *  Para probar las consultas JQL ingresar aqui http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/issues/
+	 * y hacer click "Busqueda Avanzada".
+	 *  
+	 *  Parseo y envio los issues (tareas)
+	 * 
+	 * @param jql 						Consulta realizada al cliente en Java Query Language.
+	 * @param start						Scroll start
+	 * @param end						Scroll end 
+	 * @return							Issues que satisfacen la Query, la cantidad resultante sera igual a (start - end)
+	 * @throws JsonProcessingException 
+	 * @throws IOException
+	 * @throws ClassCastException
+	 */
+	public Issue[] getIssues(String jql, Integer start, Integer end) throws JsonProcessingException, IOException, ClassCastException {
+		// TODO validate params
+		Integer size = ( MAX_SIZE_ISSUE_QUERY < end ) ? MAX_SIZE_ISSUE_QUERY : end ; 
+		// Init vars
 		Iterator<JsonNode> it ;
-		JSONFilter jf =  new JSONFilter() ;
-		
-		
-		Integer size = 1000 ;
-		Integer start = 0 ;
+		JSONFilter jf =  new JSONFilter() ;		
 		boolean hasMore = true ;
+		ObjectMapper mapper = new ObjectMapper();
+		Issue[] issuesPOJO = new IssuePOJO[ end-start ] ; 
+		int count = 0 ;
 		
-		String issueJsonSchema = readFile( "issueSchema" , Charset.defaultCharset() ) ;
-		JsonNode issueSchema = m.readTree(issueJsonSchema) ;
-	
-		while (hasMore) {
-			ArrayNode issues = (ArrayNode) m.readTree(jira.getIssues("", start, size )).path("issues") ;
-			
-			it = issues.getElements() ;
-			
-			JsonNode issue = null ;
+		while (hasMore && count < end) {
+			String response_form_client = client.getIssues(jql, start, size ) ;
+			ArrayNode issues = (ArrayNode) mapper.readTree(response_form_client).path("issues") ;
+			it = issues.elements() ;	
 			hasMore = it.hasNext() ;
+			JsonNode issue = null ;	
 			
+			//Parsing response
 			while (it.hasNext()) {
 				issue = it.next() ;
-				JsonNode json =  jf.filter(issue, issueSchema) ;
-				System.out.println( json.get("key").getTextValue() ); //estos issues estan listos para ser enviados al ES
-				send( "jira", "issue", json.get("key").getTextValue(), json.toString()) ;
+				JsonNode jsonIssue =  jf.filter(issue, issueSchema) ;				
+				JiraIssue i = mapper.readValue(jsonIssue.toString(), JiraIssue.class); 
+				IssuePOJOAdaptor adaptor = new IssuePOJOAdaptor() ;
+				issuesPOJO[count++] = adaptor.adapt(i) ;
+				it.remove() ;
 			}
-			start += size ;						
+			start += size ;	//NEXT SCROLL	
 		}
+		return issuesPOJO;	
+	}
+	
+	/**
+	 * Devuelve todos los Issues del cliente Jira.
+	 * 
+	 * @return Arreglo de Issues.
+	 * @throws JsonProcessingException
+	 * @throws IOException
+	 */
+	public Issue[] getAllIssues() throws JsonProcessingException, IOException  {
+		return getIssues("", 0, getIssuesSize()) ;
+	}
+	
+	/**
+	 * Devuelve el issue que machea con la Key dada
+	 * 
+	 * @param key 				Valor clave del issue (es unico)
+	 * @return					Issue que cumple con la key
+	 * @throws JsonProcessingException
+	 * @throws IOException
+	 * @throws ClassCastException
+	 */
+	public Issue getIssue(String key) throws JsonProcessingException, IOException, ClassCastException  {
+		return getIssues("key="+key, 0, 1)[0] ;
+	}
+		
+	/**
+	 * Realiza una consulta (con poco costo) para conocer la cantidad Usuarios en Jira
+	 * @return	Cantidad de usuarios de Jira
+	 */
+	public Integer getUsersSize() {
+		String clientJsonResponse = client.getUsers("jira-developers", 0, 1 ) ;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readTree(clientJsonResponse).path("users").path("size").asInt() ;
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+
+	public User getUser(String name) throws JsonProcessingException, IOException {
+		JSONFilter jf =  new JSONFilter() ;
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode user = mapper.readTree(client.getUser(name)) ;
+		JsonNode formatedUser =  jf.filter(user, userSchema) ; 
+		UserPOJO u = mapper.readValue(formatedUser.toString(), UserPOJO.class); 
+		return ( u.getName() == null ) ? null : u ;
 		
 	}
 	
-	static public void sendUsers() throws IOException, URISyntaxException {
-		ObjectMapper m = new ObjectMapper();
+	public User[] getAllUsers() throws JsonProcessingException, IOException{
+		return getUsers(0, getUsersSize()) ;
+	}
+	
+	public User[] getUsers(Integer start, Integer end) throws JsonProcessingException, IOException{
+		Integer size = (MAX_SIZE_USER_QUERY < end) ? MAX_SIZE_ISSUE_QUERY : end ;
 		Iterator<JsonNode> it ;
 		JSONFilter jf =  new JSONFilter() ;
 		
-		
-		Integer max = 49, min = 0 ;
-		Integer gap = 49 ;
 		boolean hasMore = true ;
+
+		User[] usersPOJO = new UserPOJO[end-start] ; 
 		
+		ObjectMapper mapper = new ObjectMapper();
+
 		// Parseo y envio los users
 
-		String userJsonSchema = readFile( "userSchema" , Charset.defaultCharset() ) ;
-		JsonNode userSchema = m.readTree(userJsonSchema) ;
-		while (hasMore) {
-			ArrayNode users = (ArrayNode) ( m.readTree(jira.getUsers("jira-developers", min, max)).path("users").path("items")) ;	
-			
-			it = users.getElements() ;
+		int count = 0 ;
+		while (hasMore && count < end ) {
+			String clientJsonResponse = client.getUsers("jira-developers", start, end ) ;
+		
+			ArrayNode users = (ArrayNode) ( mapper.readTree(clientJsonResponse).path("users").path("items")) ;	
+		
+			it = users.elements() ;
 			JsonNode user = null ;
 			hasMore = it.hasNext() ;
 			while (it.hasNext()) {
+			
 				user = it.next() ;
 				JsonNode json =  jf.filter(user, userSchema) ; 
-				System.out.println( json ); //estos usuarios estan listos para ser enviados al ES
-				send( "jira", "user", json.get("name").getTextValue(), json.toString()) ;
 				
-
+				UserPOJO u = mapper.readValue(json.toString(), UserPOJO.class); 
+				usersPOJO[count++] = u ;
+				
 			}
-			min = max+1 ;
-			max = min + gap ;	
+			start+= size ;	
 		}
+		return usersPOJO;
+			
 	}
 	
-	/* Redireccionar System.out a un archivo 
-	 * import java.io.File;
-	 * import java.io.FileOutputStream;
-	 * import java.io.PrintStream;
-
-	File file = new File("test.txt");  
-	FileOutputStream foStream = new FileOutputStream(file);  
-	PrintStream out = new PrintStream(foStream);  
-	System.setOut(out);  
-	*/
-
 }
 

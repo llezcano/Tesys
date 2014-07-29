@@ -2,6 +2,12 @@ package org.tesys.core.project.tracking;
 
 public class UserPOJO implements User{
 	
+	@Override
+	public String toString() {
+		return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress
+				+ ", displayName=" + displayName + ", active=" + active + "]";
+	}
+
 	public String name ;
 	
 	public String emailAddress ; 

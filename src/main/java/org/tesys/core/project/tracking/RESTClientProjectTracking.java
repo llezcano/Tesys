@@ -1,5 +1,7 @@
 package org.tesys.core.project.tracking;
 
+import org.tesys.util.GenericJSONClient;
+
 /**
  * Este ProjectTracking es un cliente REST para el connector del un Project Manager.
  * 
@@ -8,6 +10,12 @@ package org.tesys.core.project.tracking;
  */
 public class RESTClientProjectTracking implements ProjectTracking {
 
+	public static void main( String args[] ) {
+		
+		GenericJSONClient client = new GenericJSONClient("http://localhost:8091/") ;
+		System.out.println( client.GET("/core/rest/project/issues") );
+		
+	}
 	public RESTClientProjectTracking() {
 		// TODO setear parametros iniciales, por ejemplo URL del Project Manager Connector
 	}

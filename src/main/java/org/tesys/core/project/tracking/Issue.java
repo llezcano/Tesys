@@ -2,9 +2,9 @@ package org.tesys.core.project.tracking;
 
 public interface Issue {
 	
-	public Integer getKey() ;
+	public String getKey() ;
 	
-	public Integer getResolutiondate() ;
+	public String getResolutiondate() ;
 	
 	public String getAggregatetimeoriginalestimate();
 	
@@ -16,8 +16,8 @@ public interface Issue {
 	
 	public String getAggregatetimeestimate() ;
 
-	public User getReporter() ;
+	public String getReporter() ;
 
-	public Issue[] getSubtasks() ;
+	public String[] getSubtasks() ;
 
 }
