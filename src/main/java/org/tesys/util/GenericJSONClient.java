@@ -14,7 +14,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 /**
  * Jersey implementation for HTTP client
  * @author rulo
- *
+ * TODO en ves de devolver String devolver responses, cada quien va a saber que hacer con eso
  */
 public class GenericJSONClient implements GenericClient {
 	
@@ -110,14 +110,14 @@ public class GenericJSONClient implements GenericClient {
 	
 	@Override
 	public String POST( String resource, String JSON ) {
-
+	  
 		Response response =	client
 							.target(URL)
 							.path(resource)
-							.request()
+							.request(JSONMediaType)
 							.post(Entity.entity(JSON, JSONMediaType)) ;
 		
-		return response.toString() ;
+		return response.readEntity(String.class) ;
 	}
 	
 	
