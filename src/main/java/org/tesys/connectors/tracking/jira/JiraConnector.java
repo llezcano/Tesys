@@ -1,6 +1,7 @@
 package org.tesys.connectors.tracking.jira;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -35,16 +36,48 @@ public class JiraConnector implements JiraAdaptor {
 	private static String ISSUE_SCHEMA_PATH = "WEB-INF/jira-connector/issueSchema" ;
 	private static String USER_SCHEMA_PATH = "WEB-INF/jira-connector/userSchema";
 
+	private static String JIRA_CONNECTOR_PROPERTIES_FILE = "WEB-INF/jira-connector/jira-connector.properties" ;
+	
+	private static String PROP_URL = "host" ;
+	private static String PROP_USER = "username" ;
+	private static String PROP_PASS = "password" ;
+
 	private JiraAdaptation jira ;
+	
+	private String issueSchema ;
+	private String userSchema ;
+	
+	private String URL ;
+	private String user ;
+	private String pass ;
 	
 	@Context ServletContext servletContext;
 	
+	/**
+	 * Load URL, user and pass from properties file
+	 * @throws IOException 
+	 */
+	public void loadProperties() throws IOException {
+		Properties prop = new Properties() ;
+		prop.load(servletContext.getResourceAsStream(JIRA_CONNECTOR_PROPERTIES_FILE));
+		URL = prop.getProperty(PROP_URL) ;
+		user = prop.getProperty(PROP_USER) ;
+		pass = prop.getProperty(PROP_PASS) ;
+		issueSchema = Strings.convertStreamToString(servletContext.getResourceAsStream(ISSUE_SCHEMA_PATH)) ;
+		userSchema =  Strings.convertStreamToString(servletContext.getResourceAsStream(USER_SCHEMA_PATH)) ;
+	}
+	
 	@PostConstruct
 	public void Init() {
-		JiraRESTClient client = new JiraRESTClient("http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/", "grodriguez", "654321") ;
-
-		String issueSchema = Strings.convertStreamToString(servletContext.getResourceAsStream(ISSUE_SCHEMA_PATH)) ;
-		String userSchema =  Strings.convertStreamToString(servletContext.getResourceAsStream(USER_SCHEMA_PATH)) ;
+	
+		try {
+			loadProperties() ;
+		} catch (IOException e1) {
+			System.err.println("Jira Connector: Properties file not found") ;
+			System.exit(0);
+		}
+		
+		JiraRESTClient client = new JiraRESTClient(URL, user, pass ) ;
 		
 		try {
 			jira = new JiraAdaptation(client, userSchema, issueSchema) ;
