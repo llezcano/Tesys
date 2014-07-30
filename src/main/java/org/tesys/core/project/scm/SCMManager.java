@@ -306,9 +306,9 @@ public class SCMManager {
         }
         //TODO descomentar cuando se implemente eso
         ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
-        /*if (!pt.existUser(user)) {
+        if (!pt.existUser(user)) {
           throw new Exception(Messages.getString("SCMManager.userinvalido")); //$NON-NLS-1$
-        }*/
+        }
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
 
