@@ -2,8 +2,8 @@ package org.tesys.core.project.tracking;
 
 import java.net.MalformedURLException;
 
-
 import org.tesys.rest.RESTClient ;
+
 
 
 /**
@@ -16,8 +16,9 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 
 	private RESTClient client;
 	
-	private static String RESOURCE_ISSUES = "core/rest/project/issues/" ;
-	private static String RESOURCE_USERS = "core/rest/project/users/" ;
+	 //TODO RESEARCH Discovery Resources from Connector
+	private static String RESOURCE_ISSUES = "issues/" ;
+	private static String RESOURCE_USERS = "users/" ;
 	
 	
 	/**
@@ -29,31 +30,34 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 	/*
 	public static void main( String args[] ) throws MalformedURLException {
 		
-		ProjectTrackingRESTClient project = new ProjectTrackingRESTClient("http://localhost:8091/") ;
+		ProjectTrackingRESTClient project = new ProjectTrackingRESTClient() ;
 	
 		//Query for user exists
 		System.out.println("Homero J. Simpson is a developer ? "  + project.existUser("homerojsimpson") ) ;
 		//Getting all users
 		User[] users = project.getUsers() ;
 		System.out.println("Users List: ") ;
-		System.out.println(Arrays.toString(users)) ;
+		System.out.println(java.util.Arrays.toString(users)) ;
 		System.out.println("TOTAL = " + users.length) ;
 
 		//Query for issue exists
 		System.out.println("ADA-1 is a issue ? "  + project.existUser("ADA-1") ) ;
 		//Getting all issues
-		Issue[] issues = project.getIssues() ;
-		System.out.println("Issues List: ") ;
-		System.out.println(Arrays.toString(issues)) ;
-		System.out.println("TOTAL = " + issues.length) ;
-		
+		//Issue[] issues = project.getIssues() ;
+		//System.out.println("Issues List: ") ;
+		//System.out.println(java.util.Arrays.toString(issues)) ;
+		//System.out.println("TOTAL = " + issues.length) ;
 	}
 	*/
 	
+	public ProjectTrackingRESTClient() throws MalformedURLException {
+		client = new RESTClient(getConnectorLocation());
+	}
 	
-	public ProjectTrackingRESTClient( String url ) throws MalformedURLException {
-		client = new RESTClient(url);
-		//TODO RESEARCH Discovery Resources from Connector
+	
+	public String getConnectorLocation() {
+	    //TODO RESEARCH Discovery Services
+	    return "http://localhost:8091/core/rest/project/" ;
 	}
 	
 	@Override
