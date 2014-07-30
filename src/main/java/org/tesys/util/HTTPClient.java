@@ -1,4 +1,4 @@
-package org.tesys.rest;
+package org.tesys.util;
 
 import java.net.MalformedURLException;
 import java.util.Map;

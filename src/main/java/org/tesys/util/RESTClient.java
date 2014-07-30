@@ -1,4 +1,4 @@
-package org.tesys.rest;
+package org.tesys.util;
 
 import java.util.Map;
 

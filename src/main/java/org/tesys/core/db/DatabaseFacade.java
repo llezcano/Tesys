@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 
 import javax.ws.rs.core.Response;
 
-import org.tesys.rest.RESTClient;
+import org.tesys.util.RESTClient;
 
 
 public class DatabaseFacade {
@@ -62,49 +62,13 @@ public class DatabaseFacade {
     return response.readEntity( String.class );
   }
 
-  //TODO por ahora queda sin uso
+  
   public String POST(String index, String dtype, String query) {
     
     Response response = client.POST(index + "/" + dtype , query); //$NON-NLS-1$
     
     return response.readEntity( String.class );
   }
-  
-  
-  //{"project_tracking_user":"foo","scm_user":"bar","repository":"baz"} = mapeoUserPojo
-  //TODO public mapeoUserPOJO getMapeo()
-  //{"results":[{"project_tracking_user":"foo","scm_user":"bar","repository":"baz"}]}
-  //public String getMapeo( scm , users )
-  // fin generacion de query
-  //NOMAS SIRVE PARA VER SI EXISTE O NO EL MAPEO, NO IMPORTA LOS DATOS
-  
-  
-  
-  
-  //TODO
-  /* revisiones que se hicieron desde el scm
-   * El pojo seria dos string
-   * {"results":[{"revision":"1", "repository":"sida"}]}
-   * 
-   * "scm", "revisions", "{ \"_source\":\"revision\"}" /falta repositorio
-   * 
-   * Aca importa el dato
-   */
-  
-  
-  //TODO
-  /* lo mismo que el anterior pero sacarlo de sonar/revisions
-   * 
-   * Traer todos los datos (sin query)
-   * 
-   * 
-   */
-  
-  
-  
-  
-  
-  
-  
+
 
 }

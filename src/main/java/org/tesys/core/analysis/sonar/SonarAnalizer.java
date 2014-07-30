@@ -68,7 +68,7 @@ public class SonarAnalizer {
     }
     
     
-    SCMManager scm = new SCMManager();
+    SCMManager scm = SCMManager.getInstance();
   
     for (String rev : revisions) {
       if( rev.equals("0") ) {
@@ -91,10 +91,10 @@ public class SonarAnalizer {
     
     SonarExtractor se = new SonarExtractor(host, proyectKey, revisions);
     new StoreResults(se.getResults()); //TODO
-
     
     purgeDirectory(workspace);
     
+
     return "hecho";
   }
   

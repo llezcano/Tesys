@@ -63,10 +63,8 @@ public class JiraAdaptation {
 		try {
 			return mapper.readTree(response_form_client).path("total").asInt();
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0;
@@ -153,10 +151,8 @@ public class JiraAdaptation {
 		try {
 			return mapper.readTree(clientJsonResponse).path("users").path("size").asInt() ;
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0;

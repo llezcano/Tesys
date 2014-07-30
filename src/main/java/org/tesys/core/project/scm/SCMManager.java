@@ -4,24 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.db.DatabaseFacade;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
-import org.tesys.util.GenericJSONClient;
 import org.tesys.util.MD5;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
@@ -57,55 +47,53 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * Dicho conector sera el que tenga la implementacion de como realizar un checkout y debera
  * guardar los archivos en una ruta predefinida que luego el sistema analizara.
  * 
+ * ALMACENA DATOS EN:
+ * 
+ * scm/users
+ * scm/revisions
+ * 
  */
 
-@Path("/scm")
-@Singleton
 public class SCMManager {
 
-  private static final String DEFAULT_URL_SCM_CONNECTOR =
-      "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
-  private static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
+ 
+  public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
+  public static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
+  public static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
+  public static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
+  public static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
+  public static final String SCM_USER_DATA_ID = "scm_user"; //$NON-NLS-1$
+  
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
-  private static final String QUERY_QL = "query"; //$NON-NLS-1$
-  private static final String BOOL_QL = "bool"; //$NON-NLS-1$
-  private static final String MUST_QL = "must"; //$NON-NLS-1$
-  private static final String MATCH_QL = "match"; //$NON-NLS-1$
-  private static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
-  private static final String SCM_USER_DATA_ID = "scm_user"; //$NON-NLS-1$
   private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
   private static final String ISSUE_REGEX = "#issue='(.*?)'"; //$NON-NLS-1$
   private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"; //$NON-NLS-1$
   private static final String OK_CODE = "1"; //$NON-NLS-1$
-  private static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
-  private static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
-  private static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
-
-
+ 
   private Pattern issuePattern;
   private Pattern userPattern;
   private Matcher matcher;
   private DatabaseFacade db;
-  private GenericJSONClient client;
+  private SCMFacade scmFacade;
 
-
-
-  /**
-   * Se ejecuta solo la primer vez que se usa un servicio ya que la clase en Singleton Inicializa
-   * variables utiles para todos los servicios
-   */
-  @PostConstruct
-  public void init() {
+  
+  
+  private static SCMManager instance = null;
+  
+  private SCMManager() {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
     db = new DatabaseFacade();
+    scmFacade = SCMFacade.getInstance();
   }
-
-  public SCMManager() {
-    client = new GenericJSONClient(DEFAULT_URL_SCM_CONNECTOR);
+  
+  public static SCMManager getInstance() {
+     if(instance == null) {
+        instance = new SCMManager();
+     }
+     return instance;
   }
-
 
 
   /**
@@ -118,12 +106,9 @@ public class SCMManager {
    * @param scmData Datos previos a hacer un commit (autor, mensaje y repos)
    * @return
    */
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
   public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
     try {
-      // cada uno de estos se puede hacer con un thread aparte
+      //TODO cada uno de estos se puede hacer con un thread aparte
       getIssue(scmData.getMessage());
       mapUser(scmData);
     } catch (Exception e) {
@@ -147,9 +132,6 @@ public class SCMManager {
    * @param scmData
    * @return
    */
-  @PUT
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
   public String storeCommit(ScmPostCommitDataPOJO scmData) {
 
     generateRevisionZero(scmData.getRepository());
@@ -192,37 +174,8 @@ public class SCMManager {
    * @return si se pudo hacer o no
    */
   public boolean doCheckout(String revision, String repository) {
-
-    JsonFactory factory = new JsonFactory();
-    ObjectMapper om = new ObjectMapper(factory);
-    factory.setCodec(om);
-    ObjectNode data = om.createObjectNode();
-    data.put(REPOSITORY_DATA_ID, repository);
-
-    if (client.PUT(revision, data.toString()).equals("true")) { //$NON-NLS-1$
-      return true;
-    }
-    return false;
+    return scmFacade.doCheckout(revision, repository);
   }
-
-
-
-  /**
-   * Este metodo debe ser utlizado para setear en que url esta el connector del SCM por default es
-   * en:
-   * 
-   * http://localhost:8080/core/rest/connectors/svn/
-   * 
-   * @param url
-   * @return
-   */
-  @PUT
-  @Path("/config")
-  public String changeConnectorLocation(String url) {
-    client.setURL(url);
-    return Messages.getString("SCMManager.urlchanged"); //$NON-NLS-1$
-  }
-
 
 
   /**
@@ -248,10 +201,9 @@ public class SCMManager {
         throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
       }
       ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
-      //TODO descomentar cuando se implemente eso
-      /*if (!pt.existIssue(issue)) {
+      if (!pt.existIssue(issue)) {
         throw new Exception(Messages.getString("SCMManager.issueinvalido")); //$NON-NLS-1$
-      }*/
+      }
     } else {
       throw new Exception(Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
     }
@@ -290,11 +242,12 @@ public class SCMManager {
    */
   private void mapUser(ScmPreCommitDataPOJO scmData) throws Exception {
    
-    //TODO
-    String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
+    //TODO hacer la consulta cuando ande la base de datos
+    //String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
 
 
-    if (!result.contains(scmData.getAuthor())) {
+    //if (!result.contains(scmData.getAuthor())) {
+    if( true ) { //o sea que se mapea siempre
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
@@ -304,7 +257,6 @@ public class SCMManager {
         if (matcher.find()) {
           throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
         }
-        //TODO descomentar cuando se implemente eso
         ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
         if (!pt.existUser(user)) {
           throw new Exception(Messages.getString("SCMManager.userinvalido")); //$NON-NLS-1$
@@ -312,7 +264,9 @@ public class SCMManager {
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
 
-        ObjectNode data = om.createObjectNode();
+        JsonFactory factory = new JsonFactory();
+        ObjectMapper mapper = new ObjectMapper(factory);
+        ObjectNode data = mapper.createObjectNode();
         data.put(PROJECT_TRACKING_USER_DATA_ID, user);
         data.put(SCM_USER_DATA_ID, scmData.getAuthor());
         data.put(REPOSITORY_DATA_ID, scmData.getRepository());
