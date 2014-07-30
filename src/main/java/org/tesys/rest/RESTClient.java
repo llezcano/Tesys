@@ -40,7 +40,9 @@ public class RESTClient implements HTTPClient {
 			RESTClient myClient = new RESTClient("http://localhost:8091/");
 			Response response = myClient.TEST("/core/rest/project/users/mcabrera");
 			//La case UserPOJO debe ser mappeable desde JSON. Lo cual lo logro con @XmlRootElement.
-			UserPOJO user = response.readEntity(new GenericType<UserPOJO>() {});
+			UserPOJO u = response.readEntity(UserPOJO.class);			
+			// Asi tambien funciona, UserPOJO u = response.readEntity(new GenericType<UserPOJO>() {});
+			
 			System.out.println(u) ;
 
 		} catch (MalformedURLException e) {
@@ -111,7 +113,7 @@ public class RESTClient implements HTTPClient {
 		return 	client
 				.target(this.getURL())
 				.path(resource)
-				.request()
+				.request(this.type)
 				.put(Entity.entity(JSON, this.type));
 
 	}
@@ -121,7 +123,7 @@ public class RESTClient implements HTTPClient {
 		return 	client
 				.target(this.getURL())
 				.path(resource)
-				.request(type)
+				.request(this.type)
 				.post(Entity.entity(JSON, this.type));
 
 	}
@@ -131,7 +133,7 @@ public class RESTClient implements HTTPClient {
 		return 	client
 				.target(this.getURL())
 				.path(resource)
-				.request()
+				.request(this.type)
 				.delete();
 
 	}

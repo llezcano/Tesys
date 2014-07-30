@@ -4,12 +4,10 @@ import org.tesys.core.project.tracking.UserPOJO;
 import org.tesys.connectors.tracking.jira.model.*;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.User;
-import org.tesys.util.InputOutput;
 import org.tesys.util.JSONFilter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +33,7 @@ public class JiraAdaptation {
 	 * @param args
 	 * @throws IOException
 	 */
+	/*
 	public static void main (String args[]) throws IOException {
 		JiraRESTClient client = new JiraRESTClient("http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/", "grodriguez", "654321") ;
 
@@ -45,6 +44,7 @@ public class JiraAdaptation {
 		
 		
 	}
+	*/
 	
 	public JiraAdaptation(JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema) throws JsonProcessingException, IOException {	
 		client = jiraClient ;

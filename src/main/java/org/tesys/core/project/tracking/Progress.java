@@ -1,5 +1,6 @@
 package org.tesys.core.project.tracking;
 
+
 public class Progress {
 	private String total;
 

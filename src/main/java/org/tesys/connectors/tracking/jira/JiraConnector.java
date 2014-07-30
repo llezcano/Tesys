@@ -11,14 +11,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
 
 import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.Strings;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Web Service REST ofrecido por el conector de Jira. 

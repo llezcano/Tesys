@@ -2,13 +2,14 @@ package org.tesys.core.project.tracking;
 
 import java.util.Arrays;
 
-
 //import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class IssuePOJO implements Issue  {
-	
+@XmlRootElement
+public class IssuePOJO implements Issue {
+
 	private String key;
-	
+
 	private Progress progress;
 
 	private String[] subtasks;
@@ -37,151 +38,121 @@ public class IssuePOJO implements Issue  {
 
 	private String priority;
 
-
-	public void setKey (String key)
-	{
-	this.key = key;
+	public void setKey(String key) {
+		this.key = key;
 	}
 
-	
-	public Progress getProgress ()
-	{
-	return progress;
+	public Progress getProgress() {
+		return progress;
 	}
 
-	public void setProgress (Progress progress)
-	{
-	this.progress = progress;
+	public void setProgress(Progress progress) {
+		this.progress = progress;
 	}
 
-	public String[] getSubtasks ()
-	{
-	return subtasks;
+	public String[] getSubtasks() {
+		return subtasks;
 	}
 
-	public void setSubtasks (String[] subtasks)
-	{
-	this.subtasks = subtasks;
+	public void setSubtasks(String[] subtasks) {
+		this.subtasks = subtasks;
 	}
 
-	public String getIssuetype ()
-	{
-	return issuetype;
+	public String getIssuetype() {
+		return issuetype;
 	}
 
-	public void setIssuetype (String issuetype)
-	{
-	this.issuetype = issuetype;
+	public void setIssuetype(String issuetype) {
+		this.issuetype = issuetype;
 	}
 
-	public String getStatus ()
-	{
-	return status;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setStatus (String status)
-	{
-	this.status = status;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
-	public String getWorkratio ()
-	{
-	return workratio;
+	public String getWorkratio() {
+		return workratio;
 	}
 
-	public void setWorkratio (String workratio)
-	{
-	this.workratio = workratio;
+	public void setWorkratio(String workratio) {
+		this.workratio = workratio;
 	}
 
-	public String getAssignee ()
-	{
-	return assignee;
+	public String getAssignee() {
+		return assignee;
 	}
 
-	public void setAssignee (String assignee)
-	{
-	this.assignee = assignee;
+	public void setAssignee(String assignee) {
+		this.assignee = assignee;
 	}
 
-	public String getResolutiondate ()
-	{
-	return resolutiondate;
+	public String getResolutiondate() {
+		return resolutiondate;
 	}
 
-	public void setResolutiondate (String resolutiondate)
-	{
-	this.resolutiondate = resolutiondate;
+	public void setResolutiondate(String resolutiondate) {
+		this.resolutiondate = resolutiondate;
 	}
 
-	public String getAggregatetimeestimate ()
-	{
-	return aggregatetimeestimate;
+	public String getAggregatetimeestimate() {
+		return aggregatetimeestimate;
 	}
 
-	public void setAggregatetimeestimate (String aggregatetimeestimate)
-	{
-	this.aggregatetimeestimate = aggregatetimeestimate;
+	public void setAggregatetimeestimate(String aggregatetimeestimate) {
+		this.aggregatetimeestimate = aggregatetimeestimate;
 	}
 
-	public String getReporter ()
-	{
-	return reporter;
+	public String getReporter() {
+		return reporter;
 	}
 
-	public void setReporter (String reporter)
-	{
-	this.reporter = reporter;
+	public void setReporter(String reporter) {
+		this.reporter = reporter;
 	}
 
-	public String getAggregatetimeoriginalestimate ()
-	{
-	return aggregatetimeoriginalestimate;
+	public String getAggregatetimeoriginalestimate() {
+		return aggregatetimeoriginalestimate;
 	}
 
-	public void setAggregatetimeoriginalestimate (String aggregatetimeoriginalestimate)
-	{
-	this.aggregatetimeoriginalestimate = aggregatetimeoriginalestimate;
+	public void setAggregatetimeoriginalestimate(
+			String aggregatetimeoriginalestimate) {
+		this.aggregatetimeoriginalestimate = aggregatetimeoriginalestimate;
 	}
 
-	public String getProject ()
-	{
-	return project;
+	public String getProject() {
+		return project;
 	}
 
-	public void setProject (String project)
-	{
-	this.project = project;
+	public void setProject(String project) {
+		this.project = project;
 	}
 
-	public String getUpdated ()
-	{
-	return updated;
+	public String getUpdated() {
+		return updated;
 	}
 
-	public void setUpdated (String updated)
-	{
-	this.updated = updated;
+	public void setUpdated(String updated) {
+		this.updated = updated;
 	}
 
-	public String getCreated ()
-	{
-	return created;
+	public String getCreated() {
+		return created;
 	}
 
-	public void setCreated (String created)
-	{
-	this.created = created;
+	public void setCreated(String created) {
+		this.created = created;
 	}
 
-	public String getPriority ()
-	{
-	return priority;
+	public String getPriority() {
+		return priority;
 	}
 
-	public void setPriority (String priority)
-	{
-	this.priority = priority;
+	public void setPriority(String priority) {
+		this.priority = priority;
 	}
 
 	@Override
@@ -189,7 +160,6 @@ public class IssuePOJO implements Issue  {
 		// TODO Auto-generated method stub
 		return key;
 	}
-
 
 	@Override
 	public String toString() {
@@ -204,6 +174,5 @@ public class IssuePOJO implements Issue  {
 				+ ", updated=" + updated + ", created=" + created
 				+ ", priority=" + priority + "]";
 	}
-
 
 }

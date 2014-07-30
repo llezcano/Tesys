@@ -1,5 +1,7 @@
 package org.tesys.core.project.tracking;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class UserPOJO implements User{
 	
 	@Override

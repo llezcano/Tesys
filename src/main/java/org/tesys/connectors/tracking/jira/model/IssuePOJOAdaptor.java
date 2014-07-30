@@ -17,9 +17,6 @@ public class IssuePOJOAdaptor {
 		issue.setPriority(jIssue.getFields().getPriority().getId());
 		issue.setProgress(jIssue.getFields().getProgress());
 		issue.setReporter(jIssue.getFields().getReporter().getName());
-		issue.setUpdated(jIssue.getFields().getUpdated());
-		issue.setProject(jIssue.getFields().getProject().getKey());
-		issue.setReporter(jIssue.getFields().getReporter().getName());
 		issue.setResolutiondate(jIssue.getFields().getResolutiondate());
 		
 		//TODO hacer adaptor por cada clase hija
@@ -30,6 +27,7 @@ public class IssuePOJOAdaptor {
 		issue.setSubtasks(subtasks);
 		
 		issue.setUpdated(jIssue.getFields().getUpdated());
+		issue.setProject(jIssue.getFields().getProject().getKey());
 		issue.setWorkratio(jIssue.getFields().getWorkratio());
 		return issue ;
 	}
