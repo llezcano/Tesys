@@ -1,21 +1,51 @@
 package org.tesys.core.project.tracking;
 
 /**
- *  Interface para un facade de Project Tracking. El cual sera el proovedor de 
- *  Issues (tareas) y Users (desarrolladores) de un proyecto.
- *  
+ * Interface para Connector de un Gestor de proyectos (Project Tracking). El
+ * cual sera el proovedor de Issues y Users de un proyecto.
+ * 
+ * Sinonimos: 
+ * 
+ * Issue=Tarea, 
+ * User=Usuario=Desarrollador, 
+ * Gestor de Proyectos=Project Tracking
+ * 
  * @author rulo
- *
+ * 
  */
-
 public interface ProjectTracking {
+
 	
-	public Issue[] getIssues() ;
-	
-	public boolean existUser( String key ) ;
-	
-	public User[] getUsers() ;
-	
-	public boolean existIssue( String key ) ;
-	
+	/**
+	 * Consulta al Gestor de Proyectos todos los issues existentes.
+	 * 
+	 * @return Un arreglo de todos issues existentes.
+	 */public Issue[] getIssues();
+
+	/**
+	 * Consulta al Gestor de Proyectos todos los usuarios existentes.
+	 * 
+	 * @return Un arreglo de todos usuarios existentes.
+	 */
+	public User[] getUsers();
+
+	/**
+	 * Consulta al Gestor de proyectos por la existencia de un issue con una
+	 * clave determinada.
+	 * 
+	 * @param key
+	 *            Campo clave del issue.
+	 * @return Devuelve 'true' solo si existe un issue asociado a esa clave.
+	 */
+	public boolean existIssue(String key);
+
+	/**
+	 * Consulta al Gestor de proyectos por la existencia de un usuario con una
+	 * clave determinada.
+	 * 
+	 * @param key
+	 *            Campo clave del usuario
+	 * @return Devuelve 'true' solo si existe un usuario con esa clave.
+	 */
+	public boolean existUser(String key);
 }
