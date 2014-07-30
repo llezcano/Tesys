@@ -25,7 +25,7 @@ public class ScmPostCommitDataPOJO {
 
   @Override
   public String toString() {
-    return "SvnPostCommitDataPOJO [author=" + author + ", message=" + message + ", repository="
+    return "ScmPostCommitDataPOJO [author=" + author + ", message=" + message + ", repository="
         + repository + ", revision=" + revision + ", date=" + date + "]";
   }
 

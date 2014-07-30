@@ -157,7 +157,6 @@ public class IssuePOJO implements Issue {
 
 	@Override
 	public String getKey() {
-		// TODO Auto-generated method stub
 		return key;
 	}
 

@@ -2,7 +2,7 @@ package org.tesys.core.project.tracking;
 
 import java.net.MalformedURLException;
 
-import org.tesys.rest.RESTClient ;
+import org.tesys.util.RESTClient;
 
 
 /**
@@ -56,7 +56,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 	
 	public String getConnectorLocation() {
 	    //TODO RESEARCH Discovery Services
-	    return "http://localhost:8091/core/rest/project/" ;
+	    return "http://localhost:8080/core/rest/project/" ;
 	}
 	
 	@Override

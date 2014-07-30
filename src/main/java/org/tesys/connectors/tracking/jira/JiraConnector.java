@@ -80,7 +80,6 @@ public class JiraConnector implements JiraAdaptor {
 		try {
 			jira = new JiraAdaptation(client, userSchema, issueSchema) ;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -110,7 +109,6 @@ public class JiraConnector implements JiraAdaptor {
     	try {
 			return jira.getUser(name) ;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -126,7 +124,6 @@ public class JiraConnector implements JiraAdaptor {
     	try {
 			return jira.getAllUsers();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;   			
@@ -141,7 +138,6 @@ public class JiraConnector implements JiraAdaptor {
     	try {
 			return jira.getAllIssues() ;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;	
