@@ -14,7 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.db.DatabaseFacade;
-import org.tesys.core.project.tracking.RESTClientProjectTracking;
+import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 import org.tesys.util.GenericJSONClient;
 import org.tesys.util.MD5;
 
@@ -247,7 +247,7 @@ public class SCMManager {
       if (matcher.find()) {
         throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
       }
-      RESTClientProjectTracking pt = new RESTClientProjectTracking();
+      ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
       //TODO descomentar cuando se implemente eso
       /*if (!pt.existIssue(issue)) {
         throw new Exception(Messages.getString("SCMManager.issueinvalido")); //$NON-NLS-1$
@@ -289,35 +289,10 @@ public class SCMManager {
    * @throws Exception
    */
   private void mapUser(ScmPreCommitDataPOJO scmData) throws Exception {
-    // generar una query para buscar en la db
-    JsonFactory factory = new JsonFactory();
-    ObjectMapper om = new ObjectMapper(factory);
-    factory.setCodec(om);
-
-    ObjectNode node1 = om.createObjectNode();
-    node1.put(SCM_USER_DATA_ID, scmData.getAuthor());
-    ObjectNode node11 = om.createObjectNode();
-    node11.put(MATCH_QL, node1);
-
-    ObjectNode node2 = om.createObjectNode();
-    node2.put(REPOSITORY_DATA_ID, scmData.getRepository());
-    ObjectNode node22 = om.createObjectNode();
-    node22.put(MATCH_QL, node2);
-
-    ArrayNode an = om.createArrayNode();
-    an.add(node11);
-    an.add(node22);
-    ObjectNode must = om.createObjectNode();
-    must.put(MUST_QL, an);
-    ObjectNode bool = om.createObjectNode();
-    bool.put(BOOL_QL, must);
-    ObjectNode query = om.createObjectNode();
-    query.put(QUERY_QL, bool);
-    // fin generacion de query
-
+   
+    //TODO
     String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
-    // Espera algo como
-    // {"results":[{"project_tracking_user":"foo","scm_user":"bar","repository":"baz"}]}
+
 
     if (!result.contains(scmData.getAuthor())) {
       matcher = userPattern.matcher(scmData.getMessage());
@@ -330,7 +305,7 @@ public class SCMManager {
           throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
         }
         //TODO descomentar cuando se implemente eso
-        RESTClientProjectTracking pt = new RESTClientProjectTracking();
+        ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
         /*if (!pt.existUser(user)) {
           throw new Exception(Messages.getString("SCMManager.userinvalido")); //$NON-NLS-1$
         }*/
