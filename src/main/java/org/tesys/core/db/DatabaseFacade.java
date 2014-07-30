@@ -1,6 +1,8 @@
 package org.tesys.core.db;
 
 
+import java.net.MalformedURLException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.DELETE;
@@ -9,8 +11,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
-import org.tesys.util.GenericJSONClient;
+import org.tesys.rest.RESTClient;
+
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 
 @Path("/db")
@@ -18,11 +24,15 @@ import org.tesys.util.GenericJSONClient;
 public class DatabaseFacade {
 
   private static final String DEFAULT_LOCATION_CONNECTOR = "http://localhost:8080/core/rest/connectors/elasticsearch"; //$NON-NLS-1$
-  GenericJSONClient client;
+  RESTClient client;
 
   @PostConstruct
   public void init() {
-    client = new GenericJSONClient(DEFAULT_LOCATION_CONNECTOR);
+    try {
+      client = new RESTClient(DEFAULT_LOCATION_CONNECTOR);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    }
   }
   
   /**
@@ -30,13 +40,21 @@ public class DatabaseFacade {
    * desde rest
    */
   public DatabaseFacade() {
-    client = new GenericJSONClient(DEFAULT_LOCATION_CONNECTOR);
+    try {
+      client = new RESTClient(DEFAULT_LOCATION_CONNECTOR);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    }
   }
 
   @PUT
   @Path("/config")
   public String changeConnectorLocation(String url) {
-    client.setURL(url);
+    try {
+      client.setURL(url);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    }
     return Messages.getString("DatabaseFacade.urlchanged"); //$NON-NLS-1$
   }
 
@@ -45,16 +63,20 @@ public class DatabaseFacade {
   @Path("{index}/{dtype}/{id}")
   public String PUT(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("id") String id, String data) {
+    
+    Response response = client.PUT(index + "/" + dtype + "/" + id, data); //$NON-NLS-1$ //$NON-NLS-2$
 
-    return client.PUT(index + "/" + dtype + "/" + id, data); //$NON-NLS-1$ //$NON-NLS-2$
+    return response.readEntity( String.class );
   }
 
   @DELETE
   @Path("{index}/{dtype}/{id}")
   public String DELETE(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("id") String id) {
+    
+    Response response = client.DELETE(index + "/" + dtype + "/" + id); //$NON-NLS-1$ //$NON-NLS-2$
 
-    return client.DELETE(index + "/" + dtype + "/" + id); //$NON-NLS-1$ //$NON-NLS-2$
+    return response.readEntity( String.class );
   }
 
 
@@ -62,8 +84,10 @@ public class DatabaseFacade {
   @Path("{index}/{dtype}/{id}")
   public String GET(@PathParam("index") String index, @PathParam("dtype") String dtype,
       @PathParam("id") String id) {
+    
+    Response response = client.GET(index + "/" + dtype + "/" + id); //$NON-NLS-1$ //$NON-NLS-2$
 
-    return client.GET(index + "/" + dtype + "/" + id); //$NON-NLS-1$ //$NON-NLS-2$
+    return response.readEntity( String.class );
   }
 
 
@@ -72,7 +96,9 @@ public class DatabaseFacade {
   public String POST(@PathParam("index") String index, @PathParam("dtype") String dtype,
       String query) {
     
-    return client.POST(index + "/" + dtype , query); //$NON-NLS-1$
+    Response response = client.POST(index + "/" + dtype , query); //$NON-NLS-1$
+    
+    return response.readEntity( String.class );
   }
 
 }

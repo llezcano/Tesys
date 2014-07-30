@@ -58,7 +58,8 @@ public class SVNConnector {
     }
 
     SVNRevision svnr = SVNRevision.create( Integer.parseInt( revision ) );
-    final File destPath = new File(System.getProperty("user.home"), ".tesys");
+    //TODO esta ruta hay que pedirsela al core
+    final File destPath = new File(System.getProperty("user.home"), ".tesys/workspace");
     
     try {
       return checkout(location, svnr, destPath, false);

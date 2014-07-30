@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.db.DatabaseFacade;
+import org.tesys.core.project.tracking.RESTClientProjectTracking;
 import org.tesys.util.GenericJSONClient;
 import org.tesys.util.MD5;
 
@@ -24,11 +25,46 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
+/**
+ * Esta clase es la principal encargada de llevar a cabo todas las tareas relacioanasdas
+ * con el SCM que se utilice en el proyecto.
+ * 
+ * Tiene dos funciones principales.
+ * 
+ * Una es como ofrecedor de servicios para:
+ * 
+ * - Saber si un commit que se esta realizando es valido. 
+ * Este servicio debe ser consumido antes de que se realice el commit, lo que en la
+ * mayoria de los SCM se conoce como hook pre commit, y se le deben proporcionar los
+ * datos que sirvan para validar el commit.
+ * 
+ * - Guardar un commit.
+ * En este caso se almacena la informacion relacionada a que se realizo con exito un commit,
+ * no los archivos que se commitearon, los datos se especifican en el metodo y basicamente 
+ * este servicio se utiliza dentro del sistema para luego saber que revision corresponde a que
+ * tarea del project tracking. Este servicio esta pensado para ser consumido por el hook post commit
+ * Pero se puede usar de forma "asincrona" tranquilamente guardando los commits cada tanto usando
+ * algun sistemas de log del SCM o lo que sea que se disponga.
+ * 
+ * Hay que mencionar que estos dos servicios van a ser utilizados quizas por scripts ya que es la unica
+ * forma de hacer hooks en la mayoria de los SCMs, y estos scrips deben estar en alguna locacion
+ * especifica, por lo que son imposibles de gestionar dentro del core, pero aun asi fundamentales
+ * para el sistema.
+ * 
+ * La Segunda funcionalidad es desde el sistema poder hacer "checkouts" de un SCM.
+ * En este caso, esta clase, actua como cliente de un servidor conocido como "conector SCM"
+ * Que debe existir dependiendo del tipo de SCM que se este utilizando.
+ * Dicho conector sera el que tenga la implementacion de como realizar un checkout y debera
+ * guardar los archivos en una ruta predefinida que luego el sistema analizara.
+ * 
+ */
+
 @Path("/scm")
 @Singleton
 public class SCMManager {
 
-  private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
+  private static final String DEFAULT_URL_SCM_CONNECTOR =
+      "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
   private static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
@@ -45,7 +81,7 @@ public class SCMManager {
   private static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
   private static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
   private static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
- 
+
 
   private Pattern issuePattern;
   private Pattern userPattern;
@@ -64,7 +100,10 @@ public class SCMManager {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
     db = new DatabaseFacade();
-    client = new GenericJSONClient(DEFAULT_URL_SCM_CONNECTOR); 
+  }
+
+  public SCMManager() {
+    client = new GenericJSONClient(DEFAULT_URL_SCM_CONNECTOR);
   }
 
 
@@ -113,11 +152,13 @@ public class SCMManager {
   @Produces(MediaType.TEXT_PLAIN)
   public String storeCommit(ScmPostCommitDataPOJO scmData) {
 
+    generateRevisionZero(scmData.getRepository());
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
     String issue = null;
 
     try {
       issue = getIssue(scmData.getMessage());
+
       dateFormat.parse(scmData.getDate());
     } catch (Exception e) {
       return e.getMessage();
@@ -133,8 +174,6 @@ public class SCMManager {
 
     return OK_CODE;
   }
-
-
 
   /**
    * Esta clase hace un checkout de un scm en la carpeta $HOME/.tesys
@@ -208,14 +247,13 @@ public class SCMManager {
       if (matcher.find()) {
         throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
       }
-      // TODO preguntarle el project.tracking si existe issue en jira
-      // ProjectTracking pt;
-      // if( !pt.existIssue( issue ) ) {
-      // throw new Exception("El issue: " + issue + "No coincide con un issue existente");
-      // }
+      RESTClientProjectTracking pt = new RESTClientProjectTracking();
+      //TODO descomentar cuando se implemente eso
+      /*if (!pt.existIssue(issue)) {
+        throw new Exception(Messages.getString("SCMManager.issueinvalido")); //$NON-NLS-1$
+      }*/
     } else {
-      throw new Exception(
-          Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
+      throw new Exception(Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
     }
     return issue;
   }
@@ -276,11 +314,12 @@ public class SCMManager {
     ObjectNode query = om.createObjectNode();
     query.put(QUERY_QL, bool);
     // fin generacion de query
-    
+
     String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
-    
-    
-    if ( !result.contains( scmData.getAuthor() )) {
+    // Espera algo como
+    // {"results":[{"project_tracking_user":"foo","scm_user":"bar","repository":"baz"}]}
+
+    if (!result.contains(scmData.getAuthor())) {
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
@@ -290,10 +329,11 @@ public class SCMManager {
         if (matcher.find()) {
           throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
         }
-        // TODO
-        // if( !pt.existUser( user ) ) {
-        // throw new Exception("El user: " + user + "No coincide con un user existente");
-        // }
+        //TODO descomentar cuando se implemente eso
+        RESTClientProjectTracking pt = new RESTClientProjectTracking();
+        /*if (!pt.existUser(user)) {
+          throw new Exception(Messages.getString("SCMManager.userinvalido")); //$NON-NLS-1$
+        }*/
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
 
@@ -304,10 +344,34 @@ public class SCMManager {
 
         db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
       } else {
-        throw new Exception(
-            Messages.getString("syntaxerroruser")); //$NON-NLS-1$
+        throw new Exception(Messages.getString("syntaxerroruser")); //$NON-NLS-1$
       }
     }
+
+  }
+
+  /**
+   * Este metodo inserta en la base de datos la revision 0 que es cuando el proyecto esta vacio, de
+   * esta forma cuando se analize la informacion se va a poder sacar metricas en relacion a otros
+   * commits con este
+   * 
+   * Hay que guardar un unico dato por cada repositorio, pero como el costo de preguntar si esta es
+   * casi igual a guardarlo se guarda directamente siempre que se hace un commit
+   * 
+   * @param repository
+   */
+
+  private void generateRevisionZero(String repository) {
+    ScmPostCommitDataPOJO rev0 = new ScmPostCommitDataPOJO();
+    rev0.setAuthor("null"); //$NON-NLS-1$
+    rev0.setDate("2000-01-01 00:00:00"); //$NON-NLS-1$
+    rev0.setMessage("null"); //$NON-NLS-1$
+    rev0.setRepository(repository);
+    rev0.setRevision("0"); //$NON-NLS-1$
+
+    ObjectMapper rev0objectMapper = new ObjectMapper();
+    JsonNode rev0data = rev0objectMapper.valueToTree(rev0);
+    db.PUT(SCM_DB_INDEX, SCM_DTYPE_REVISIONS, "r0", rev0data.toString()); //$NON-NLS-1$
 
   }
 
