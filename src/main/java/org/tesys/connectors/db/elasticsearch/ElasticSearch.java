@@ -37,7 +37,7 @@ public class ElasticSearch {
   @PostConstruct
   public void init() {
     try {
-      client = new RESTClient("http://localhost:9200/");
+      client = new RESTClient("http://192.168.0.2:9200/");
     } catch (MalformedURLException e) {
       e.printStackTrace();
     }
@@ -159,61 +159,62 @@ public class ElasticSearch {
     return size;
   }
   
-  
-  //EJEMPLO
-  @GET
-  //@Consumes(MediaType.APPLICATION_JSON)
-  //@Produces(MediaType.APPLICATION_JSON)
-  @Path("getSCM-JIRA-MAPPING/{index}/{dtype}")
-  public void getMapping( /*index y dtype por rest*/  ) {
-    
-    //cuantos hay
-    String size = getSize(index, dtype);
-    
-    //query para hacer la busqeuda en el elastic
-    /* 
-    * { "query": { "bool": { "must": [ { "match": { "scm_user": "<usuario>" }}, { "match": {
-    * "repository": "<repositorio>" }} ] } } }
-    * 
-    * Dirigirse a la documentacion del lenguaje para mas informacion:
-    * http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-body.html
-    */
-    JsonFactory factory = new JsonFactory();
-    ObjectMapper om = new ObjectMapper(factory);
-    factory.setCodec(om);
-
-    //busca que son cada variable en SCMManager
-    ObjectNode node1 = om.createObjectNode();
-    node1.put(SCM_USER_DATA_ID, scmData.getAuthor());
-    ObjectNode node11 = om.createObjectNode();
-    node11.put(MATCH_QL, node1);
-
-    ObjectNode node2 = om.createObjectNode();
-    node2.put(REPOSITORY_DATA_ID, scmData.getRepository());
-    ObjectNode node22 = om.createObjectNode();
-    node22.put(MATCH_QL, node2);
-
-    ArrayNode an = om.createArrayNode();
-    an.add(node11);
-    an.add(node22);
-    ObjectNode must = om.createObjectNode();
-    must.put(MUST_QL, an);
-    ObjectNode bool = om.createObjectNode();
-    bool.put(BOOL_QL, must);
-    ObjectNode query = om.createObjectNode();
-    query.put(QUERY_QL, bool);
-    
-    //agregarle el size
-    
-    //query.put("size", size);??? ver si no rompe nada
-    
-    
-    //se llama al elastic 
-    Response response = client.POST(index + "/" + dtype + "/_search", query.toString());
-    
-    //Devuelve los datos con sida, asi que hay que sacarlos usando lo que se usa en el metod post
-  }
-  
+//  
+//  //EJEMPLO
+//  
+//  @GET
+//  //@Consumes(MediaType.APPLICATION_JSON)
+//  //@Produces(MediaType.APPLICATION_JSON)
+//  @Path("getSCM-JIRA-MAPPING/{index}/{dtype}")
+//  public void getMapping( /*index y dtype por rest*/  ) {
+//    
+//    //cuantos hay
+//    String size = getSize(index, dtype);
+//    
+//    //query para hacer la busqeuda en el elastic
+//    /* 
+//    * { "query": { "bool": { "must": [ { "match": { "scm_user": "<usuario>" }}, { "match": {
+//    * "repository": "<repositorio>" }} ] } } }
+//    * 
+//    * Dirigirse a la documentacion del lenguaje para mas informacion:
+//    * http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-body.html
+//    */
+//    JsonFactory factory = new JsonFactory();
+//    ObjectMapper om = new ObjectMapper(factory);
+//    factory.setCodec(om);
+//
+//    //busca que son cada variable en SCMManager
+//    ObjectNode node1 = om.createObjectNode();
+//    node1.put(SCM_USER_DATA_ID, scmData.getAuthor());
+//    ObjectNode node11 = om.createObjectNode();
+//    node11.put(MATCH_QL, node1);
+//
+//    ObjectNode node2 = om.createObjectNode();
+//    node2.put(REPOSITORY_DATA_ID, scmData.getRepository());
+//    ObjectNode node22 = om.createObjectNode();
+//    node22.put(MATCH_QL, node2);
+//
+//    ArrayNode an = om.createArrayNode();
+//    an.add(node11);
+//    an.add(node22);
+//    ObjectNode must = om.createObjectNode();
+//    must.put(MUST_QL, an);
+//    ObjectNode bool = om.createObjectNode();
+//    bool.put(BOOL_QL, must);
+//    ObjectNode query = om.createObjectNode();
+//    query.put(QUERY_QL, bool);
+//    
+//    //agregarle el size
+//    
+//    //query.put("size", size);??? ver si no rompe nada
+//    
+//    
+//    //se llama al elastic 
+//    Response response = client.POST(index + "/" + dtype + "/_search", query.toString());
+//    
+//    //Devuelve los datos con sida, asi que hay que sacarlos usando lo que se usa en el metod post
+//  }
+//  
   
   
 
