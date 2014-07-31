@@ -8,48 +8,79 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.tesys.core.analysis.sonar.AnalisisPOJO;
+import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
-import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 
 @Path("/connectors/elasticsearch")
 @Singleton
 public class ElasticSearchConnector {
 
+    private ElasticSearch Elasticsearch ;
     @PostConstruct
     public void init() {
-	System.out.println("JiraConnector") ;
+	Elasticsearch = new ElasticSearch() ;
+	
     }
 
 
     @GET
     @Path("/mapping/{name}/{repoID}")
     public boolean isValidDeveloper(@PathParam("name") String name, @PathParam("repoID") String repoID) {
-	//isValidDeveloper(@PathParam("name") String name, @PathParam("repoID") String repoID)
-	return true;
+	return Elasticsearch.isValidDeveloper(name, repoID);
     }
     
     @GET
     @Path("/revisions")
-    public RevisionPOJO[] getRevisions() {
-	// TODO getRevisions()
-	return null;
+    public RevisionPOJO[] getRevisions() {	
+	return Elasticsearch.getRevisions() ;
     }
     
-    @PUT
-    @Path("/revisions/{id}")
-    public void store(@PathParam("id") String ID, ScmPostCommitDataPOJO data) {
-	
-	//TODO store(String ID, ScmPostCommitDataPOJO data)
+    @GET
+    @Path("/revisions/unscanned")
+    public RevisionPOJO[] getUnscanedRevisions() {
+	return Elasticsearch.getUnscanedRevisions() ;
     }
     
+    
+    /**
+     * Aqui se almacenan los mapeos entre los usuarios JIRA-SCM
+     * 
+     * @param ID
+     * @param mapping
+     */
     @PUT
     @Path("/mapping/{id}")
     public void store(@PathParam("id") String ID, MappingPOJO mapping) {
-	//TODO store(String ID, SCMProjectMappingPOJO mapping)
-	System.out.println(mapping);
+	Elasticsearch.store(ID, mapping);
     }
     
+    /**
+     * Aqui se almacenan las descripciones de cada metrica individual (Nombre,tipo,etc.)
+     * 
+     * @param ID
+     * @param metric
+     */
+    @PUT
+    @Path("/metric/{id}")
+    public void store(@PathParam("id") String ID, MetricPOJO metric) {
+	Elasticsearch.store(ID, metric);
+    }
+    
+    /**
+     * Aqui se almacenan los analisis del sonar. Los cuales con un conjunto de metricas.
+     * 
+     * @param ID
+     * @param analisis
+     */
+    @PUT
+    @Path("/analysis/{id}")
+    public void store(@PathParam("id") String ID, AnalisisPOJO analisis) {
+	Elasticsearch.store(ID, analisis);
+    }
+
+
     // TODO /revisions/{repo} esto es para que funcione con distintas revisiones
     
 
