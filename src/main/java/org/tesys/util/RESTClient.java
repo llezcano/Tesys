@@ -22,120 +22,98 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
  */
 public class RESTClient implements HTTPClient {
 
-	private MediaType type = MediaType.APPLICATION_JSON_TYPE;
+  private MediaType type = MediaType.APPLICATION_JSON_TYPE;
 
-	private URL URL;
-	private HttpAuthenticationFeature auth;
-	private Client client;
+  private URL URL;
+  private HttpAuthenticationFeature auth;
+  private Client client;
 
-	/**
-	 * Main for test class and examples
-	 * 
-	 * @param args
-	 */
-	/*
-	public static void main(String args[]) {
-	
-		try {
-			RESTClient myClient = new RESTClient("http://localhost:8091/");
-			Response response = myClient.TEST("/core/rest/project/users/mcabrera");
-			//La case UserPOJO debe ser mappeable desde JSON. Lo cual lo logro con @XmlRootElement.
-			UserPOJO u = response.readEntity(UserPOJO.class);			
-			// Asi tambien funciona, UserPOJO u = response.readEntity(new GenericType<UserPOJO>() {});
-			
-			System.out.println(u) ;
+  /**
+   * Main for test class and examples
+   * 
+   * @param args
+   */
+  /*
+   * public static void main(String args[]) {
+   * 
+   * try { RESTClient myClient = new RESTClient("http://localhost:8091/"); Response response =
+   * myClient.TEST("/core/rest/project/users/mcabrera"); //La case UserPOJO debe ser mappeable desde
+   * JSON. Lo cual lo logro con @XmlRootElement. UserPOJO u = response.readEntity(UserPOJO.class);
+   * // Asi tambien funciona, UserPOJO u = response.readEntity(new GenericType<UserPOJO>() {});
+   * 
+   * System.out.println(u) ;
+   * 
+   * } catch (MalformedURLException e) { // TODO Auto-generated catch block e.printStackTrace();
+   * System.exit(0); }
+   * 
+   * }
+   */
 
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(0);
-		}
+  /**
+   * Client constructor without authorization
+   * 
+   * @param url
+   * @throws MalformedURLException
+   */
+  public RESTClient(String url) throws MalformedURLException {
+    URL = new URL(url);
+    auth = null;
+    client = ClientBuilder.newClient();
+  }
 
-	}
-	*/
+  public RESTClient(String url, String user, String pass) throws MalformedURLException {
+    URL = new URL(url);
+    auth = HttpAuthenticationFeature.basic(user, pass);
+    client = ClientBuilder.newClient();
+    // Setting client authorization
+    client.register(auth);
+  }
 
-	/**
-	 * Client constructor without authorization
-	 * 
-	 * @param url
-	 * @throws MalformedURLException
-	 */
-	public RESTClient(String url) throws MalformedURLException {
-		URL = new URL(url);
-		auth = null;
-		client = ClientBuilder.newClient();
-	}
+  public String getURL() {
+    return URL.toString();
+  }
 
-	public RESTClient(String url, String user, String pass)
-			throws MalformedURLException {
-		URL = new URL(url);
-		auth = HttpAuthenticationFeature.basic(user, pass);
-		client = ClientBuilder.newClient();
-		// Setting client authorization
-		client.register(auth);
-	}
+  public void setURL(String url) throws MalformedURLException {
+    URL = new URL(url);
+  }
 
-	public String getURL() {
-		return URL.toString();
-	}
+  public Response GET(String resource, Map<String, String> params) {
+    if (params == null)
+      return this.GET(resource);
 
-	public void setURL(String url) throws MalformedURLException {
-		URL = new URL(url);
-	}
+    WebTarget target = client.target(getURL()).path(resource);
+    // adding parameters
+    for (Map.Entry<String, String> param : params.entrySet())
+      target = target.queryParam(param.getKey(), param.getValue());
 
-	public Response GET(String resource, Map<String, String> params) {
-		if (params == null)
-			return this.GET(resource);
+    // making request
+    return target.request(this.type).get();
+  }
 
-		WebTarget target = client.target(getURL()).path(resource);
-		// adding parameters
-		for (Map.Entry<String, String> param : params.entrySet())
-			target = target.queryParam(param.getKey(), param.getValue());
+  public Response GET(String resource) {
 
-		// making request
-		return 	target
-				.request(this.type)
-				.get();
-	}
+    return client.target(this.getURL()).path(resource).request(this.type).get();
 
-	public Response GET(String resource) {
+  }
 
-		return 	client
-				.target(this.getURL())
-				.path(resource)
-				.request(this.type)
-				.get();
+  public Response PUT(String resource, String JSON) {
 
-	}
+    return client.target(this.getURL()).path(resource).request(this.type)
+        .put(Entity.entity(JSON, this.type));
 
-	public Response PUT(String resource, String JSON) {
+  }
 
-		return 	client
-				.target(this.getURL())
-				.path(resource)
-				.request(this.type)
-				.put(Entity.entity(JSON, this.type));
+  public Response POST(String resource, String JSON) {
 
-	}
+    return client.target(this.getURL()).path(resource).request(this.type)
+        .post(Entity.entity(JSON, this.type));
 
-	public Response POST(String resource, String JSON) {
+  }
 
-		return 	client
-				.target(this.getURL())
-				.path(resource)
-				.request(this.type)
-				.post(Entity.entity(JSON, this.type));
+  public Response DELETE(String resource) {
 
-	}
+    return client.target(this.getURL()).path(resource).request(this.type).delete();
 
-	public Response DELETE(String resource) {
-
-		return 	client
-				.target(this.getURL())
-				.path(resource)
-				.request(this.type)
-				.delete();
-
-	}
+  }
 
 }

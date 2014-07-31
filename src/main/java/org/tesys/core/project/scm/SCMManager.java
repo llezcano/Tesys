@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.tesys.core.db.DatabaseFacade;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 import org.tesys.util.MD5;
@@ -16,83 +15,80 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
 /**
- * Esta clase es la principal encargada de llevar a cabo todas las tareas relacioanasdas
- * con el SCM que se utilice en el proyecto.
+ * Esta clase es la principal encargada de llevar a cabo todas las tareas relacioanasdas con el SCM
+ * que se utilice en el proyecto.
  * 
  * Tiene dos funciones principales.
  * 
  * Una es como ofrecedor de servicios para:
  * 
- * - Saber si un commit que se esta realizando es valido. 
- * Este servicio debe ser consumido antes de que se realice el commit, lo que en la
- * mayoria de los SCM se conoce como hook pre commit, y se le deben proporcionar los
- * datos que sirvan para validar el commit.
+ * - Saber si un commit que se esta realizando es valido. Este servicio debe ser consumido antes de
+ * que se realice el commit, lo que en la mayoria de los SCM se conoce como hook pre commit, y se le
+ * deben proporcionar los datos que sirvan para validar el commit.
  * 
- * - Guardar un commit.
- * En este caso se almacena la informacion relacionada a que se realizo con exito un commit,
- * no los archivos que se commitearon, los datos se especifican en el metodo y basicamente 
- * este servicio se utiliza dentro del sistema para luego saber que revision corresponde a que
- * tarea del project tracking. Este servicio esta pensado para ser consumido por el hook post commit
- * Pero se puede usar de forma "asincrona" tranquilamente guardando los commits cada tanto usando
- * algun sistemas de log del SCM o lo que sea que se disponga.
+ * - Guardar un commit. En este caso se almacena la informacion relacionada a que se realizo con
+ * exito un commit, no los archivos que se commitearon, los datos se especifican en el metodo y
+ * basicamente este servicio se utiliza dentro del sistema para luego saber que revision corresponde
+ * a que tarea del project tracking. Este servicio esta pensado para ser consumido por el hook post
+ * commit Pero se puede usar de forma "asincrona" tranquilamente guardando los commits cada tanto
+ * usando algun sistemas de log del SCM o lo que sea que se disponga.
  * 
- * Hay que mencionar que estos dos servicios van a ser utilizados quizas por scripts ya que es la unica
- * forma de hacer hooks en la mayoria de los SCMs, y estos scrips deben estar en alguna locacion
- * especifica, por lo que son imposibles de gestionar dentro del core, pero aun asi fundamentales
- * para el sistema.
+ * Hay que mencionar que estos dos servicios van a ser utilizados quizas por scripts ya que es la
+ * unica forma de hacer hooks en la mayoria de los SCMs, y estos scrips deben estar en alguna
+ * locacion especifica, por lo que son imposibles de gestionar dentro del core, pero aun asi
+ * fundamentales para el sistema.
  * 
- * La Segunda funcionalidad es desde el sistema poder hacer "checkouts" de un SCM.
- * En este caso, esta clase, actua como cliente de un servidor conocido como "conector SCM"
- * Que debe existir dependiendo del tipo de SCM que se este utilizando.
- * Dicho conector sera el que tenga la implementacion de como realizar un checkout y debera
- * guardar los archivos en una ruta predefinida que luego el sistema analizara.
+ * La Segunda funcionalidad es desde el sistema poder hacer "checkouts" de un SCM. En este caso,
+ * esta clase, actua como cliente de un servidor conocido como "conector SCM" Que debe existir
+ * dependiendo del tipo de SCM que se este utilizando. Dicho conector sera el que tenga la
+ * implementacion de como realizar un checkout y debera guardar los archivos en una ruta predefinida
+ * que luego el sistema analizara.
  * 
  * ALMACENA DATOS EN:
  * 
- * scm/users
- * scm/revisions
+ * scm/users scm/revisions
  * 
  */
 
 public class SCMManager {
 
- 
+
   public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
   public static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
   public static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
   public static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
   public static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
   public static final String SCM_USER_DATA_ID = "scm_user"; //$NON-NLS-1$
-  
+
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
   private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
   private static final String ISSUE_REGEX = "#issue='(.*?)'"; //$NON-NLS-1$
   private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"; //$NON-NLS-1$
   private static final String OK_CODE = "1"; //$NON-NLS-1$
- 
+
   private Pattern issuePattern;
   private Pattern userPattern;
   private Matcher matcher;
   private DatabaseFacade db;
   private SCMFacade scmFacade;
 
-  
-  
+
+
   private static SCMManager instance = null;
-  
+
   private SCMManager() {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
     db = new DatabaseFacade();
     scmFacade = SCMFacade.getInstance();
   }
-  
+
   public static SCMManager getInstance() {
-     if(instance == null) {
-        instance = new SCMManager();
-     }
-     return instance;
+    if (instance == null) {
+      instance = new SCMManager();
+    }
+    return instance;
   }
 
 
@@ -108,7 +104,7 @@ public class SCMManager {
    */
   public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
     try {
-      //TODO cada uno de estos se puede hacer con un thread aparte
+      // TODO cada uno de estos se puede hacer con un thread aparte
       getIssue(scmData.getMessage());
       mapUser(scmData);
     } catch (Exception e) {
@@ -241,13 +237,13 @@ public class SCMManager {
    * @throws Exception
    */
   private void mapUser(ScmPreCommitDataPOJO scmData) throws Exception {
-   
-    //TODO hacer la consulta cuando ande la base de datos
-    //String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
+
+    // TODO hacer la consulta cuando ande la base de datos
+    // String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
 
 
-    //if (!result.contains(scmData.getAuthor())) {
-    if( true ) { //o sea que se mapea siempre
+    // if (!result.contains(scmData.getAuthor())) {
+    if (true) { // o sea que se mapea siempre
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
