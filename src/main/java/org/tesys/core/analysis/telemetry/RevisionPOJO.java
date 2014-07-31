@@ -2,6 +2,8 @@ package org.tesys.core.analysis.telemetry;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+@XmlRootElement
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
   private Date date;

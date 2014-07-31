@@ -1,5 +1,6 @@
 package org.tesys.core.project.scm;
 
+
 public class CheckoutInfoPOJO {
 
   private String pathDestination;

@@ -1,6 +1,7 @@
 package org.tesys.core.project.scm;
 
 
+
 public class ScmPreCommitDataPOJO {
 
   private String author;

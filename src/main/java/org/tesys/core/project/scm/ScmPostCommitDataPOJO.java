@@ -1,5 +1,8 @@
 package org.tesys.core.project.scm;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class ScmPostCommitDataPOJO {
   private String author;
   private String message;

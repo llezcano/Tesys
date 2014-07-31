@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.tesys.core.db.Database;
 import org.tesys.core.db.DatabaseFacade;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
+import org.tesys.util.MD5;
 
 
 public class SonarAnalizer {
@@ -20,7 +22,7 @@ public class SonarAnalizer {
 
   private SCMManager scm;
   private StoreResults sr;
-  private DatabaseFacade db;
+  private Database db;
   private SonarExtractor se;
 
   private static SonarAnalizer instance = null;
@@ -28,7 +30,7 @@ public class SonarAnalizer {
   private SonarAnalizer() {
     scm = SCMManager.getInstance();
     sr = StoreResults.getInstance();
-    db = new DatabaseFacade();
+    db = new Database();
     se = new SonarExtractor();
   }
 
@@ -73,7 +75,8 @@ public class SonarAnalizer {
       
       analizar();
       rev.setScaned(true);
-      db.storeCommit( rev );
+      String id = MD5.generateId(rev.getDate().toString()); //PROBAR SI SE GENERA BIEN EL MISMO ID Y ADEMAS METER LA GENERACION DEL ID EN EL POJO
+      db.store( id, rev );
     }
       
     sr.storeAnalysis( se.getResults(revisionesSinEscanear) );

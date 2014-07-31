@@ -30,14 +30,14 @@ public class StoreResults {
   public void storeMetrics(List<MetricPOJO> metrics) {
 
     for (MetricPOJO metric : metrics) {
-      db.storeMetric( metric );
+      db.store( metric );
     }
   }
 
   public void storeAnalysis(List<AnalisisPOJO> resultados) {
 
     for (AnalisisPOJO analisis : resultados) {
-      db.storeAnalisis( analisis );
+      db.store( analisis );
 
     }
 

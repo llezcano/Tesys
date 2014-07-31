@@ -1,19 +1,16 @@
 package org.tesys.core.project.scm;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.tesys.core.db.DatabaseFacade;
+import org.tesys.core.db.Database;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 import org.tesys.util.MD5;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
 /**
@@ -71,17 +68,28 @@ public class SCMManager {
   private Pattern issuePattern;
   private Pattern userPattern;
   private Matcher matcher;
-  private DatabaseFacade db;
+  private Database db;
   private SCMFacade scmFacade;
 
-
-
+  
   private static SCMManager instance = null;
 
+  /*
+  public static void main( String args[] ) throws MalformedURLException {
+      
+      SCMProjectMappingPOJO mapping = new SCMProjectMappingPOJO("pepeJira", "pepeSCM", "Tesys") ;
+      RESTClient client = new RESTClient("http://localhost:8091/core/rest/connectors/elasticsearch/") ;
+      System.out.println(mapping) ;
+      client.PUT("/mapping/1", mapping) ;
+          
+      
+  }
+  */
+  
   private SCMManager() {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
-    db = new DatabaseFacade();
+    db = new Database();
     scmFacade = SCMFacade.getInstance();
   }
 
@@ -152,7 +160,7 @@ public class SCMManager {
     RevisionPOJO revision = new RevisionPOJO(formatDate, scmData.getAuthor(), issue,
         scmData.getRevision(), scmData.getRepository());
 
-    db.storeRevision( id, revision );
+    db.store( id, revision );
 
     return true;
   }
@@ -242,17 +250,16 @@ public class SCMManager {
    */
   private void mapUser(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
 
-    boolean results;
+    boolean existeMapeo;
     
     try {
-      results = db.getUserMapping( user, repo );
+      existeMapeo = db.isValidDeveloper( scmData.getAuthor(), scmData.getRepository() );
     } catch (Exception e) {
       throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
     }
 
 
-    // if (!result.contains(scmData.getAuthor())) {
-    if (true) {
+    if ( !existeMapeo ) {
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
@@ -270,16 +277,10 @@ public class SCMManager {
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
 
-        JsonFactory factory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(factory);
-        ObjectNode data = mapper.createObjectNode();
-        data.put(PROJECT_TRACKING_USER_DATA_ID, user);
-        data.put(SCM_USER_DATA_ID, scmData.getAuthor());
-        data.put(REPOSITORY_DATA_ID, scmData.getRepository());
-        MappingPOJO mp;
+        MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(), scmData.getRepository());
 
         try {
-          db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
+          db.store( id, mp);
         } catch (Exception e) {
           throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
         }
@@ -306,12 +307,17 @@ public class SCMManager {
   private void generateRevisionZero(String repository) {
     
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-    Date d = dateFormat.parse(new Date(0).toString());
+    Date d = null;
+    try {
+      d = dateFormat.parse(new Date(0).toString());
+    } catch (ParseException e1) {
+      e1.printStackTrace();
+    }
     
-    RevisionPOJO rev0 = new RevisionPOJO( new Date(0),"null","null","0",repository);
+    RevisionPOJO rev0 = new RevisionPOJO( d, "null", "null", "0", repository);
 
     try {
-      db.storeRevision("0", rev0);
+      db.store("0", rev0);
     } catch (Exception e) {
       throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
     }

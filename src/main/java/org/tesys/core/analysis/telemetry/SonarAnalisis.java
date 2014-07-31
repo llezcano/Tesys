@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
 import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;

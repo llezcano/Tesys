@@ -2,6 +2,9 @@ package org.tesys.core.project.scm;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
   private Date date;
