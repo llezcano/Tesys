@@ -1,12 +1,15 @@
 package org.tesys.core.project.scm;
 
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.tesys.core.db.DatabaseFacade;
+import org.tesys.core.db.SCMProjectMappingPOJO;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 import org.tesys.util.MD5;
+import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -72,10 +75,21 @@ public class SCMManager {
   private DatabaseFacade db;
   private SCMFacade scmFacade;
 
-
-
+  
   private static SCMManager instance = null;
 
+  /*
+  public static void main( String args[] ) throws MalformedURLException {
+      
+      SCMProjectMappingPOJO mapping = new SCMProjectMappingPOJO("pepeJira", "pepeSCM", "Tesys") ;
+      RESTClient client = new RESTClient("http://localhost:8091/core/rest/connectors/elasticsearch/") ;
+      System.out.println(mapping) ;
+      client.PUT("/mapping/1", mapping) ;
+          
+      
+  }
+  */
+  
   private SCMManager() {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
