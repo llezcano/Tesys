@@ -17,7 +17,7 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 @Path("/connectors/svn")
 public class SVNConnector {
 
-  private static final String url = "svn://localhost/";
+  private static final String URL = "svn://localhost/";
 
   private long checkout(SVNURL url, SVNRevision revision, File destPath, boolean isRecursive)
       throws SVNException {
@@ -51,9 +51,9 @@ public class SVNConnector {
 
     SVNURL location = null;
     try {
-      location = SVNURL.parseURIEncoded(url + svnco.getRepository());
+      location = SVNURL.parseURIEncoded(URL + svnco.getRepository());
     } catch (SVNException e1) {
-      e1.printStackTrace();
+      throw new RuntimeException("No se genero una URL valida");
     }
 
     SVNRevision svnr = SVNRevision.create(Integer.parseInt(revision));
@@ -63,8 +63,8 @@ public class SVNConnector {
     try {
       return checkout(location, svnr, destPath, false);
     } catch (SVNException e) {
-      e.printStackTrace();
+      throw new RuntimeException("No se pudo hacer el checkout");
     }
-    return 0;
+
   }
 }

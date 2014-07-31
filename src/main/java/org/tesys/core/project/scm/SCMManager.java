@@ -54,7 +54,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class SCMManager {
 
 
-
   public static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
   public static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
   public static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
@@ -103,14 +102,13 @@ public class SCMManager {
    * @param scmData Datos previos a hacer un commit (autor, mensaje y repos)
    * @return
    */
-  public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) {
+  public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
     try {
       // TODO cada uno de estos se puede hacer con un thread aparte
       getIssue(scmData.getMessage());
       mapUser(scmData);
-    } catch (Exception e) {
-      System.err.println( e.getMessage() );
-      return false;
+    } catch (InvalidCommitException e) {
+      throw e;
     }
 
     return true;
@@ -130,7 +128,7 @@ public class SCMManager {
    * @param scmData
    * @return
    */
-  public boolean storeCommit(ScmPostCommitDataPOJO scmData) {
+  public boolean storeCommit(ScmPostCommitDataPOJO scmData) throws RuntimeException {
 
     generateRevisionZero(scmData.getRepository());
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -143,7 +141,7 @@ public class SCMManager {
     } catch (InvalidCommitException e) {
       throw e;
     } catch (ParseException e1) {
-        throw new RuntimeException(Messages.getString("SCMManager.formatofechainvalido")); //$NON-NLS-1$
+      throw new RuntimeException(Messages.getString("SCMManager.formatofechainvalido")); //$NON-NLS-1$
     }
 
     // Se sobre escribe el mensaje por el issue que es lo que importa
@@ -195,17 +193,17 @@ public class SCMManager {
     if (matcher.find()) {
       issue = matcher.group(1);
       if (issue.contains(INVALID_ISSUE)) {
-        throw new SyntaxErrorException();
+        throw new InvalidCommitException(Messages.getString("syntaxerrorissue"));
       }
       if (matcher.find()) {
-        throw new MultiCommandException();
+        throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands"));
       }
       ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
       if (!pt.existIssue(issue)) {
-        throw new InvalidIssueException();
+        throw new InvalidCommitException(Messages.getString("SCMManager.issueinvalido"));
       }
     } else {
-      throw new SyntaxErrorException(); 
+      throw new InvalidCommitException(Messages.getString("syntaxerrorissue")); 
     }
     return issue;
   }
@@ -247,20 +245,20 @@ public class SCMManager {
 
 
     // if (!result.contains(scmData.getAuthor())) {
-    if (true) { // o sea que se mapea siempre
+    if (true) {
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
         if (user.contains(INVALID_USER)) {
-          throw new SyntaxErrorException();
+          throw new InvalidCommitException(Messages.getString("syntaxerroruser"));
         }
         if (matcher.find()) {
-          throw new MultiCommandException();
+          throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands"));
         }
         
         ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
         if (!pt.existUser(user)) {
-          throw new InvalidUserException(); 
+          throw new InvalidCommitException(Messages.getString("SCMManager.userinvalido")); 
         }
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
@@ -272,9 +270,16 @@ public class SCMManager {
         data.put(SCM_USER_DATA_ID, scmData.getAuthor());
         data.put(REPOSITORY_DATA_ID, scmData.getRepository());
 
-        db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
+
+        try {
+          db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
+        } catch (Exception e) {
+          throw new InvalidCommitException("La base de datos no se puede consultar"); 
+        }
+
+        
       } else {
-        throw new SyntaxErrorException(); //$NON-NLS-1$
+        throw new InvalidCommitException(Messages.getString("syntaxerroruser"));
       }
     }
 

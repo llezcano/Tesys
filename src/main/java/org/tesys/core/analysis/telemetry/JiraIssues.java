@@ -4,12 +4,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.SearchHit;
 import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -44,7 +38,6 @@ public class JiraIssues {
               .execute().actionGet();
     } catch (ElasticsearchException e) {
       System.err.println(SERVER_ERROR + e.getMessage());
-      System.exit(1);
     }
 
     ObjectMapper mapper = new ObjectMapper();
@@ -57,7 +50,6 @@ public class JiraIssues {
                 .execute().actionGet();
       } catch (ElasticsearchException e) {
         System.err.println(SERVER_ERROR + e.getMessage());
-        System.exit(1);
       }
 
 

@@ -4,4 +4,8 @@ public class InvalidCommitException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
   
+  
+  public InvalidCommitException(String msg) {
+    super(msg);
+  }
 }

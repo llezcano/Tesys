@@ -32,7 +32,7 @@ public class SCMFacade {
     try {
       client = new RESTClient(DEFAULT_URL_SCM_CONNECTOR);
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+      System.err.println(e.getMessage());
     }
   }
 

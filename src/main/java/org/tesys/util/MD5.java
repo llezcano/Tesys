@@ -8,7 +8,7 @@ public class MD5 {
 
   private static MessageDigest md;
 
-
+  private MD5() {}
 
   /**
    * Este metodo genera el MD5 equivalente de un String dado. Si se quieren varios Strings hay que
@@ -21,11 +21,11 @@ public class MD5 {
     try {
       md = MessageDigest.getInstance("MD5");
     } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+      md = null;
     }
     md.update(input.getBytes());
     byte[] digest = md.digest();
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (byte b : digest) {
       sb.append(String.format("%02x", b & 0xff));
     }

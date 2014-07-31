@@ -54,7 +54,6 @@ public class SonarAnalisis {
                 .execute().actionGet();
       } catch (ElasticsearchException e) {
         System.err.println(Messages.getString("servercantconsulted") + e.getMessage()); //$NON-NLS-1$
-        System.exit(1);
       }
 
       analisis.add(response);
@@ -83,10 +82,8 @@ public class SonarAnalisis {
         object = mapper.readTree(jp);
       } catch (JsonParseException e) {
         System.err.println(Messages.getString("parsejsonerror") + e.getMessage()); //$NON-NLS-1$
-        System.exit(1);
       } catch (IOException e) {
         System.err.println(Messages.getString("readjsonerror") + e.getMessage()); //$NON-NLS-1$
-        System.exit(1);
       }
 
       // Saca profile:Sonar_way que no es una metrica
@@ -159,7 +156,6 @@ public class SonarAnalisis {
                 | SecurityException | InvocationTargetException | ClassNotFoundException e) {
               System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
                   + e.getMessage());
-              System.exit(1);
             }
 
 
@@ -229,7 +225,6 @@ public class SonarAnalisis {
               | SecurityException | InvocationTargetException | ClassNotFoundException e) {
             System.err.println(Messages.getString("sonardatatypeerrorjoincommit") //$NON-NLS-1$
                 + e.getMessage());
-            System.exit(1);
           }
 
           metricHandler = (Metrics) object;

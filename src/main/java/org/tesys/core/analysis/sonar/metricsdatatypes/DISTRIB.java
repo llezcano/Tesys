@@ -39,7 +39,7 @@ public class DISTRIB implements Metrics {
 
   public String getDifferenceBetweenAnalysis() {
 
-    StringBuffer ret = new StringBuffer();
+    StringBuilder ret = new StringBuilder();
     String[] actCom = actual.split(SEMI_COLON);
     String[] antCom = anterior.split(SEMI_COLON);
 
@@ -66,7 +66,7 @@ public class DISTRIB implements Metrics {
 
   public String getNewAnalysisPerTask() {
 
-    StringBuffer ret = new StringBuffer();
+    StringBuilder ret = new StringBuilder();
     String[] actCom = actual.split(SEMI_COLON);
     String[] antCom = anterior.split(SEMI_COLON);
 

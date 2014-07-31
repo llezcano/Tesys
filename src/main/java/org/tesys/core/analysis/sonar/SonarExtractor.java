@@ -22,15 +22,15 @@ public class SonarExtractor {
   private List<Metric> metricList;
 
 
-  public static String host = "http://localhost:9000"; // de sonar
-  public static String proyectKey = "temporal:test";
+  public static String HOST = "http://localhost:9000"; // de sonar
+  public static String PROJECT_KEY = "temporal:test";
 
-  private static final String user = "admin";
-  private static final String pass = "admin";
+  private static final String USER = "admin";
+  private static final String PASS = "admin";
 
   public SonarExtractor() {
 
-    sonar = new Sonar(new HttpClient4Connector(new Host("http://localhost:9000", user, pass)));
+    sonar = new Sonar(new HttpClient4Connector(new Host(HOST, USER, PASS)));
     metricList = sonar.findAll(MetricQuery.all());
 
   }
@@ -45,7 +45,7 @@ public class SonarExtractor {
       met[index++] = metric.getKey();
     }
 
-    TimeMachine struts = sonar.find(TimeMachineQuery.createForMetrics(proyectKey, met));
+    TimeMachine struts = sonar.find(TimeMachineQuery.createForMetrics(PROJECT_KEY, met));
     TimeMachineCell[] tmc = struts.getCells();
     TimeMachineColumn[] tmco = struts.getColumns();
 
@@ -69,7 +69,7 @@ public class SonarExtractor {
         }
       }
 
-      sonar.delete(ProjectDeleteQuery.create(proyectKey));
+      sonar.delete(ProjectDeleteQuery.create(PROJECT_KEY));
       resultados.add(resultadoDeRevision);
     }
 

@@ -49,14 +49,19 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
   }
 
 
-  public ProjectTrackingRESTClient() throws MalformedURLException {
-    client = new RESTClient(getConnectorLocation());
+  public ProjectTrackingRESTClient() {
+    try {
+	client = new RESTClient(getConnectorLocation());
+    } catch (MalformedURLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+    }
   }
 
 
   public String getConnectorLocation() {
     // TODO RESEARCH Discovery Services
-    return "http://localhost:8091/core/rest/project/";
+    return "http://localhost:8080/core/rest/connectors/jira";
   }
 
   @Override
