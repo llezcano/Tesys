@@ -1,21 +1,21 @@
 package org.tesys.core.project.scm;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.tesys.util.MD5;
 
 @XmlRootElement
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
-  private Date date;
-  private String scm_user;
-  private String project_tracking_task;
-  private String revision;
-  private String repository;
-  private boolean scaned;
+  public long date;
+  public String scm_user;
+  public String project_tracking_task;
+  public String revision;
+  public String repository;
+  public boolean scaned;
   
 
-  public RevisionPOJO(Date date, String scm_user, String project_tracking_task, String revision,
+  public RevisionPOJO(long date, String scm_user, String project_tracking_task, String revision,
       String repository) {
     this.date = date;
     this.scm_user = scm_user;
@@ -26,12 +26,17 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
   }
 
   
+  public String getID() {
+    return MD5.generateId( String.valueOf(date) );
+  }
+  
+  
 
-  public Date getDate() {
+  public long getDate() {
     return date;
   }
 
-  public void setDate(Date date) {
+  public void setDate(long date) {
     this.date = date;
   }
 
@@ -85,9 +90,9 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     this.scaned = scaned;
   }
 
-
+  
   public int compareTo(RevisionPOJO rev) {
-    if (rev.getDate().before(this.date)) {
+    if ( rev.getDate() < this.date ) {
       return 1;
     }
     return -1;

@@ -24,7 +24,6 @@ public class ElasticSearchConnector {
 	
     }
 
-
     @GET
     @Path("/mapping/{name}/{repoID}")
     public boolean isValidDeveloper(@PathParam("name") String name, @PathParam("repoID") String repoID) {

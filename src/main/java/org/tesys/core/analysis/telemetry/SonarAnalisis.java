@@ -24,84 +24,75 @@ public class SonarAnalisis {
 
 
 
-  public SonarAnalisis(List<RevisionPOJO> revisions, List<MetricPOJO> metrics) {
+  public SonarAnalisis( List<MetricPOJO> metrics ) {
     
   }
 
+  public List<AnalisisPOJO> getAnalisisPorCommit(List<AnalisisPOJO> analisisAcumulados) {
 
-  public List<AnalisisPOJO> getAnalisisSonar() {
+    List<AnalisisPOJO> analisisPorCommit = new LinkedList<AnalisisPOJO>();
 
+    for (int i = 1; i < analisisAcumulados.size(); i++) {
+      AnalisisPOJO analisisAcumuladoPrevio = analisisAcumulados.get(i - 1);
+      AnalisisPOJO analisisAcumuladoActual = analisisAcumulados.get(i);
+      
+      if( !(analisisAcumuladoPrevio.isScaned() &&  analisisAcumuladoActual.isScaned())) {
+          
+          
+        AnalisisPOJO nuevoAnalisisPorCommit = new AnalisisPOJO();
 
-  }
-
-
-
-  /**
-   * Dada una lista de analisis del sonar, resta los datos de cada uno con los del anterior Para asi
-   * obtener los metricas de ese unico commit y no de todo el proyecto entero
-   * 
-   * @param analisisAcumuladosJson Las analisis ejecutados por el sonar
-   * @return los mismos analisis pero con la informacion relativa (o no acumulada)
-   */
-  public List<JsonNode> getAnalisisPorCommit(List<JsonNode> analisisAcumuladosJson) {
-
-    List<JsonNode> analisisPorCommit = new LinkedList<JsonNode>();
-    ObjectMapper mapper = new ObjectMapper();
-
-    for (int i = 1; i < analisisAcumuladosJson.size(); i++) {
-      JsonNode analisisAcumuladoPrevio = analisisAcumuladosJson.get(i - 1);
-      JsonNode analisisAcumuladoActual = analisisAcumuladosJson.get(i);
-
-      ObjectNode nuevoAnalisisPorCommit = mapper.createObjectNode();
-
-      Iterator<JsonNode> anteriorValues = analisisAcumuladoPrevio.getElements();
-      Iterator<JsonNode> actualValues = analisisAcumuladoActual.getElements();
-      Iterator<String> actualMetrics = analisisAcumuladoActual.getFieldNames();
+        Iterator<JsonNode> anteriorValues = analisisAcumuladoPrevio.getElements();
+        Iterator<JsonNode> actualValues = analisisAcumuladoActual.getElements();
+        Iterator<String> actualMetrics = analisisAcumuladoActual.getFieldNames();
 
 
-      while (actualMetrics.hasNext()) {
+        while (actualMetrics.hasNext()) {
 
-        Metrics metricHandler = null;
-        String metricName = actualMetrics.next().toString();
-        JsonNode valorAnalisisAcumuladoActual = actualValues.next();
-        JsonNode valorAnalisisAcumuladoPrevio = anteriorValues.next();
+          Metrics metricHandler = null;
+          String metricName = actualMetrics.next().toString();
+          JsonNode valorAnalisisAcumuladoActual = actualValues.next();
+          JsonNode valorAnalisisAcumuladoPrevio = anteriorValues.next();
 
-        if (metricName.equals(DBUtilities.REVISION_TAG)) {
-          nuevoAnalisisPorCommit.put(metricName, valorAnalisisAcumuladoActual.asText());
-        } else {
+          if (metricName.equals(DBUtilities.REVISION_TAG)) {
+            nuevoAnalisisPorCommit.put(metricName, valorAnalisisAcumuladoActual.asText());
+          } else {
 
-          if (!valorAnalisisAcumuladoActual.asText().equals(DBUtilities.NULL_VALUE_JSON)) {
+            if (!valorAnalisisAcumuladoActual.asText().equals(DBUtilities.NULL_VALUE_JSON)) {
 
-            JsonNode metricDescription = Searcher.searchMetric(metricName, metricsList);
-            String metricType = metricDescription.get(DBUtilities.VAL_TYPE_TAG).asText();
+              JsonNode metricDescription = Searcher.searchMetric(metricName, metricsList);
+              String metricType = metricDescription.get(DBUtilities.VAL_TYPE_TAG).asText();
 
-            Object object = null;
+              Object object = null;
 
-            try {
-              object =
-                  Class.forName(DBUtilities.METRICS_DATA_TYPES_PATH + "." + metricType) //$NON-NLS-1$
-                      .getConstructors()[0].newInstance(valorAnalisisAcumuladoActual,
-                      valorAnalisisAcumuladoPrevio);
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-              System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
-                  + e.getMessage());
-            }
+              try {
+                object =
+                    Class.forName(DBUtilities.METRICS_DATA_TYPES_PATH + "." + metricType) //$NON-NLS-1$
+                        .getConstructors()[0].newInstance(valorAnalisisAcumuladoActual,
+                        valorAnalisisAcumuladoPrevio);
+              } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                  | SecurityException | InvocationTargetException | ClassNotFoundException e) {
+                System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
+                    + e.getMessage());
+              }
 
 
-            metricHandler = (Metrics) object;
+              metricHandler = (Metrics) object;
 
-            if (metricHandler != null) {
-              nuevoAnalisisPorCommit.put(metricName, metricHandler.getDifferenceBetweenAnalysis());
+              if (metricHandler != null) {
+                nuevoAnalisisPorCommit.put(metricName, metricHandler.getDifferenceBetweenAnalysis());
+              }
+
             }
 
           }
 
         }
-
+        analisisPorCommit.add(nuevoAnalisisPorCommit);
+        
+        
+        
       }
-      analisisPorCommit.add(nuevoAnalisisPorCommit);
-
+      
     }
 
     return analisisPorCommit;

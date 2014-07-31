@@ -1,9 +1,7 @@
 package org.tesys.core.analysis.sonar;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.sonar.wsclient.Host;
 import org.sonar.wsclient.Sonar;
@@ -36,8 +34,6 @@ public class SonarExtractor {
 
   }
 
-  // devuelve una lista en la que cada elemento es un hashmap que tiene los resultados
-  // del sonar para dicha revision
   public List< AnalisisPOJO > getResults( List<RevisionPOJO> revisions ) {
 
     String[] met = new String[metricList.size()];
@@ -59,19 +55,24 @@ public class SonarExtractor {
 
       AnalisisPOJO resultadoDeRevision = new AnalisisPOJO();
       
-      //Hay que meterle una revision, un repositorio y un boolean de si ya se acoplo a un issue del jira
-      //que va siempre en false
+      resultadoDeRevision.setDate( revisions.get(j).getDate() );
+      resultadoDeRevision.setProject_tracking_task(revisions.get(j).getProject_tracking_task());
+      resultadoDeRevision.setRepository(revisions.get(j).getRepository());
+      resultadoDeRevision.setRevision(revisions.get(j).getRevision());
+      resultadoDeRevision.setScm_user(revisions.get(j).getScm_user());
       
-      resultadoDeRevision.put("revision", revisions.get(j));
-      // resultadoDeRevision.put("repository", revisions.get(j));
 
-
-      //Aca hay que hacer un set medio loco
       for (int i = 0; i < tmco.length; i++) {
+        KeyValuePOJO kvp = new KeyValuePOJO();
+        
         try {
-          resultadoDeRevision.put(tmco[i].getMetricKey(), v[i].toString());
+          kvp.key = tmco[i].getMetricKey();
+          kvp.value = v[i].toString();
+          resultadoDeRevision.add( kvp );
         } catch (Exception e) {
-          resultadoDeRevision.put(tmco[i].getMetricKey(), "null");
+          kvp.key = tmco[i].getMetricKey();
+          kvp.value = "null";
+          resultadoDeRevision.add( kvp );
         }
       }
 

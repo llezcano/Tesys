@@ -1,7 +1,6 @@
 package org.tesys.core.db;
 
 import java.net.MalformedURLException;
-import java.util.List;
 
 import javax.ws.rs.core.Response;
 
