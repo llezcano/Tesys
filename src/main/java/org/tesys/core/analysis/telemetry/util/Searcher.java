@@ -2,8 +2,8 @@ package org.tesys.core.analysis.telemetry.util;
 
 import java.util.List;
 
-import org.tesys.core.analysis.telemetry.RevisionPOJO;
 import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
+import org.tesys.core.project.scm.RevisionPOJO;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

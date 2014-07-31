@@ -2,6 +2,7 @@ package org.tesys.core.project.scm;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,24 +134,25 @@ public class SCMManager {
     generateRevisionZero(scmData.getRepository());
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
     String issue = null;
+    Date formatDate = null;
 
     try {
+      
       issue = getIssue(scmData.getMessage());
-
-      dateFormat.parse(scmData.getDate());
+      formatDate = dateFormat.parse(scmData.getDate());
+      
     } catch (InvalidCommitException e) {
       throw e;
     } catch (ParseException e1) {
       throw new RuntimeException(Messages.getString("SCMManager.formatofechainvalido")); //$NON-NLS-1$
     }
 
-    // Se sobre escribe el mensaje por el issue que es lo que importa
-    scmData.setMessage(issue);
     String id = MD5.generateId(scmData.getDate());
+    
+    RevisionPOJO revision = new RevisionPOJO(formatDate, scmData.getAuthor(), issue,
+        scmData.getRevision(), scmData.getRepository());
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode data = objectMapper.valueToTree(scmData);
-    db.PUT(SCM_DB_INDEX, SCM_DTYPE_REVISIONS, id, data.toString());
+    db.storeRevision( id, revision );
 
     return true;
   }
@@ -193,17 +195,17 @@ public class SCMManager {
     if (matcher.find()) {
       issue = matcher.group(1);
       if (issue.contains(INVALID_ISSUE)) {
-        throw new InvalidCommitException(Messages.getString("syntaxerrorissue"));
+        throw new InvalidCommitException(Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
       }
       if (matcher.find()) {
-        throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands"));
+        throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
       }
       ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
       if (!pt.existIssue(issue)) {
-        throw new InvalidCommitException(Messages.getString("SCMManager.issueinvalido"));
+        throw new InvalidCommitException(Messages.getString("SCMManager.issueinvalido")); //$NON-NLS-1$
       }
     } else {
-      throw new InvalidCommitException(Messages.getString("syntaxerrorissue")); 
+      throw new InvalidCommitException(Messages.getString("syntaxerrorissue"));  //$NON-NLS-1$
     }
     return issue;
   }
@@ -240,8 +242,13 @@ public class SCMManager {
    */
   private void mapUser(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
 
-    // TODO hacer la consulta cuando ande la base de datos
-    // String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
+    boolean results;
+    
+    try {
+      results = db.getUserMapping( user, repo );
+    } catch (Exception e) {
+      throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
+    }
 
 
     // if (!result.contains(scmData.getAuthor())) {
@@ -250,15 +257,15 @@ public class SCMManager {
       if (matcher.find()) {
         String user = matcher.group(1);
         if (user.contains(INVALID_USER)) {
-          throw new InvalidCommitException(Messages.getString("syntaxerroruser"));
+          throw new InvalidCommitException(Messages.getString("syntaxerroruser")); //$NON-NLS-1$
         }
         if (matcher.find()) {
-          throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands"));
+          throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
         }
         
         ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
         if (!pt.existUser(user)) {
-          throw new InvalidCommitException(Messages.getString("SCMManager.userinvalido")); 
+          throw new InvalidCommitException(Messages.getString("SCMManager.userinvalido"));  //$NON-NLS-1$
         }
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
@@ -269,17 +276,17 @@ public class SCMManager {
         data.put(PROJECT_TRACKING_USER_DATA_ID, user);
         data.put(SCM_USER_DATA_ID, scmData.getAuthor());
         data.put(REPOSITORY_DATA_ID, scmData.getRepository());
-
+        MappingPOJO mp;
 
         try {
           db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
         } catch (Exception e) {
-          throw new InvalidCommitException("La base de datos no se puede consultar"); 
+          throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
         }
 
         
       } else {
-        throw new InvalidCommitException(Messages.getString("syntaxerroruser"));
+        throw new InvalidCommitException(Messages.getString("syntaxerroruser")); //$NON-NLS-1$
       }
     }
 
@@ -297,16 +304,17 @@ public class SCMManager {
    */
 
   private void generateRevisionZero(String repository) {
-    ScmPostCommitDataPOJO rev0 = new ScmPostCommitDataPOJO();
-    rev0.setAuthor("null"); //$NON-NLS-1$
-    rev0.setDate("2000-01-01 00:00:00"); //$NON-NLS-1$
-    rev0.setMessage("null"); //$NON-NLS-1$
-    rev0.setRepository(repository);
-    rev0.setRevision("0"); //$NON-NLS-1$
+    
+    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+    Date d = dateFormat.parse(new Date(0).toString());
+    
+    RevisionPOJO rev0 = new RevisionPOJO( new Date(0),"null","null","0",repository);
 
-    ObjectMapper rev0objectMapper = new ObjectMapper();
-    JsonNode rev0data = rev0objectMapper.valueToTree(rev0);
-    db.PUT(SCM_DB_INDEX, SCM_DTYPE_REVISIONS, "0", rev0data.toString()); //$NON-NLS-1$
+    try {
+      db.storeRevision("0", rev0);
+    } catch (Exception e) {
+      throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
+    }
 
   }
 

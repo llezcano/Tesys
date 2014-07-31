@@ -11,6 +11,7 @@ import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
 import org.tesys.core.analysis.telemetry.util.Formatter;
 import org.tesys.core.analysis.telemetry.util.Searcher;
 import org.tesys.core.db.DatabaseFacade;
+import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,7 +47,7 @@ public class ProcessData {
     // Se obtienen todas las metricas que existen en sonar, con tipo y demas
     List<MetricPOJO> metrics = db.getMetrics();
 
-    SonarAnalisis sonarAnalisis = new SonarAnalisis(client, revisiones, metrics);
+    SonarAnalisis sonarAnalisis = new SonarAnalisis( revisions, metrics);
 
     // Se obtienen los analisis por commit acumulado
     List<JsonNode> analisisJson = sonarAnalisis.getDataJsonFormat(sonarAnalisis.getAnalisis());

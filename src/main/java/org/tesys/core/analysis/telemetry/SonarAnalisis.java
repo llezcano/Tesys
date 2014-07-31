@@ -6,14 +6,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
 import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
 import org.tesys.core.analysis.telemetry.util.Searcher;
+import org.tesys.core.project.scm.RevisionPOJO;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -26,85 +23,17 @@ public class SonarAnalisis {
 
 
 
-  private List<SearchResponse> analisis;
-  private List<JsonNode> metricsList;
+  public SonarAnalisis(List<RevisionPOJO> revisions, List<MetricPOJO> metrics) {
+    
+  }
 
-  /**
-   * Almacena los datos que tiene el servidor sobre el sonar en una variable
-   * 
-   * @param client un cliente elasticsearch listo para ejecutar consultas
-   * @param revisions una lista de clases Revisions (Creada desde la clase SvnRevisions)
-   * @param metrics
-   */
-  public SonarAnalisis(Client client, List<RevisionPOJO> revisions, List<JsonNode> metrics) {
 
-    analisis = new LinkedList<SearchResponse>();
-    this.metricsList = metrics;
+  public List<AnalisisPOJO> getAnalisisSonar() {
 
-    for (RevisionPOJO revision : revisions) {
-      SearchResponse response = null;
-      try {
-        response =
-            client
-                .prepareSearch(DBUtilities.ES_SONAR_INDEX)
-                .setTypes(DBUtilities.ES_SNAPSHOTS_DATATYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(
-                    QueryBuilders.termQuery(DBUtilities.REVISION_TAG, revision.getRev().toString()))
-                .execute().actionGet();
-      } catch (ElasticsearchException e) {
-        System.err.println(Messages.getString("servercantconsulted") + e.getMessage()); //$NON-NLS-1$
-      }
-
-      analisis.add(response);
-    }
 
   }
 
-  /**
-   * 
-   * @param analisis una lista de las respuesta que arroja el servidor sobre los analisi que el
-   *        sonar ejecuto
-   * @return la informacion relevante de cada analisis en formato json por separado
-   */
-  public List<JsonNode> getDataJsonFormat(List<SearchResponse> analisis) {
 
-    List<JsonNode> analisisFormateados = new LinkedList<JsonNode>();
-
-    for (SearchResponse searchResponse : analisis) {
-
-      ObjectMapper mapper = new ObjectMapper();
-      JsonFactory factory = mapper.getJsonFactory();
-      JsonParser jp;
-      JsonNode object = null;
-      try {
-        jp = factory.createJsonParser(searchResponse.toString());
-        object = mapper.readTree(jp);
-      } catch (JsonParseException e) {
-        System.err.println(Messages.getString("parsejsonerror") + e.getMessage()); //$NON-NLS-1$
-      } catch (IOException e) {
-        System.err.println(Messages.getString("readjsonerror") + e.getMessage()); //$NON-NLS-1$
-      }
-
-      // Saca profile:Sonar_way que no es una metrica
-      ObjectNode o =
-          (ObjectNode) object.get(DBUtilities.ES_HITS_TAG).get(DBUtilities.ES_HITS_TAG).get(0)
-              .get(DBUtilities.ES_SOURCE_TAG);
-      o.remove(DBUtilities.PROFILE_TAG);
-      o.remove(DBUtilities.PROFILE_VERSION_TAG);
-      object = o;
-
-      analisisFormateados.add(object);
-
-    }
-
-    return analisisFormateados;
-
-  }
-
-  public List<SearchResponse> getAnalisis() {
-    return analisis;
-  }
 
   /**
    * Dada una lista de analisis del sonar, resta los datos de cada uno con los del anterior Para asi

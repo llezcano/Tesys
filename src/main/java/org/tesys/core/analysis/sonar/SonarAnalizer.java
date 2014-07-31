@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.tesys.core.db.DatabaseFacade;
+import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
 
 
@@ -60,25 +61,28 @@ public class SonarAnalizer {
    */
   public boolean executeSonarAnalysis() {
 
+    List<RevisionPOJO> revisionesSinEscanear =  db.getUnscanedRevisions();
+    
+    for ( RevisionPOJO rev : revisionesSinEscanear ) { 
+      
+      if( rev.getRevision().equals("0") ) {
+        purgeDirectory(workspace); 
+      } else { 
+        scm.doCheckout(rev.getRevision(), rev.getRepository()); //en realidad anda con repo = "" 
+      } 
+      
+      analizar();
+      rev.setScaned(true);
+      db.storeCommit( rev );
+    }
+      
+    sr.storeAnalysis( se.getResults(revisionesSinEscanear) );
 
-    /*
-     * db.getRevisions() db.getScannedRevisions() List< (String, String) > revisions =
-     * calculateUnscanedRevisions()
-     * 
-     * for ( (String, String) rev : revisions ) { if( rev.getRev().equals("0") ) {
-     * purgeDirectory(workspace); } else { scm.doCheckout(rev.getRev(), rev.getRepo()); //en
-     * realidad anda con repo = "" } analizar();
-     * 
-     * db.guardar( rev ) //como ya analizada }
-     * 
-     * sr.storeAnalysis( se.getResults(revisions) );
-     */
     purgeDirectory(workspace);
 
 
     return true;
   }
-
 
   /**
    * Guarda los tipos de metricas que soporta la instancia de sonar (/api/metrics)
@@ -89,14 +93,6 @@ public class SonarAnalizer {
     sr.storeMetrics(se.getMetrics());
     return true;
   }
-
-
-  // TODO Borrame cuando sepas que eta clase anda
-  public static void main(String[] args) {
-    SonarAnalizer s = SonarAnalizer.getInstance();
-    s.storeMetrics();
-  }
-
 
   /**
    * Executa una tarea ant ubicada en buildFile

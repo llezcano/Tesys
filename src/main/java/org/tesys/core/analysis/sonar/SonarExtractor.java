@@ -15,6 +15,7 @@ import org.sonar.wsclient.services.TimeMachine;
 import org.sonar.wsclient.services.TimeMachineCell;
 import org.sonar.wsclient.services.TimeMachineColumn;
 import org.sonar.wsclient.services.TimeMachineQuery;
+import org.tesys.core.project.scm.RevisionPOJO;
 
 public class SonarExtractor {
 
@@ -37,7 +38,7 @@ public class SonarExtractor {
 
   // devuelve una lista en la que cada elemento es un hashmap que tiene los resultados
   // del sonar para dicha revision
-  public List<Map<String, String>> getResults(List<String> revisions) {
+  public List< AnalisisPOJO > getResults( List<RevisionPOJO> revisions ) {
 
     String[] met = new String[metricList.size()];
     int index = 0;
@@ -49,18 +50,23 @@ public class SonarExtractor {
     TimeMachineCell[] tmc = struts.getCells();
     TimeMachineColumn[] tmco = struts.getColumns();
 
-    List<Map<String, String>> resultados = new LinkedList<Map<String, String>>();
+    List< AnalisisPOJO > resultados = new LinkedList< AnalisisPOJO >();
 
 
     for (int j = 0; j < tmc.length; j++) {
 
       Object[] v = tmc[j].getValues();
 
-      Map<String, String> resultadoDeRevision = new HashMap<String, String>();
+      AnalisisPOJO resultadoDeRevision = new AnalisisPOJO();
+      
+      //Hay que meterle una revision, un repositorio y un boolean de si ya se acoplo a un issue del jira
+      //que va siempre en false
+      
       resultadoDeRevision.put("revision", revisions.get(j));
-      // resultadoDeRevision.put("revision", revisions.get(j));
+      // resultadoDeRevision.put("repository", revisions.get(j));
 
 
+      //Aca hay que hacer un set medio loco
       for (int i = 0; i < tmco.length; i++) {
         try {
           resultadoDeRevision.put(tmco[i].getMetricKey(), v[i].toString());

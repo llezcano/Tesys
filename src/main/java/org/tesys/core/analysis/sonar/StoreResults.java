@@ -30,48 +30,19 @@ public class StoreResults {
   public void storeMetrics(List<MetricPOJO> metrics) {
 
     for (MetricPOJO metric : metrics) {
-      // db.PUT(index, dtype, id, data) TODO
+      db.storeMetric( metric );
     }
-
   }
 
-  public void storeAnalysis(List<Map<String, String>> resultados) {
+  public void storeAnalysis(List<AnalisisPOJO> resultados) {
 
-    for (Map<String, String> map : resultados) {
-      ObjectMapper mapper = new ObjectMapper();
-      try {
-        String json = mapper.writeValueAsString(map);
-        System.out.println(json);// TODO
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      }
+    for (AnalisisPOJO analisis : resultados) {
+      db.storeAnalisis( analisis );
 
     }
 
-    // db.PUT(index, dtype, id, data) TODO
 
   }
 
-  // DELETE
-  /*
-   * public StoreResults( List<Map<String, String>> resultados) {
-   * 
-   * 
-   * 
-   * String json = JSONValue.toJSONString(map); json = json.replace(' ', '_');
-   * 
-   * HttpClient httpClient = new DefaultHttpClient();
-   * 
-   * try { HttpPost request = new HttpPost( db ); StringEntity params =new StringEntity( json );
-   * request.addHeader("content-type", "application/json"); request.setEntity(params);
-   * httpClient.execute(request);
-   * 
-   * // handle response here... }catch (Exception ex) { // handle exception here } finally {
-   * httpClient.getConnectionManager().shutdown(); }
-   * 
-   * }
-   * 
-   * }
-   */
 
 }
