@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.tesys.core.project.tracking.UserPOJO;
 
 /**
  * Cliente para Servicios Web REST el cual usa Jersey.
@@ -34,21 +35,29 @@ public class RESTClient implements HTTPClient {
    * @param args
    */
   /*
-   * public static void main(String args[]) {
-   * 
-   * try { RESTClient myClient = new RESTClient("http://localhost:8091/"); Response response =
-   * myClient.TEST("/core/rest/project/users/mcabrera"); //La case UserPOJO debe ser mappeable desde
-   * JSON. Lo cual lo logro con @XmlRootElement. UserPOJO u = response.readEntity(UserPOJO.class);
-   * // Asi tambien funciona, UserPOJO u = response.readEntity(new GenericType<UserPOJO>() {});
-   * 
-   * System.out.println(u) ;
-   * 
-   * } catch (MalformedURLException e) { // TODO Auto-generated catch block e.printStackTrace();
-   * System.exit(0); }
-   * 
-   * }
-   */
+    public static void main(String args[]) {
+    
+        try { 
+            RESTClient myClient = new RESTClient("http://localhost:9200/"); 
+            UserPOJO u = new UserPOJO() ;
+            u.setActive(true);
+            u.setDisplayName("pepeestareloco");
+            u.setEmailAddress("pepe@pepin");
+            u.setName("name");
 
+            Response response = myClient.POST("/a/b/c", u);
+           
+            //La case UserPOJO debe ser mappeable desde JSON. Lo cual lo logro con @XmlRootElement.
+      	    
+      	           
+      	    System.out.println(u) ;
+        
+        } catch (MalformedURLException e) { // TODO Auto-generated catch block e.printStackTrace();
+        System.exit(0); }
+        
+    }
+   */
+  
   /**
    * Client constructor without authorization
    * 
@@ -61,6 +70,12 @@ public class RESTClient implements HTTPClient {
     client = ClientBuilder.newClient();
   }
 
+  /**
+   * Client constructor with authorization
+   * 
+   * @param url
+   * @throws MalformedURLException
+   */
   public RESTClient(String url, String user, String pass) throws MalformedURLException {
     URL = new URL(url);
     auth = HttpAuthenticationFeature.basic(user, pass);
@@ -68,7 +83,7 @@ public class RESTClient implements HTTPClient {
     // Setting client authorization
     client.register(auth);
   }
-
+  
   public String getURL() {
     return URL.toString();
   }
@@ -96,17 +111,17 @@ public class RESTClient implements HTTPClient {
 
   }
 
-  public Response PUT(String resource, String JSON) {
+  public Response PUT(String resource, Object serealizable) {
 
     return client.target(this.getURL()).path(resource).request(this.type)
-        .put(Entity.entity(JSON, this.type));
+        .put(Entity.entity(serealizable, this.type));
 
   }
 
-  public Response POST(String resource, String JSON) {
+  public Response POST(String resource, Object serealizable) {
 
     return client.target(this.getURL()).path(resource).request(this.type)
-        .post(Entity.entity(JSON, this.type));
+        .post(Entity.entity(serealizable, this.type));
 
   }
 
