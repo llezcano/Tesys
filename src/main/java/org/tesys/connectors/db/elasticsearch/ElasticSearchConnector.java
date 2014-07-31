@@ -3,15 +3,13 @@ package org.tesys.connectors.db.elasticsearch;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-
-import org.tesys.core.analysis.telemetry.RevisionPOJO;
-import org.tesys.core.db.SCMProjectMappingPOJO;
+import org.tesys.core.project.scm.MappingPOJO;
+import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 
 @Path("/connectors/elasticsearch")
@@ -47,7 +45,7 @@ public class ElasticSearchConnector {
     
     @PUT
     @Path("/mapping/{id}")
-    public void store(@PathParam("id") String ID, SCMProjectMappingPOJO mapping) {
+    public void store(@PathParam("id") String ID, MappingPOJO mapping) {
 	//TODO store(String ID, SCMProjectMappingPOJO mapping)
 	System.out.println(mapping);
     }

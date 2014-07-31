@@ -1,22 +1,19 @@
 package org.tesys.core.analysis.sonar;
 
-import org.tesys.core.db.DatabaseFacade;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.tesys.core.db.Database;
 
 import java.util.List;
-import java.util.Map;
+
 
 
 public class StoreResults {
 
-  private DatabaseFacade db;
+  private Database db;
 
   private static StoreResults instance = null;
 
   private StoreResults() {
-    db = new DatabaseFacade();
+    db = new Database();
   }
 
   public static StoreResults getInstance() {

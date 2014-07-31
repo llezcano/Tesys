@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.tesys.core.db.Database;
-import org.tesys.core.db.DatabaseFacade;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
 import org.tesys.util.MD5;

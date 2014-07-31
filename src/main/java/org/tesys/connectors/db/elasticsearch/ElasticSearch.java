@@ -19,8 +19,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.tesys.core.analysis.telemetry.RevisionPOJO;
-import org.tesys.core.db.SCMProjectMappingPOJO;
+import org.tesys.core.project.scm.RevisionPOJO;
+import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 import org.tesys.util.RESTClient;
 
@@ -253,7 +253,7 @@ public class ElasticSearch {
 
     }
 
-    public void store(String ID, SCMProjectMappingPOJO mapping) {
+    public void store(String ID, MappingPOJO mapping) {
 
     }
     
