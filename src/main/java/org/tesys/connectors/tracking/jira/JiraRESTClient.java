@@ -10,10 +10,11 @@ import org.glassfish.jersey.client
 import org.codehaus.jettison.json.JSONException;
 */
 
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tesys.util.GenericJSONClient;
+import org.tesys.util.RESTClient;
 
 
 public class JiraRESTClient {
@@ -38,11 +39,16 @@ public class JiraRESTClient {
 	private static final String RUSER_USERNAME = "username" ;
 
 	
-	private GenericJSONClient client ;
+	private RESTClient client ;
 	
 	
 	public JiraRESTClient(String url, String user, String pass) {
-		client = new GenericJSONClient(url, user, pass) ;
+		try {
+		    client = new RESTClient(url, user, pass) ;
+		} catch (MalformedURLException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
 
 	}
 	
@@ -57,7 +63,7 @@ public class JiraRESTClient {
 		Map<String, String> params = new HashMap<String, String>(); 
 		params.put(RGROUP_GROUPNAME, group );
 		params.put(RGROUP_EXPAND, "users[" + min.toString() + ":" + max.toString() + "]") ;
-		return client.GET(this.path(RESOURCE_GROUP), params) ;
+		return client.GET(this.path(RESOURCE_GROUP), params).readEntity(String.class) ;
 	}
 	
 	
@@ -65,7 +71,7 @@ public class JiraRESTClient {
 		//TODO
 		Map<String, String> params = new HashMap<String, String>(); 
 		params.put(RUSER_USERNAME, userKey );
-		return client.GET(this.path(RESOURCE_USER), params) ;		
+		return client.GET(this.path(RESOURCE_USER), params).readEntity(String.class) ;		
 	}
 	
 	/**
@@ -82,7 +88,7 @@ public class JiraRESTClient {
 		params.put(RSEARCH_QUERY, query ); 
 		params.put(RSEARCH_START, min.toString()) ;
 		params.put(RSEARCH_MAX, max.toString()) ;
-		return client.GET(this.path(RESOURCE_SEARCH), params) ;
+		return client.GET(this.path(RESOURCE_SEARCH), params).readEntity(String.class) ;
 	}
 	
 	/**

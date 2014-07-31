@@ -26,7 +26,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 	 * @param args
 	 * @throws MalformedURLException
 	 */
-	/*
+	
 	public static void main( String args[] ) throws MalformedURLException {
 		
 		ProjectTrackingRESTClient project = new ProjectTrackingRESTClient() ;
@@ -47,7 +47,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 		//System.out.println(java.util.Arrays.toString(issues)) ;
 		//System.out.println("TOTAL = " + issues.length) ;
 	}
-	*/
+	
 	
 	public ProjectTrackingRESTClient() throws MalformedURLException {
 		client = new RESTClient(getConnectorLocation());
@@ -56,7 +56,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 	
 	public String getConnectorLocation() {
 	    //TODO RESEARCH Discovery Services
-	    return "http://localhost:8080/core/rest/project/" ;
+	    return "http://localhost:8091/core/rest/project/" ;
 	}
 	
 	@Override
