@@ -66,7 +66,6 @@ public class JiraRESTClient {
 
 
   public String getUser(String userKey) {
-    // TODO
     Map<String, String> params = new HashMap<String, String>();
     params.put(RUSER_USERNAME, userKey);
     return client.GET(this.path(RESOURCE_USER), params).readEntity(String.class);

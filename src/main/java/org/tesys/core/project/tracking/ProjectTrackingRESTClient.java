@@ -49,8 +49,13 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
   }
 
 
-  public ProjectTrackingRESTClient() throws MalformedURLException {
-    client = new RESTClient(getConnectorLocation());
+  public ProjectTrackingRESTClient() {
+    try {
+	client = new RESTClient(getConnectorLocation());
+    } catch (MalformedURLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+    }
   }
 
 

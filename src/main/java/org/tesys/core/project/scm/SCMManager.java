@@ -52,7 +52,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SCMManager {
 
-
   public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
   public static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
   public static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
