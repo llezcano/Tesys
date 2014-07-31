@@ -1,5 +1,6 @@
 package org.tesys.core.project.scm;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,19 +54,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class SCMManager {
 
 
-  public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
+
   public static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
   public static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
   public static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
   public static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
   public static final String SCM_USER_DATA_ID = "scm_user"; //$NON-NLS-1$
+  public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
 
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
   private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
   private static final String ISSUE_REGEX = "#issue='(.*?)'"; //$NON-NLS-1$
   private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"; //$NON-NLS-1$
-  private static final String OK_CODE = "1"; //$NON-NLS-1$
 
   private Pattern issuePattern;
   private Pattern userPattern;
@@ -102,16 +103,17 @@ public class SCMManager {
    * @param scmData Datos previos a hacer un commit (autor, mensaje y repos)
    * @return
    */
-  public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
+  public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) {
     try {
       // TODO cada uno de estos se puede hacer con un thread aparte
       getIssue(scmData.getMessage());
       mapUser(scmData);
     } catch (Exception e) {
-      return e.getMessage();
+      System.err.println( e.getMessage() );
+      return false;
     }
 
-    return OK_CODE;
+    return true;
   }
 
 
@@ -128,7 +130,7 @@ public class SCMManager {
    * @param scmData
    * @return
    */
-  public String storeCommit(ScmPostCommitDataPOJO scmData) {
+  public boolean storeCommit(ScmPostCommitDataPOJO scmData) {
 
     generateRevisionZero(scmData.getRepository());
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -138,8 +140,10 @@ public class SCMManager {
       issue = getIssue(scmData.getMessage());
 
       dateFormat.parse(scmData.getDate());
-    } catch (Exception e) {
-      return e.getMessage();
+    } catch (InvalidCommitException e) {
+      throw e;
+    } catch (ParseException e1) {
+        throw new RuntimeException(Messages.getString("SCMManager.formatofechainvalido")); //$NON-NLS-1$
     }
 
     // Se sobre escribe el mensaje por el issue que es lo que importa
@@ -150,7 +154,7 @@ public class SCMManager {
     JsonNode data = objectMapper.valueToTree(scmData);
     db.PUT(SCM_DB_INDEX, SCM_DTYPE_REVISIONS, id, data.toString());
 
-    return OK_CODE;
+    return true;
   }
 
   /**
@@ -185,23 +189,23 @@ public class SCMManager {
    * @return
    * @throws Exception
    */
-  private String getIssue(String message) throws Exception {
+  private String getIssue(String message) throws InvalidCommitException {
     String issue;
     matcher = issuePattern.matcher(message);
     if (matcher.find()) {
       issue = matcher.group(1);
       if (issue.contains(INVALID_ISSUE)) {
-        throw new Exception(Messages.getString("syntaxerrorcomilla")); //$NON-NLS-1$
+        throw new SyntaxErrorException();
       }
       if (matcher.find()) {
-        throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
+        throw new MultiCommandException();
       }
       ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
       if (!pt.existIssue(issue)) {
-        throw new Exception(Messages.getString("SCMManager.issueinvalido")); //$NON-NLS-1$
+        throw new InvalidIssueException();
       }
     } else {
-      throw new Exception(Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
+      throw new SyntaxErrorException(); 
     }
     return issue;
   }
@@ -236,7 +240,7 @@ public class SCMManager {
    * @param scmData
    * @throws Exception
    */
-  private void mapUser(ScmPreCommitDataPOJO scmData) throws Exception {
+  private void mapUser(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
 
     // TODO hacer la consulta cuando ande la base de datos
     // String result = db.POST(SCM_DB_INDEX, SCM_DTYPE_USERS, query.toString());
@@ -248,14 +252,15 @@ public class SCMManager {
       if (matcher.find()) {
         String user = matcher.group(1);
         if (user.contains(INVALID_USER)) {
-          throw new Exception(Messages.getString("syntaxerrorcomilla")); //$NON-NLS-1$
+          throw new SyntaxErrorException();
         }
         if (matcher.find()) {
-          throw new Exception(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
+          throw new MultiCommandException();
         }
+        
         ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
         if (!pt.existUser(user)) {
-          throw new Exception(Messages.getString("SCMManager.userinvalido")); //$NON-NLS-1$
+          throw new InvalidUserException(); 
         }
 
         String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
@@ -269,7 +274,7 @@ public class SCMManager {
 
         db.PUT(SCM_DB_INDEX, SCM_DTYPE_USERS, id, data.toString());
       } else {
-        throw new Exception(Messages.getString("syntaxerroruser")); //$NON-NLS-1$
+        throw new SyntaxErrorException(); //$NON-NLS-1$
       }
     }
 
@@ -296,7 +301,7 @@ public class SCMManager {
 
     ObjectMapper rev0objectMapper = new ObjectMapper();
     JsonNode rev0data = rev0objectMapper.valueToTree(rev0);
-    db.PUT(SCM_DB_INDEX, SCM_DTYPE_REVISIONS, "r0", rev0data.toString()); //$NON-NLS-1$
+    db.PUT(SCM_DB_INDEX, SCM_DTYPE_REVISIONS, "0", rev0data.toString()); //$NON-NLS-1$
 
   }
 

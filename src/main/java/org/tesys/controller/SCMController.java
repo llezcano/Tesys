@@ -29,7 +29,7 @@ public class SCMController {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
-  public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
+  public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) {
 
     return scmManager.isCommitAllowed(scmData);
   }
