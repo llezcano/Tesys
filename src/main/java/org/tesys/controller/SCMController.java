@@ -17,10 +17,10 @@ import org.tesys.core.project.scm.ScmPreCommitDataPOJO;
 @Path("/scm")
 @Singleton
 public class SCMController {
-  
+
   private SCMManager scmManager;
-  
-  
+
+
   @PostConstruct
   public void init() {
     scmManager = SCMManager.getInstance();
@@ -30,7 +30,7 @@ public class SCMController {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
   public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
-    
+
     return scmManager.isCommitAllowed(scmData);
   }
 

@@ -36,12 +36,12 @@ public class SonarAnalisis {
    * @param revisions una lista de clases Revisions (Creada desde la clase SvnRevisions)
    * @param metrics
    */
-  public SonarAnalisis(Client client, List<Revision> revisions, List<JsonNode> metrics) {
+  public SonarAnalisis(Client client, List<RevisionPOJO> revisions, List<JsonNode> metrics) {
 
     analisis = new LinkedList<SearchResponse>();
     this.metricsList = metrics;
 
-    for (Revision revision : revisions) {
+    for (RevisionPOJO revision : revisions) {
       SearchResponse response = null;
       try {
         response =
@@ -50,8 +50,8 @@ public class SonarAnalisis {
                 .setTypes(DBUtilities.ES_SNAPSHOTS_DATATYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setQuery(
-                    QueryBuilders.termQuery(DBUtilities.REVISION_TAG, revision.getRev()
-                        .toString())).execute().actionGet();
+                    QueryBuilders.termQuery(DBUtilities.REVISION_TAG, revision.getRev().toString()))
+                .execute().actionGet();
       } catch (ElasticsearchException e) {
         System.err.println(Messages.getString("servercantconsulted") + e.getMessage()); //$NON-NLS-1$
         System.exit(1);
@@ -91,8 +91,7 @@ public class SonarAnalisis {
 
       // Saca profile:Sonar_way que no es una metrica
       ObjectNode o =
-          (ObjectNode) object.get(DBUtilities.ES_HITS_TAG)
-              .get(DBUtilities.ES_HITS_TAG).get(0)
+          (ObjectNode) object.get(DBUtilities.ES_HITS_TAG).get(DBUtilities.ES_HITS_TAG).get(0)
               .get(DBUtilities.ES_SOURCE_TAG);
       o.remove(DBUtilities.PROFILE_TAG);
       o.remove(DBUtilities.PROFILE_VERSION_TAG);
@@ -190,14 +189,14 @@ public class SonarAnalisis {
    * @return analisis por tarea de jira
    */
   public List<JsonNode> getAnalisisPorTarea(List<JsonNode> analisisJsonPorCommit,
-      List<Revision> revisiones, List<JsonNode> issuesID) {
+      List<RevisionPOJO> revisiones, List<JsonNode> issuesID) {
 
     List<JsonNode> analisisPorTarea = new LinkedList<JsonNode>(issuesID);
 
     for (JsonNode commitAnalisis : analisisJsonPorCommit) {
 
       String revisionID = commitAnalisis.get(DBUtilities.REVISION_TAG).asText();
-      Revision revision = Searcher.searchRevision(revisionID, revisiones);
+      RevisionPOJO revision = Searcher.searchRevision(revisionID, revisiones);
 
       JsonNode tareaActual = Searcher.searchTarea(revision.getTask(), analisisPorTarea);
 
@@ -224,9 +223,8 @@ public class SonarAnalisis {
 
           Object object = null;
           try {
-            object =
-                Class.forName(DBUtilities.METRICS_DATA_TYPES_PATH + "." + metricType) //$NON-NLS-1$
-                    .getConstructors()[0].newInstance(value, oldValue);
+            object = Class.forName(DBUtilities.METRICS_DATA_TYPES_PATH + "." + metricType) //$NON-NLS-1$
+                .getConstructors()[0].newInstance(value, oldValue);
           } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
               | SecurityException | InvocationTargetException | ClassNotFoundException e) {
             System.err.println(Messages.getString("sonardatatypeerrorjoincommit") //$NON-NLS-1$

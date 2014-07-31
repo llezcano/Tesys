@@ -9,7 +9,8 @@ public class ScmPreCommitDataPOJO {
 
   @Override
   public String toString() {
-    return "ScmData [author=" + author + ", message=" + message + ", repository=" + repository + "]";
+    return "ScmData [author=" + author + ", message=" + message + ", repository=" + repository
+        + "]";
   }
 
   public String getAuthor() {

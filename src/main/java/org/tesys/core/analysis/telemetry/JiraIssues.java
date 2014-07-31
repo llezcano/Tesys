@@ -39,9 +39,9 @@ public class JiraIssues {
 
     try {
       response =
-          client.prepareSearch(DBUtilities.ES_JIRA_INDEX)
-              .setTypes(DBUtilities.ES_ISSUES_DATATYPE).setSearchType(SearchType.SCAN)
-              .setScroll(new TimeValue(60000)).setSize(100).execute().actionGet();
+          client.prepareSearch(DBUtilities.ES_JIRA_INDEX).setTypes(DBUtilities.ES_ISSUES_DATATYPE)
+              .setSearchType(SearchType.SCAN).setScroll(new TimeValue(60000)).setSize(100)
+              .execute().actionGet();
     } catch (ElasticsearchException e) {
       System.err.println(SERVER_ERROR + e.getMessage());
       System.exit(1);

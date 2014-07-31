@@ -2,7 +2,7 @@ package org.tesys.core.analysis.telemetry.util;
 
 import java.util.List;
 
-import org.tesys.core.analysis.telemetry.Revision;
+import org.tesys.core.analysis.telemetry.RevisionPOJO;
 import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,8 +41,8 @@ public class Searcher {
    * @param revisiones conjunto de revisiones
    * @return revision que coincide con ese id
    */
-  public static Revision searchRevision(String r, List<Revision> revisiones) {
-    for (Revision revision : revisiones) {
+  public static RevisionPOJO searchRevision(String r, List<RevisionPOJO> revisiones) {
+    for (RevisionPOJO revision : revisiones) {
       if (revision.getRev().equals(r)) {
         return revision;
       }

@@ -14,38 +14,38 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
-    final ObjectMapper defaultObjectMapper;
-    final ObjectMapper combinedObjectMapper;
+  final ObjectMapper defaultObjectMapper;
+  final ObjectMapper combinedObjectMapper;
 
-    public ObjectMapperProvider() {
-        defaultObjectMapper = createDefaultMapper();
-        combinedObjectMapper = createCombinedObjectMapper();
-    }
+  public ObjectMapperProvider() {
+    defaultObjectMapper = createDefaultMapper();
+    combinedObjectMapper = createCombinedObjectMapper();
+  }
 
-    @Override
-    public ObjectMapper getContext(final Class<?> type) {
-            return defaultObjectMapper;
-    }
+  @Override
+  public ObjectMapper getContext(final Class<?> type) {
+    return defaultObjectMapper;
+  }
 
-    private static ObjectMapper createCombinedObjectMapper() {
-        return new ObjectMapper()
-                .configure(SerializationFeature.WRAP_ROOT_VALUE, true)
-                .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
-                .setAnnotationIntrospector(createJaxbJacksonAnnotationIntrospector());
-    }
+  private static ObjectMapper createCombinedObjectMapper() {
+    return new ObjectMapper().configure(SerializationFeature.WRAP_ROOT_VALUE, true)
+        .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
+        .setAnnotationIntrospector(createJaxbJacksonAnnotationIntrospector());
+  }
 
-    private static ObjectMapper createDefaultMapper() {
-        final ObjectMapper result = new ObjectMapper();
-        result.enable(SerializationFeature.INDENT_OUTPUT);
+  private static ObjectMapper createDefaultMapper() {
+    final ObjectMapper result = new ObjectMapper();
+    result.enable(SerializationFeature.INDENT_OUTPUT);
 
-        return result;
-    }
+    return result;
+  }
 
-    private static AnnotationIntrospector createJaxbJacksonAnnotationIntrospector() {
+  private static AnnotationIntrospector createJaxbJacksonAnnotationIntrospector() {
 
-        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
-        final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
+    final AnnotationIntrospector jaxbIntrospector =
+        new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+    final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
 
-        return AnnotationIntrospector.pair(jacksonIntrospector, jaxbIntrospector);
-    }
+    return AnnotationIntrospector.pair(jacksonIntrospector, jaxbIntrospector);
+  }
 }

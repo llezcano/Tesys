@@ -1,58 +1,59 @@
 package org.tesys.core.project.tracking;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class UserPOJO implements User{
-	
-	@Override
-	public String toString() {
-		return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress
-				+ ", displayName=" + displayName + ", active=" + active + "]";
-	}
+public class UserPOJO implements User {
 
-	public String name ;
-	
-	public String emailAddress ; 
-	
-	public String displayName ;
-	
-	public boolean active ;
-	
-	@Override
-	public String getName() {
-		return name;
-	}
+  @Override
+  public String toString() {
+    return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress + ", displayName="
+        + displayName + ", active=" + active + "]";
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String name;
 
-	@Override
-	public String getEmailAddress() {
-		return emailAddress;
-	}
+  public String emailAddress;
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+  public String displayName;
 
-	@Override
-	public String getDisplayName() {
-		return displayName;
-	}
+  public boolean active;
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+  @Override
+  public String getName() {
+    return name;
+  }
 
-	@Override
-	public boolean isActive() {
-		return active;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+  @Override
+  public String getEmailAddress() {
+    return emailAddress;
+  }
 
-	
+  public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
+  }
+
+  @Override
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
+  @Override
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+
 }
