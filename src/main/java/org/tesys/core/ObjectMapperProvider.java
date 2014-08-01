@@ -1,5 +1,6 @@
 package org.tesys.core;
 
+
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -14,38 +15,43 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
-  final ObjectMapper defaultObjectMapper;
-  final ObjectMapper combinedObjectMapper;
+    final ObjectMapper defaultObjectMapper;
+    final ObjectMapper combinedObjectMapper;
 
-  public ObjectMapperProvider() {
-    defaultObjectMapper = createDefaultMapper();
-    combinedObjectMapper = createCombinedObjectMapper();
-  }
+    public ObjectMapperProvider() {
+        defaultObjectMapper = createDefaultMapper();
+        combinedObjectMapper = createCombinedObjectMapper();
+    }
 
-  @Override
-  public ObjectMapper getContext(final Class<?> type) {
-    return defaultObjectMapper;
-  }
+    @Override
+    public ObjectMapper getContext(final Class<?> type) {
 
-  private static ObjectMapper createCombinedObjectMapper() {
-    return new ObjectMapper().configure(SerializationFeature.WRAP_ROOT_VALUE, true)
-        .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
-        .setAnnotationIntrospector(createJaxbJacksonAnnotationIntrospector());
-  }
+        if (type == CombinedAnnotationBean.class) {
+            return combinedObjectMapper;
+        } else {
+            return defaultObjectMapper;
+        }
+    }
 
-  private static ObjectMapper createDefaultMapper() {
-    final ObjectMapper result = new ObjectMapper();
-    result.enable(SerializationFeature.INDENT_OUTPUT);
+    private static ObjectMapper createCombinedObjectMapper() {
+        return new ObjectMapper()
+                .configure(SerializationFeature.WRAP_ROOT_VALUE, true)
+                .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
+                .setAnnotationIntrospector(createJaxbJacksonAnnotationIntrospector());
+    }
 
-    return result;
-  }
+    private static ObjectMapper createDefaultMapper() {
+        final ObjectMapper result = new ObjectMapper();
+        result.enable(SerializationFeature.INDENT_OUTPUT);
 
-  private static AnnotationIntrospector createJaxbJacksonAnnotationIntrospector() {
+        return result;
+    }
 
-    final AnnotationIntrospector jaxbIntrospector =
-        new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
-    final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
+    private static AnnotationIntrospector createJaxbJacksonAnnotationIntrospector() {
 
-    return AnnotationIntrospector.pair(jacksonIntrospector, jaxbIntrospector);
-  }
+        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
+
+        return AnnotationIntrospector.pair(jacksonIntrospector, jaxbIntrospector);
+    }
 }

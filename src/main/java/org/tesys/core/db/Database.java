@@ -1,6 +1,8 @@
 package org.tesys.core.db;
 
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -27,11 +29,12 @@ public class Database {
     private final static String RESOURCE_USER_MAPPING = "mapping/";
     private final static String RESOURCE_COMMIT = "commit/";
     private final static String RESOURCE_METRIC = "metric/";
-    private final static String RESOURCE_ANALYSIS = "analysis/";   
+    private final static String RESOURCE_ANALYSIS = "analysis/";
+    private final static String REPO_PARAM_ID = "repo";
     
     private final static String SLASH = "/";
 
-    private final static String DEFAULT_LOCATION_CONNECTOR = "http://localhost:8080/core/rest/connectors/elasticsearch"; //$NON-NLS-1$
+    private final static String DEFAULT_LOCATION_CONNECTOR = "http://localhost:8080/core/rest/connectors/elasticsearch/"; //$NON-NLS-1$
 
     public RESTClient client;
 
@@ -41,7 +44,7 @@ public class Database {
     
     public Database() {
 	try {
-	    client = new RESTClient(getURL());
+	    client = new RESTClient(DEFAULT_LOCATION_CONNECTOR);
 	} catch (MalformedURLException e) {
 	    e.printStackTrace();
 	}
@@ -49,7 +52,9 @@ public class Database {
     
     
     public boolean isValidDeveloper(String name, String repoID) {
-	Response response = client.GET(RESOURCE_USER_MAPPING+name+SLASH+repoID);
+      Map<String, String> param = new HashMap<String,String>();
+      param.put( REPO_PARAM_ID , repoID );
+	Response response = client.GET(RESOURCE_USER_MAPPING+name, param);
 	return (response.readEntity(String.class).equals("true"));
     }
 

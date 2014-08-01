@@ -1,10 +1,13 @@
 package org.tesys.core.project.scm;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tesys.util.MD5;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
   public long date;

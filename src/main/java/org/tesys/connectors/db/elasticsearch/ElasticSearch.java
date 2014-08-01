@@ -118,7 +118,7 @@ public class ElasticSearch {
 	JsonNode jsonResponse = client.POST(
 		this.pathToStore(INDEX_SCM, DTYPE_USER, QUERY), query)
 		.readEntity(JsonNode.class);
-	return jsonResponse.get("hits").get("total").asInt() > 0;
+	return (jsonResponse.get("hits").get("total").asInt() > 0);
     }
 
     public RevisionPOJO[] getRevisions() {

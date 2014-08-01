@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes; 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
@@ -32,32 +33,32 @@ import org.tesys.core.project.scm.RevisionPOJO;
 @Singleton
 public class ElasticSearchConnector {
     
-    private ElasticSearch Elasticsearch ;
+    private ElasticSearch elasticSearch ;
     
     @PostConstruct
     public void init() {
-	Elasticsearch = new ElasticSearch() ;
+	elasticSearch = new ElasticSearch() ;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/mapping/{name}/{repoID}")
-    public boolean isValidDeveloper(@PathParam("name") String name, @PathParam("repoID") String repoID) {
-	return Elasticsearch.isValidDeveloper(name, repoID);
+    @Path("/mapping/{name}")
+    public boolean isValidDeveloper(@PathParam("name") String name, @QueryParam("repo") String repoID) {
+      return elasticSearch.isValidDeveloper(name, repoID);
     }
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/revisions")
     public RevisionPOJO[] getRevisions() {	
-	return Elasticsearch.getRevisions() ;
+	return elasticSearch.getRevisions() ;
     }
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/revisions/unscanned")
     public RevisionPOJO[] getUnscanedRevisions() {
-	return Elasticsearch.getUnscanedRevisions() ;
+	return elasticSearch.getUnscanedRevisions() ;
     }
     
     
@@ -71,7 +72,7 @@ public class ElasticSearchConnector {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/mapping/{id}")
     public void store(@PathParam("id") String ID, MappingPOJO mapping) {
-	Elasticsearch.store(ID, mapping);
+	elasticSearch.store(ID, mapping);
     }
     
     /**
@@ -84,7 +85,7 @@ public class ElasticSearchConnector {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/metric/{id}")
     public void store(@PathParam("id") String ID, MetricPOJO metric) {
-	Elasticsearch.store(ID, metric);
+	elasticSearch.store(ID, metric);
     }
     
     /**
@@ -97,14 +98,14 @@ public class ElasticSearchConnector {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/analysis/{id}")
     public void store(@PathParam("id") String ID, AnalisisPOJO analisis) {
-	Elasticsearch.store(ID, analisis);
+	elasticSearch.store(ID, analisis);
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/commit/{id}")
     public void store(@PathParam("id") String ID, RevisionPOJO revision) {
-	Elasticsearch.store(ID, revision);
+      elasticSearch.store(ID, revision);
     }
 
 

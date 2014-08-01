@@ -3,7 +3,6 @@ package org.tesys.core.project.scm;
 import java.net.MalformedURLException;
 
 import org.tesys.util.RESTClient;
-import org.tesys.core.project.scm.SCMManager;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,9 +50,9 @@ public class SCMFacade {
     ObjectMapper om = new ObjectMapper(factory);
     factory.setCodec(om);
     ObjectNode data = om.createObjectNode();
-    data.put(SCMManager.REPOSITORY_DATA_ID, repository);
+    data.put("repository", repository);
 
-    if (client.PUT(revision, data.toString()).getStatus() / 100 == 2) { //$NON-NLS-1$
+    if (client.PUT(revision, data.toString()).getStatus() / 100 == 2) {
       return true;
     }
     return false;

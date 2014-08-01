@@ -48,14 +48,6 @@ import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 public class SCMManager {
 
-
-  public static final String SCM_DTYPE_REVISIONS = "revisions"; //$NON-NLS-1$
-  public static final String SCM_DTYPE_USERS = "users"; //$NON-NLS-1$
-  public static final String SCM_DB_INDEX = "scm"; //$NON-NLS-1$
-  public static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
-  public static final String SCM_USER_DATA_ID = "scm_user"; //$NON-NLS-1$
-  public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
-
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
   private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
@@ -67,21 +59,8 @@ public class SCMManager {
   private Matcher matcher;
   private Database db;
   private SCMFacade scmFacade;
-
   
   private static SCMManager instance = null;
-
-  /*
-  public static void main( String args[] ) throws MalformedURLException {
-      
-      SCMProjectMappingPOJO mapping = new SCMProjectMappingPOJO("pepeJira", "pepeSCM", "Tesys") ;
-      RESTClient client = new RESTClient("http://localhost:8091/core/rest/connectors/elasticsearch/") ;
-      System.out.println(mapping) ;
-      client.PUT("/mapping/1", mapping) ;
-          
-      
-  }
-  */
   
   private SCMManager() {
     issuePattern = Pattern.compile(ISSUE_REGEX);
@@ -230,15 +209,6 @@ public class SCMManager {
    * 
    * Ademas este metodo guarda en la base de datos los mapeos
    * 
-   * Para poder buscar si el user ya esta mapeado o no utiliza el lenguaje de busqueda interno del
-   * core, que es un JSON especial que se utiliza como una query, el json que utiliza es el siguinte
-   * 
-   * 
-   * { "query": { "bool": { "must": [ { "match": { "scm_user": "<usuario>" }}, { "match": {
-   * "repository": "<repositorio>" }} ] } } }
-   * 
-   * Dirigirse a la documentacion del lenguaje para mas informacion:
-   * http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-body.html
    * 
    * @param scmData
    * @throws Exception
