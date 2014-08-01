@@ -2,6 +2,8 @@ package org.tesys.core.project.scm;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.tesys.util.MD5;
+
 /**
  * Esta clase es para el mapeo SCM - Jira
  * 
@@ -18,6 +20,10 @@ public class MappingPOJO {
     this.projectTrackingUser = project_tracking_user;
     this.scmUser = scm_user;
     this.repository = repository;
+  }
+  
+  public String getID() {
+    return MD5.generateId(projectTrackingUser + scmUser + repository);
   }
 
   public MappingPOJO() {}

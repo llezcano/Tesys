@@ -1,5 +1,7 @@
 package org.tesys.core.analysis.sonar;
 
+import org.tesys.util.MD5;
+
 public class MetricPOJO {
 
   private String key;
@@ -14,6 +16,10 @@ public class MetricPOJO {
     this.description = description;
     this.type = type;
     this.domain = domain;
+  }
+  
+  public String getID() {
+    return MD5.generateId(key);
   }
 
   public String getKey() {

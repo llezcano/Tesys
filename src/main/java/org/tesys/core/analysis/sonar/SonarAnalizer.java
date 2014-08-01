@@ -1,7 +1,6 @@
 package org.tesys.core.analysis.sonar;
 
 import java.io.File;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.tools.ant.Project;
@@ -9,7 +8,6 @@ import org.apache.tools.ant.ProjectHelper;
 import org.tesys.core.db.Database;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
-import org.tesys.util.MD5;
 
 
 public class SonarAnalizer {
@@ -69,13 +67,13 @@ public class SonarAnalizer {
       if( rev.getRevision().equals("0") ) {
         purgeDirectory(workspace); 
       } else { 
-        scm.doCheckout(rev.getRevision(), rev.getRepository()); //en realidad anda con repo = "" 
+        scm.doCheckout(rev.getRevision(), rev.getRepository()); //TODO en realidad anda con repo = "" 
       } 
       
       analizar();
       rev.setScaned(true);
-      String id = MD5.generateId(rev.getDate().toString()); //PROBAR SI SE GENERA BIEN EL MISMO ID Y ADEMAS METER LA GENERACION DEL ID EN EL POJO
-      db.store( id, rev );
+
+      db.store( rev.getID(), rev );
     }
       
     sr.storeAnalysis( se.getResults(revisionesSinEscanear) );

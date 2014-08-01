@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.analysis.sonar.StoreResults;
 import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
 import org.tesys.core.analysis.telemetry.util.Formatter;
 import org.tesys.core.analysis.telemetry.util.Searcher;
-import org.tesys.core.db.DatabaseFacade;
+import org.tesys.core.db.Database;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
 
@@ -21,12 +22,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ProcessData {
 
-  private DatabaseFacade db;
+  private Database db;
 
   private static ProcessData instance = null;
 
   private ProcessData() {
-    db = new DatabaseFacade();
+    db = new Database();
   }
 
   public static ProcessData getInstance() {
@@ -39,15 +40,17 @@ public class ProcessData {
 
 
   public String executeProcessor() {
-
-    // Se obtiene todos los datos de las revisiones
-    List<RevisionPOJO> revisions = db.getSCMRevisions();
-    Collections.sort(revisions); // se ordenan por fecha
-
-    // Se obtienen todas las metricas que existen en sonar, con tipo y demas
+    
+    
+    List<AnalisisPOJO> analisis = db.getAnalisis();
+    
     List<MetricPOJO> metrics = db.getMetrics();
 
-    SonarAnalisis sonarAnalisis = new SonarAnalisis( revisions, metrics);
+    Collections.sort(analisis); //TODO ver si se ordenan por fecha
+
+    
+
+    SonarAnalisis sonarAnalisis = new SonarAnalisis( metrics );
 
     // Se obtienen los analisis por commit acumulado
     List<JsonNode> analisisJson = sonarAnalisis.getDataJsonFormat(sonarAnalisis.getAnalisis());

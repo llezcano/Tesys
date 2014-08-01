@@ -13,7 +13,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.tesys.core.project.tracking.UserPOJO;
 
 /**
  * Cliente para Servicios Web REST el cual usa Jersey.

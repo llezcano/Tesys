@@ -1,7 +1,6 @@
 package org.tesys.core.db;
 
 import java.net.MalformedURLException;
-import java.util.Date;
 
 import javax.ws.rs.core.Response;
 
@@ -48,12 +47,6 @@ public class Database {
 	}
     }
     
-    public static void main(String args[]) {
-	Database db = new Database() ;
-	RevisionPOJO rev  = new RevisionPOJO(new Date(), "scm2000", "JIRA-1", "rev1", "repo") ;
-	db.store("rev1", rev);
-	
-    }
     
     public boolean isValidDeveloper(String name, String repoID) {
 	Response response = client.GET(RESOURCE_USER_MAPPING+name+SLASH+repoID);

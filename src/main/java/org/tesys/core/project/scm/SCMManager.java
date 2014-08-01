@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import org.tesys.core.db.Database;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
-import org.tesys.util.MD5;
 
 
 
@@ -43,9 +42,7 @@ import org.tesys.util.MD5;
  * implementacion de como realizar un checkout y debera guardar los archivos en una ruta predefinida
  * que luego el sistema analizara.
  * 
- * ALMACENA DATOS EN:
- * 
- * scm/users scm/revisions
+
  * 
  */
 
@@ -155,12 +152,10 @@ public class SCMManager {
       throw new RuntimeException(Messages.getString("SCMManager.formatofechainvalido")); //$NON-NLS-1$
     }
 
-    String id = MD5.generateId(scmData.getDate());
-    
-    RevisionPOJO revision = new RevisionPOJO(formatDate, scmData.getAuthor(), issue,
+    RevisionPOJO revision = new RevisionPOJO(formatDate.getTime(), scmData.getAuthor(), issue,
         scmData.getRevision(), scmData.getRepository());
 
-    db.store( id, revision );
+    db.store( revision.getID(), revision );
 
     return true;
   }
@@ -275,12 +270,11 @@ public class SCMManager {
           throw new InvalidCommitException(Messages.getString("SCMManager.userinvalido"));  //$NON-NLS-1$
         }
 
-        String id = MD5.generateId(user + scmData.getAuthor() + scmData.getRepository());
 
         MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(), scmData.getRepository());
 
         try {
-          db.store( id, mp);
+          db.store( mp.getID() , mp);
         } catch (Exception e) {
           throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
         }
@@ -306,18 +300,10 @@ public class SCMManager {
 
   private void generateRevisionZero(String repository) {
     
-    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-    Date d = null;
-    try {
-      d = dateFormat.parse(new Date(0).toString());
-    } catch (ParseException e1) {
-      e1.printStackTrace();
-    }
-    
-    RevisionPOJO rev0 = new RevisionPOJO( d, "null", "null", "0", repository);
+    RevisionPOJO rev0 = new RevisionPOJO( 0, "null", "null", "0", repository);
 
     try {
-      db.store("0", rev0);
+      db.store( rev0.getID(), rev0);
     } catch (Exception e) {
       throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
     }

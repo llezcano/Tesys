@@ -27,15 +27,14 @@ public class StoreResults {
   public void storeMetrics(List<MetricPOJO> metrics) {
 
     for (MetricPOJO metric : metrics) {
-      db.store( metric );
+      db.store( metric.getID(), metric );
     }
   }
 
   public void storeAnalysis(List<AnalisisPOJO> resultados) {
 
     for (AnalisisPOJO analisis : resultados) {
-      db.store( analisis );
-
+      db.store( analisis.getID() ,analisis );
     }
 
 

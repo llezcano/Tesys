@@ -38,7 +38,7 @@ public class ElasticSearchConnector {
     public void init() {
 	Elasticsearch = new ElasticSearch() ;
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/mapping/{name}/{repoID}")
