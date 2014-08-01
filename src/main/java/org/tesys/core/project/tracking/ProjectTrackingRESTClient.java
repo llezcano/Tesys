@@ -15,7 +15,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 
   private RESTClient client;
 
-  // TODO RESEARCH Discovery Resources from Connector
+  //RESEARCH Discovery Resources from Connector
   private static String RESOURCE_ISSUES = "issues/";
   private static String RESOURCE_USERS = "users/";
 
@@ -60,7 +60,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 
 
   public String getConnectorLocation() {
-    // TODO RESEARCH Discovery Services
+    //RESEARCH Discovery Services
     return "http://localhost:8080/core/rest/connectors/jira";
   }
 

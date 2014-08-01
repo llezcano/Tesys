@@ -4,45 +4,44 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Esta clase es para el mapeo SCM - Jira
-
  * 
  */
-
 @XmlRootElement
 public class MappingPOJO {
 
-  private String project_tracking_user;
-  private String scm_user;
+  private String projectTrackingUser;
+  private String scmUser;
   private String repository;
 
 
   public MappingPOJO(String project_tracking_user, String scm_user, String repository) {
-    this.project_tracking_user = project_tracking_user;
-    this.scm_user = scm_user;
+    this.projectTrackingUser = project_tracking_user;
+    this.scmUser = scm_user;
     this.repository = repository;
   }
 
-
+  public MappingPOJO() {}
+  
   @Override
   public String toString() {
-    return "MappingPOJO [project_tracking_user=" + project_tracking_user + ", scm_user="
-        + scm_user + ", repository=" + repository + "]";
+    return "MappingPOJO [project_tracking_user=" + projectTrackingUser + ", scm_user="
+        + scmUser + ", repository=" + repository + "]";
   }
 
   public String getProjectTrackingUser() {
-    return project_tracking_user;
+    return projectTrackingUser;
   }
 
   public void setProjectTrackingUser(String project_tracking_user) {
-    this.project_tracking_user = project_tracking_user;
+    this.projectTrackingUser = project_tracking_user;
   }
 
   public String getScmUser() {
-    return scm_user;
+    return scmUser;
   }
 
   public void setScmUser(String scm_user) {
-    this.scm_user = scm_user;
+    this.scmUser = scm_user;
   }
 
   public String getRepository() {

@@ -1,5 +1,7 @@
 package org.tesys.core.analysis.sonar;
-
+//TODO cambiar nombre por -> AnalisysPOJO
 public class AnalisisPOJO {
-  //TODO
+  //TODO 
+    
+    public AnalisisPOJO() {}
 }

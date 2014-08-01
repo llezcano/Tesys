@@ -7,37 +7,54 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes; 
+import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 
+/**
+ * El objetivo de esta clase es proveer una Capa de interoperabilidad con la base de datos usada.
+ * Ya sea para independizar ubicacion fisica y el lenguaje con el cual se accederan a los datos.
+ * 
+ * Provee un Web Service REST el cual ofrece un conjunto de metodos para acceder y persistir informacion 
+ * relacionada con el CORE, el cual no debe tener acceso directo a la base de datos.
+ * 
+ * Esta clase interactua directamente con un Facade cliente de la base de datos.
+ * 
+ * @author rulo
+ *
+ */
 @Path("/connectors/elasticsearch")
 @Singleton
 public class ElasticSearchConnector {
-
+    
     private ElasticSearch Elasticsearch ;
+    
     @PostConstruct
     public void init() {
 	Elasticsearch = new ElasticSearch() ;
-	
     }
-
-
+    
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/mapping/{name}/{repoID}")
     public boolean isValidDeveloper(@PathParam("name") String name, @PathParam("repoID") String repoID) {
 	return Elasticsearch.isValidDeveloper(name, repoID);
     }
     
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/revisions")
     public RevisionPOJO[] getRevisions() {	
 	return Elasticsearch.getRevisions() ;
     }
     
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/revisions/unscanned")
     public RevisionPOJO[] getUnscanedRevisions() {
 	return Elasticsearch.getUnscanedRevisions() ;
@@ -51,6 +68,7 @@ public class ElasticSearchConnector {
      * @param mapping
      */
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/mapping/{id}")
     public void store(@PathParam("id") String ID, MappingPOJO mapping) {
 	Elasticsearch.store(ID, mapping);
@@ -63,6 +81,7 @@ public class ElasticSearchConnector {
      * @param metric
      */
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/metric/{id}")
     public void store(@PathParam("id") String ID, MetricPOJO metric) {
 	Elasticsearch.store(ID, metric);
@@ -75,9 +94,17 @@ public class ElasticSearchConnector {
      * @param analisis
      */
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/analysis/{id}")
     public void store(@PathParam("id") String ID, AnalisisPOJO analisis) {
 	Elasticsearch.store(ID, analisis);
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/commit/{id}")
+    public void store(@PathParam("id") String ID, RevisionPOJO revision) {
+	Elasticsearch.store(ID, revision);
     }
 
 

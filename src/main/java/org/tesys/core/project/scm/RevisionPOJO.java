@@ -14,7 +14,8 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
   private String repository;
   private boolean scaned;
   
-
+  public RevisionPOJO() {}
+  
   public RevisionPOJO(Date date, String scm_user, String project_tracking_task, String revision,
       String repository) {
     this.date = date;
