@@ -1,19 +1,16 @@
 package org.tesys.core.analysis.sonar.metricsdatatypes;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-
 
 public class FLOAT implements Metrics {
 
   Double actual, anterior;
 
-  public FLOAT(JsonNode actual, JsonNode anterior) {
-    this.actual = actual.asDouble();
+  public FLOAT(String actual, String anterior) {
+    this.actual = Double.valueOf(actual);
     if (anterior == null) {
       this.anterior = 0.0;
     } else {
-      this.anterior = anterior.asDouble();
+      this.anterior = Double.valueOf(anterior);
     }
   }
 

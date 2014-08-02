@@ -1,13 +1,11 @@
 package org.tesys.core.analysis.sonar;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlAccessType;
-
 
 import org.tesys.util.MD5;
 //TODO cambiar nombre por -> AnalisysPOJO
@@ -25,7 +23,20 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO>  {
   public boolean scaned = false;
   public List<KeyValuePOJO> individualResults = new ArrayList<KeyValuePOJO>();
   
+  
+  
+  @Override
+  public boolean equals(Object obj) {
+    AnalisisPOJO otro = (AnalisisPOJO) obj;
+    if( this.getID().equals(otro.getID()) ) {
+      return true;
+    }
+    return false;
+    
+  }
+  
   public AnalisisPOJO() {}
+  
   public void add(KeyValuePOJO kvp) {
     individualResults.add(kvp);
   }

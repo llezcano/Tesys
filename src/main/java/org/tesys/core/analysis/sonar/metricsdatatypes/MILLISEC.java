@@ -1,18 +1,15 @@
 package org.tesys.core.analysis.sonar.metricsdatatypes;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-
 public class MILLISEC implements Metrics {
 
   Integer actual, anterior;
 
-  public MILLISEC(JsonNode actual, JsonNode anterior) {
-    this.actual = actual.asInt();
+  public MILLISEC(String actual, String anterior) {
+    this.actual = Integer.valueOf(actual);
     if (anterior == null) {
       this.anterior = 0;
     } else {
-      this.anterior = anterior.asInt();
+      this.anterior = Integer.valueOf(anterior);
     }
   }
 

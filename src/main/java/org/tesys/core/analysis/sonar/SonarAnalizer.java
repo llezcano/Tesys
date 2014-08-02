@@ -1,7 +1,6 @@
 package org.tesys.core.analysis.sonar;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -60,23 +59,23 @@ public class SonarAnalizer {
    */
   public boolean executeSonarAnalysis() {
 
-    List<RevisionPOJO> revisionesSinEscanear =  db.getUnscanedRevisions();
+    RevisionPOJO[] revSinEscanear =  db.getUnscanedRevisions();
     
-    for ( RevisionPOJO rev : revisionesSinEscanear ) { 
+    for ( int i=0; i<revSinEscanear.length; i++ ) { 
       
-      if( rev.getRevision().equals("0") ) {
+      if( revSinEscanear[i].getRevision().equals("0") ) {
         purgeDirectory(workspace); 
       } else { 
-        scm.doCheckout(rev.getRevision(), rev.getRepository()); //TODO en realidad anda con repo = "" 
+        scm.doCheckout(revSinEscanear[i].getRevision(), revSinEscanear[i].getRepository()); //TODO en realidad anda con repo = "" 
       } 
       
       analizar();
-      rev.setScaned(true);
+      revSinEscanear[i].setScaned(true);
 
-      db.store( rev.getID(), rev );
+      db.store( revSinEscanear[i].getID(), revSinEscanear[i] );
     }
       
-    sr.storeAnalysis( se.getResults(revisionesSinEscanear) );
+    sr.storeAnalysis( se.getResults(revSinEscanear) );
 
     purgeDirectory(workspace);
 

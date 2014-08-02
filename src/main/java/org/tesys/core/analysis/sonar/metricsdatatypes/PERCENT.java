@@ -1,19 +1,15 @@
 package org.tesys.core.analysis.sonar.metricsdatatypes;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-
-
 public class PERCENT implements Metrics {
 
   Double actual, anterior;
 
-  public PERCENT(JsonNode actual, JsonNode anterior) {
-    this.actual = actual.asDouble();
+  public PERCENT(String actual, String anterior) {
+    this.actual = Double.valueOf(actual);
     if (anterior == null) {
       this.anterior = 0.0;
     } else {
-      this.anterior = anterior.asDouble();
+      this.anterior = Double.valueOf(anterior);
     }
   }
 

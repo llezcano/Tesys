@@ -8,12 +8,12 @@ import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.analysis.sonar.StoreResults;
-import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
-import org.tesys.core.analysis.telemetry.util.Formatter;
 import org.tesys.core.analysis.telemetry.util.Searcher;
 import org.tesys.core.db.Database;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
+import org.tesys.core.project.tracking.IssuePOJO;
+import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -37,6 +37,10 @@ public class ProcessData {
     return instance;
   }
 
+//TODO agregar los datos de cuanto trabajo por hora
+//TODO testear todo
+//TODO analizar si se puede hacer una forma mas facil de agregar nuevos valores 
+  //(por ejemplo si se quiere agregar la wiki, aca habria que hacer bastante)
 
 
   public String executeProcessor() {
@@ -48,39 +52,24 @@ public class ProcessData {
 
     Collections.sort(analisis); //TODO ver si se ordenan por fecha
 
-    
-
     SonarAnalisis sonarAnalisis = new SonarAnalisis( metrics );
 
-    // Se obtienen los analisis por commit acumulado
-    List<JsonNode> analisisJson = sonarAnalisis.getDataJsonFormat(sonarAnalisis.getAnalisis());
-
     // Se obtienen los analisis por commit individual
-    List<JsonNode> analisisJsonPorCommit = sonarAnalisis.getAnalisisPorCommit(analisisJson);
+    List<AnalisisPOJO> analisisPorCommit = sonarAnalisis.getAnalisisPorCommit(analisis);
 
-    // Se obtienen todas las tareas que existen de jira
-    JiraIssues jira = new JiraIssues(client);
-    List<JsonNode> issuesID = jira.getIssuesId();
-
+    //TODO guaradr en la base de datos que analisis fueron agregados a la tarea
+    
     // se obtienen los analisis por tarea
-    List<JsonNode> analisisJsonPorTarea =
-        sonarAnalisis.getAnalisisPorTarea(analisisJsonPorCommit, revisiones, issuesID);
+    List<AnalisisPOJO> analisisPorTarea =
+        sonarAnalisis.getAnalisisPorTarea( analisisPorCommit );
 
-    List<JsonNode> issues = jira.getIssues();
-
-    StoreInElasticSearch store =
-        new StoreInElasticSearch(senderhost, senderport, senderpath, senderapp, senderdata);
-
-    for (JsonNode issue : issues) {
-      JsonNode analisis = Searcher.searchIssue(issue, analisisJsonPorTarea);
-      analisisJsonPorTarea.remove(analisis);
-      ObjectNode objectAnalisis = (ObjectNode) analisis;
-      objectAnalisis.remove(DBUtilities.JIRA_TASK_TAG);
-      analisis = (JsonNode) objectAnalisis;
-
-      Formatter.joinJson(issue, analisis);
-
-      store.send(issue.get(DBUtilities.KEY_TAG).asText(), issue.toString());
+    ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
+    
+    for (AnalisisPOJO analisisDeTarea : analisisPorTarea) {
+      IssuePOJO IP = pt.getIssue( analisisDeTarea.getProject_tracking_task() );
+      //TODO juntar el issuePOJO con analisisDeTarea
+      
+      //db.store( , ); TODO el BigPOJO
     }
 
   }

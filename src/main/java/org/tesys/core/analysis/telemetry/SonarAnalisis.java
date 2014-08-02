@@ -1,31 +1,23 @@
 package org.tesys.core.analysis.telemetry;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
+import org.tesys.core.analysis.sonar.KeyValuePOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
-import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
-import org.tesys.core.analysis.telemetry.util.Searcher;
-import org.tesys.core.project.scm.RevisionPOJO;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.tesys.core.analysis.telemetry.util.Searcher;
+
 
 public class SonarAnalisis {
 
-
+  private List<MetricPOJO> metrics;
 
   public SonarAnalisis( List<MetricPOJO> metrics ) {
-    
+    this.metrics = metrics;
   }
 
   public List<AnalisisPOJO> getAnalisisPorCommit(List<AnalisisPOJO> analisisAcumulados) {
@@ -41,47 +33,42 @@ public class SonarAnalisis {
           
         AnalisisPOJO nuevoAnalisisPorCommit = new AnalisisPOJO();
 
-        Iterator<JsonNode> anteriorValues = analisisAcumuladoPrevio.getElements();
-        Iterator<JsonNode> actualValues = analisisAcumuladoActual.getElements();
-        Iterator<String> actualMetrics = analisisAcumuladoActual.getFieldNames();
+        List<KeyValuePOJO> resultadosPrevios = analisisAcumuladoPrevio.getIndividualResults();
+        List<KeyValuePOJO> resultadosActuales = analisisAcumuladoActual.getIndividualResults();
 
-
-        while (actualMetrics.hasNext()) {
-
+        for (int j=0; j<resultadosActuales.size(); j++) {
+          
           Metrics metricHandler = null;
-          String metricName = actualMetrics.next().toString();
-          JsonNode valorAnalisisAcumuladoActual = actualValues.next();
-          JsonNode valorAnalisisAcumuladoPrevio = anteriorValues.next();
+          String metricName = resultadosActuales.get(j).key;
+          String valorActual = resultadosActuales.get(j).value;
+          String valorPrevio = resultadosPrevios.get(j).value;
 
-          if (metricName.equals(DBUtilities.REVISION_TAG)) {
-            nuevoAnalisisPorCommit.put(metricName, valorAnalisisAcumuladoActual.asText());
-          } else {
+          if (!valorActual.equals("null")) {
 
-            if (!valorAnalisisAcumuladoActual.asText().equals(DBUtilities.NULL_VALUE_JSON)) {
+            MetricPOJO metric = Searcher.searchMetric(metricName, metrics);
+            String metricType = metric.getType();
 
-              JsonNode metricDescription = Searcher.searchMetric(metricName, metricsList);
-              String metricType = metricDescription.get(DBUtilities.VAL_TYPE_TAG).asText();
+            Object object = null;
 
-              Object object = null;
-
-              try {
-                object =
-                    Class.forName(DBUtilities.METRICS_DATA_TYPES_PATH + "." + metricType) //$NON-NLS-1$
-                        .getConstructors()[0].newInstance(valorAnalisisAcumuladoActual,
-                        valorAnalisisAcumuladoPrevio);
-              } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                  | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-                System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
-                    + e.getMessage());
-              }
+            try {
+              object =
+                  Class.forName("org.tesys.core.analysis.sonar.metricdatatypes"+ "." + metricType)
+                      .getConstructors()[0].newInstance(valorActual, valorPrevio);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | SecurityException | InvocationTargetException | ClassNotFoundException e) {
+              System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
+                  + e.getMessage());
+            }
 
 
-              metricHandler = (Metrics) object;
+            metricHandler = (Metrics) object;
 
-              if (metricHandler != null) {
-                nuevoAnalisisPorCommit.put(metricName, metricHandler.getDifferenceBetweenAnalysis());
-              }
-
+            if (metricHandler != null) {
+              KeyValuePOJO kvp = new KeyValuePOJO();
+              kvp.key = metricName;
+              kvp.value = metricHandler.getDifferenceBetweenAnalysis();
+              
+              nuevoAnalisisPorCommit.add( kvp );
             }
 
           }
@@ -89,15 +76,13 @@ public class SonarAnalisis {
         }
         analisisPorCommit.add(nuevoAnalisisPorCommit);
         
-        
-        
       }
       
     }
 
     return analisisPorCommit;
   }
-
+  
   /**
    * Junta las metricas de uno o varios commits correspondientes a la misma tarea de jira
    * 
@@ -105,63 +90,81 @@ public class SonarAnalisis {
    * @param revisiones los datos de las revisiones generados por la clase svnrevisions
    * @return analisis por tarea de jira
    */
-  public List<JsonNode> getAnalisisPorTarea(List<JsonNode> analisisJsonPorCommit,
-      List<RevisionPOJO> revisiones, List<JsonNode> issuesID) {
+  public List<AnalisisPOJO> getAnalisisPorTarea( List<AnalisisPOJO> analisisPorCommit ) {
+    
+    List<AnalisisPOJO> result = new LinkedList<AnalisisPOJO>();
+   
+    for (AnalisisPOJO commitAnalisis : analisisPorCommit) {
+      AnalisisPOJO guardado =  Searcher.searchIssue(result, commitAnalisis.getProject_tracking_task());
+      if( guardado == null ) {
+        result.add( commitAnalisis );
+      } else {
+        
+        
+        AnalisisPOJO nuevoAnalisisPorTarea = new AnalisisPOJO();
+        
+        nuevoAnalisisPorTarea.setDate( guardado.getDate() );
+        nuevoAnalisisPorTarea.setProject_tracking_task( guardado.getProject_tracking_task() );
 
-    List<JsonNode> analisisPorTarea = new LinkedList<JsonNode>(issuesID);
+        List<KeyValuePOJO> resultadosPrevios = guardado.getIndividualResults();
+        List<KeyValuePOJO> resultadosActuales = commitAnalisis.getIndividualResults();
+        
+        result.remove(guardado);
 
-    for (JsonNode commitAnalisis : analisisJsonPorCommit) {
+        for (int j=0; j<resultadosActuales.size(); j++) {
+          
+          Metrics metricHandler = null;
+          String metricName = resultadosActuales.get(j).key;
+          String valorActual = resultadosActuales.get(j).value;
+          String valorPrevio = resultadosPrevios.get(j).value;
 
-      String revisionID = commitAnalisis.get(DBUtilities.REVISION_TAG).asText();
-      RevisionPOJO revision = Searcher.searchRevision(revisionID, revisiones);
-
-      JsonNode tareaActual = Searcher.searchTarea(revision.getTask(), analisisPorTarea);
-
-      // al analisis por tarea correspondiente sumarle el analisis por commit
-
-      analisisPorTarea.remove(tareaActual);
-
-      ObjectNode tareaNueva = (ObjectNode) tareaActual;
-
-      Iterator<String> metrics = commitAnalisis.getFieldNames();
-      Iterator<JsonNode> values = commitAnalisis.getElements();
-
-      while (metrics.hasNext()) {
-        String metric = metrics.next();
-        JsonNode value = values.next();
-        Metrics metricHandler = null;
-
-        // la revision del commit no es un valor que queda en el analisis por tarea
-        if (!metric.equals(DBUtilities.REVISION_TAG)) {
-
-          JsonNode metricDescription = Searcher.searchMetric(metric, metricsList);
-          String metricType = metricDescription.get(DBUtilities.VAL_TYPE_TAG).asText();
-          JsonNode oldValue = tareaActual.get(metric);
+          MetricPOJO metric = Searcher.searchMetric(metricName, metrics);
+          String metricType = metric.getType();
 
           Object object = null;
+
           try {
-            object = Class.forName(DBUtilities.METRICS_DATA_TYPES_PATH + "." + metricType) //$NON-NLS-1$
-                .getConstructors()[0].newInstance(value, oldValue);
+            object =
+                Class.forName( "org.tesys.core.analysis.sonar.metricdatatypes" + "." + metricType)
+                    .getConstructors()[0].newInstance(valorActual, valorPrevio);
           } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
               | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-            System.err.println(Messages.getString("sonardatatypeerrorjoincommit") //$NON-NLS-1$
+            System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
                 + e.getMessage());
           }
+
 
           metricHandler = (Metrics) object;
 
           if (metricHandler != null) {
-            tareaNueva.put(metric, metricHandler.getNewAnalysisPerTask());
+            
+            KeyValuePOJO kvp = new KeyValuePOJO();
+            kvp.key = metricName;
+            kvp.value = metricHandler.getNewAnalysisPerTask();
+
+            nuevoAnalisisPorTarea.add( kvp );
           }
 
+
+
         }
+        result.add(nuevoAnalisisPorTarea);
+        
+        
+        
+        
       }
-
-      analisisPorTarea.add(tareaNueva);
-
+      
     }
-
-    return analisisPorTarea;
+    
+    return result;
   }
+  
+  
+  
+  
+  
+  
+  
 
 }

@@ -34,7 +34,7 @@ public class SonarExtractor {
 
   }
 
-  public List< AnalisisPOJO > getResults( List<RevisionPOJO> revisions ) {
+  public List< AnalisisPOJO > getResults( RevisionPOJO [] revisions ) {
 
     String[] met = new String[metricList.size()];
     int index = 0;
@@ -55,11 +55,11 @@ public class SonarExtractor {
 
       AnalisisPOJO resultadoDeRevision = new AnalisisPOJO();
       
-      resultadoDeRevision.setDate( revisions.get(j).getDate() );
-      resultadoDeRevision.setProject_tracking_task(revisions.get(j).getProject_tracking_task());
-      resultadoDeRevision.setRepository(revisions.get(j).getRepository());
-      resultadoDeRevision.setRevision(revisions.get(j).getRevision());
-      resultadoDeRevision.setScm_user(revisions.get(j).getScm_user());
+      resultadoDeRevision.setDate( revisions[j].getDate() );
+      resultadoDeRevision.setProject_tracking_task(revisions[j].getProject_tracking_task());
+      resultadoDeRevision.setRepository(revisions[j].getRepository());
+      resultadoDeRevision.setRevision(revisions[j].getRevision());
+      resultadoDeRevision.setScm_user(revisions[j].getScm_user());
       
 
       for (int i = 0; i < tmco.length; i++) {

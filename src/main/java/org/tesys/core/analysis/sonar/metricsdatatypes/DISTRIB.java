@@ -1,10 +1,5 @@
 package org.tesys.core.analysis.sonar.metricsdatatypes;
 
-import org.tesys.core.analysis.telemetry.dbutilities.DBUtilities;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-
 
 /**
  * Clase paras tratar con un tipo de dato DISTRIB que es de la forma 0=1;5=0;10=0 Donde por ejemplo
@@ -19,14 +14,14 @@ public class DISTRIB implements Metrics {
 
   String actual, anterior;
 
-  public DISTRIB(JsonNode actual, JsonNode anterior) {
-    this.actual = actual.asText();
+  public DISTRIB(String actual, String anterior) {
+    this.actual = actual;
 
-    if (anterior == null || anterior.asText().equals(DBUtilities.NULL_VALUE_JSON)) {
+    if (anterior == null || anterior.equals("null")) {
       // Crear una nueva complejidad, se agarra como modelo la nueva y pone todos los valores en 0
       this.anterior = this.actual.replaceAll("=[0-9]+", "=0");
     } else {
-      this.anterior = anterior.asText();
+      this.anterior = anterior;
     }
   }
 

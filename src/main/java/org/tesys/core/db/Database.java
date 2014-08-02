@@ -2,6 +2,7 @@ package org.tesys.core.db;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -85,6 +86,18 @@ public class Database {
 	// TODO Auto-generated method stub
 	return null;
     }
+    
+    public List<MetricPOJO> getMetrics() {
+      //TODO
+      return null;
+    }
+    
+    public List<AnalisisPOJO> getAnalisis() {
+      //TODO
+      return null;
+    }
+    
+   
 
 }
 
