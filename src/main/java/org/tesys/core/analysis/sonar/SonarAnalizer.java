@@ -11,10 +11,12 @@ import org.tesys.core.project.scm.SCMManager;
 
 public class SonarAnalizer {
 
-  public static final File buildFile =
-      new File(System.getProperty("user.home"), ".tesys/build.xml");
-  public static final File workspace =
-      new File(System.getProperty("user.home"), ".tesys/workspace");
+  private static final String USER_HOME = "user.home";
+  
+  public static final File BUILD_FILE =
+      new File(System.getProperty(USER_HOME), ".tesys/build.xml");
+  public static final File WORKSPACE =
+      new File(System.getProperty(USER_HOME), ".tesys/workspace");
 
   private SCMManager scm;
   private StoreResults sr;
@@ -63,10 +65,11 @@ public class SonarAnalizer {
     
     for ( int i=0; i<revSinEscanear.length; i++ ) { 
       
-      if( revSinEscanear[i].getRevision().equals("0") ) {
-        purgeDirectory(workspace); 
+      if( "0".equals( revSinEscanear[i].getRevision() ) ) {
+        purgeDirectory(WORKSPACE); 
       } else { 
-        scm.doCheckout(revSinEscanear[i].getRevision(), revSinEscanear[i].getRepository()); //TODO en realidad anda con repo = "" 
+      //TODO en realidad anda con repo = "" 
+        scm.doCheckout(revSinEscanear[i].getRevision(), revSinEscanear[i].getRepository()); 
       } 
       
       analizar();
@@ -77,7 +80,7 @@ public class SonarAnalizer {
       
     sr.storeAnalysis( se.getResults(revSinEscanear) );
 
-    purgeDirectory(workspace);
+    purgeDirectory(WORKSPACE);
 
 
     return true;
@@ -98,11 +101,11 @@ public class SonarAnalizer {
    */
   private void analizar() {
     Project p = new Project();
-    p.setUserProperty("ant.file", buildFile.getAbsolutePath());
+    p.setUserProperty("ant.file", BUILD_FILE.getAbsolutePath());
     p.init();
     ProjectHelper helper = ProjectHelper.getProjectHelper();
     p.addReference("ant.projectHelper", helper);
-    helper.parse(p, buildFile);
+    helper.parse(p, BUILD_FILE);
     p.executeTarget(p.getDefaultTarget());
   }
 
@@ -112,8 +115,9 @@ public class SonarAnalizer {
    */
   private void purgeDirectory(File dir) {
     for (File file : dir.listFiles()) {
-      if (file.isDirectory())
+      if (file.isDirectory()) {
         purgeDirectory(file);
+      }
       file.delete();
     }
   }

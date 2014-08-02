@@ -20,9 +20,10 @@ public class SonarExtractor {
   private Sonar sonar;
   private List<Metric> metricList;
 
+  //TODO hacer esto con variable asi se puede cambiar en vez de constantes
 
-  public static String HOST = "http://localhost:9000"; // de sonar
-  public static String PROJECT_KEY = "temporal:test";
+  public static final String HOST = "http://localhost:9000"; // de sonar
+  public static final String PROJECT_KEY = "temporal:test";
 
   private static final String USER = "admin";
   private static final String PASS = "admin";
@@ -56,10 +57,10 @@ public class SonarExtractor {
       AnalisisPOJO resultadoDeRevision = new AnalisisPOJO();
       
       resultadoDeRevision.setDate( revisions[j].getDate() );
-      resultadoDeRevision.setProject_tracking_task(revisions[j].getProject_tracking_task());
+      resultadoDeRevision.setProject_tracking_task(revisions[j].getProjectTrackingTask());
       resultadoDeRevision.setRepository(revisions[j].getRepository());
       resultadoDeRevision.setRevision(revisions[j].getRevision());
-      resultadoDeRevision.setScm_user(revisions[j].getScm_user());
+      resultadoDeRevision.setScm_user(revisions[j].getScmUser());
       
 
       for (int i = 0; i < tmco.length; i++) {

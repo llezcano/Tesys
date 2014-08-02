@@ -1,22 +1,14 @@
 package org.tesys.core.analysis.telemetry;
 
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
-import org.tesys.core.analysis.sonar.SonarAnalizer;
-import org.tesys.core.analysis.sonar.StoreResults;
-import org.tesys.core.analysis.telemetry.util.Searcher;
 import org.tesys.core.db.Database;
-import org.tesys.core.project.scm.RevisionPOJO;
-import org.tesys.core.project.scm.SCMManager;
 import org.tesys.core.project.tracking.IssuePOJO;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
 
@@ -43,7 +35,7 @@ public class ProcessData {
   //(por ejemplo si se quiere agregar la wiki, aca habria que hacer bastante)
 
 
-  public String executeProcessor() {
+  public void executeProcessor() {
     
     
     List<AnalisisPOJO> analisis = db.getAnalisis();

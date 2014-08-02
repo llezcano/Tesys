@@ -6,24 +6,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tesys.util.MD5;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
-  public long date;
-  public String scm_user;
-  public String project_tracking_task;
-  public String revision;
-  public String repository;
-  public boolean scaned;
+  protected long date;
+  
+  @JsonProperty("scm_user")
+  protected String scmUser;
+  
+  @JsonProperty("project_tracking_task")
+  protected String projectTrackingTask;
+  
+  protected String revision;
+  protected String repository;
+  protected boolean scaned;
   
   public RevisionPOJO() {}
   
-  public RevisionPOJO(long date, String scm_user, String project_tracking_task, String revision,
+  public RevisionPOJO(long date, String scmUser, String projectTrackingTask, String revision,
       String repository) {
     this.date = date;
-    this.scm_user = scm_user;
-    this.project_tracking_task = project_tracking_task;
+    this.scmUser = scmUser;
+    this.projectTrackingTask = projectTrackingTask;
     this.revision = revision;
     this.repository = repository;
     this.scaned = false;
@@ -34,7 +41,6 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     return MD5.generateId( String.valueOf(date) );
   }
   
-  
 
   public long getDate() {
     return date;
@@ -44,24 +50,22 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     this.date = date;
   }
 
-
-  public String getScm_user() {
-    return scm_user;
+  public String getScmUser() {
+    return scmUser;
   }
 
 
-  public void setScm_user(String scm_user) {
-    this.scm_user = scm_user;
+  public void setScmUser(String scmUser) {
+    this.scmUser = scmUser;
+  }
+
+  public String getProjectTrackingTask() {
+    return projectTrackingTask;
   }
 
 
-  public String getProject_tracking_task() {
-    return project_tracking_task;
-  }
-
-
-  public void setProject_tracking_task(String project_tracking_task) {
-    this.project_tracking_task = project_tracking_task;
+  public void setprojectTrackingTask(String projectTrackingTask) {
+    this.projectTrackingTask = projectTrackingTask;
   }
 
 

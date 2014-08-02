@@ -48,6 +48,15 @@ import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 public class SCMManager {
 
+  private static final String SCM_MANAGER_FORMATOFECHAINVALIDO = "SCMManager.formatofechainvalido";
+  private static final String SCM_MANAGER_ISSUEINVALIDO = "SCMManager.issueinvalido";
+  private static final String SYNTAXERRORISSUE = "syntaxerrorissue";
+  private static final String SYTAXERRORMULTIPLECOMMANDS = "sytaxerrormultiplecommands";
+  private static final String SCM_MANAGER_USERINVALIDO = "SCMManager.userinvalido";
+  private static final String SYNTAXERRORUSER = "syntaxerroruser";
+  private static final String SCM_MANAGER_BASEDEDATOSCAIDA = "SCMManager.basededatoscaida";
+  
+  
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
   private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
@@ -89,7 +98,7 @@ public class SCMManager {
    */
   public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
     try {
-      // TODO cada uno de estos se puede hacer con un thread aparte
+      //cada uno de estos se puede hacer con un thread aparte
       getIssue(scmData.getMessage());
       mapUser(scmData);
     } catch (InvalidCommitException e) {
@@ -113,7 +122,7 @@ public class SCMManager {
    * @param scmData
    * @return
    */
-  public boolean storeCommit(ScmPostCommitDataPOJO scmData) throws RuntimeException {
+  public boolean storeCommit(ScmPostCommitDataPOJO scmData) throws InvalidCommitException {
 
     generateRevisionZero(scmData.getRepository());
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
@@ -128,7 +137,7 @@ public class SCMManager {
     } catch (InvalidCommitException e) {
       throw e;
     } catch (ParseException e1) {
-      throw new RuntimeException(Messages.getString("SCMManager.formatofechainvalido")); //$NON-NLS-1$
+      throw new InvalidCommitException(Messages.getString(SCM_MANAGER_FORMATOFECHAINVALIDO)); //$NON-NLS-1$
     }
 
     RevisionPOJO revision = new RevisionPOJO(formatDate.getTime(), scmData.getAuthor(), issue,
@@ -177,17 +186,17 @@ public class SCMManager {
     if (matcher.find()) {
       issue = matcher.group(1);
       if (issue.contains(INVALID_ISSUE)) {
-        throw new InvalidCommitException(Messages.getString("syntaxerrorissue")); //$NON-NLS-1$
+        throw new InvalidCommitException(Messages.getString(SYNTAXERRORISSUE)); //$NON-NLS-1$
       }
       if (matcher.find()) {
-        throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
+        throw new InvalidCommitException(Messages.getString(SYTAXERRORMULTIPLECOMMANDS)); //$NON-NLS-1$
       }
       ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
       if (!pt.existIssue(issue)) {
-        throw new InvalidCommitException(Messages.getString("SCMManager.issueinvalido")); //$NON-NLS-1$
+        throw new InvalidCommitException(Messages.getString(SCM_MANAGER_ISSUEINVALIDO)); //$NON-NLS-1$
       }
     } else {
-      throw new InvalidCommitException(Messages.getString("syntaxerrorissue"));  //$NON-NLS-1$
+      throw new InvalidCommitException(Messages.getString(SYNTAXERRORISSUE));  //$NON-NLS-1$
     }
     return issue;
   }
@@ -220,7 +229,7 @@ public class SCMManager {
     try {
       existeMapeo = db.isValidDeveloper( scmData.getAuthor(), scmData.getRepository() );
     } catch (Exception e) {
-      throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
+      throw new InvalidCommitException(Messages.getString(SCM_MANAGER_BASEDEDATOSCAIDA), e);
     }
 
 
@@ -228,30 +237,27 @@ public class SCMManager {
       matcher = userPattern.matcher(scmData.getMessage());
       if (matcher.find()) {
         String user = matcher.group(1);
+        
         if (user.contains(INVALID_USER)) {
-          throw new InvalidCommitException(Messages.getString("syntaxerroruser")); //$NON-NLS-1$
+          throw new InvalidCommitException(Messages.getString(SYNTAXERRORUSER));
         }
+        
         if (matcher.find()) {
-          throw new InvalidCommitException(Messages.getString("sytaxerrormultiplecommands")); //$NON-NLS-1$
+          throw new InvalidCommitException(Messages.getString(SYTAXERRORMULTIPLECOMMANDS));
         }
         
         ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
         if (!pt.existUser(user)) {
-          throw new InvalidCommitException(Messages.getString("SCMManager.userinvalido"));  //$NON-NLS-1$
+          throw new InvalidCommitException(Messages.getString(SCM_MANAGER_USERINVALIDO));
         }
 
 
         MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(), scmData.getRepository());
 
-        try {
-          db.store( mp.getID() , mp);
-        } catch (Exception e) {
-          throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
-        }
+        db.store( mp.getID() , mp);
 
-        
       } else {
-        throw new InvalidCommitException(Messages.getString("syntaxerroruser")); //$NON-NLS-1$
+        throw new InvalidCommitException(Messages.getString(SYNTAXERRORUSER));
       }
     }
 
@@ -275,7 +281,7 @@ public class SCMManager {
     try {
       db.store( rev0.getID(), rev0);
     } catch (Exception e) {
-      throw new InvalidCommitException(Messages.getString("SCMManager.basededatoscaida"));  //$NON-NLS-1$
+      throw new InvalidCommitException(Messages.getString(SCM_MANAGER_BASEDEDATOSCAIDA), e );  //$NON-NLS-1$
     }
 
   }
