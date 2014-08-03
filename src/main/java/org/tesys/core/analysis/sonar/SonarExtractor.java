@@ -56,24 +56,14 @@ public class SonarExtractor {
 
       AnalisisPOJO resultadoDeRevision = new AnalisisPOJO();
       
-      resultadoDeRevision.setDate( revisions[j].getDate() );
-      resultadoDeRevision.setProject_tracking_task(revisions[j].getProjectTrackingTask());
-      resultadoDeRevision.setRepository(revisions[j].getRepository());
-      resultadoDeRevision.setRevision(revisions[j].getRevision());
-      resultadoDeRevision.setScm_user(revisions[j].getScmUser());
-      
+      resultadoDeRevision.setRevision( revisions[j] );
 
       for (int i = 0; i < tmco.length; i++) {
-        KeyValuePOJO kvp = new KeyValuePOJO();
         
         try {
-          kvp.key = tmco[i].getMetricKey();
-          kvp.value = v[i].toString();
-          resultadoDeRevision.add( kvp );
+          resultadoDeRevision.add( new KeyValuePOJO(tmco[i].getMetricKey(), v[i].toString()) );
         } catch (Exception e) {
-          kvp.key = tmco[i].getMetricKey();
-          kvp.value = "null";
-          resultadoDeRevision.add( kvp );
+          resultadoDeRevision.add( new KeyValuePOJO(tmco[i].getMetricKey(), "null") );
         }
       }
 

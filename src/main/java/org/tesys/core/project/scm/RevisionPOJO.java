@@ -1,15 +1,18 @@
 package org.tesys.core.project.scm;
 
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tesys.util.MD5;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
   protected long date;
@@ -22,7 +25,7 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
   
   protected String revision;
   protected String repository;
-  protected boolean scaned;
+  private boolean scaned;
   
   public RevisionPOJO() {}
   

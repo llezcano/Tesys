@@ -11,7 +11,7 @@ public class Searcher {
   public static AnalisisPOJO searchIssue( List<AnalisisPOJO> analisis, String issue ) {
     
     for (AnalisisPOJO analisisPOJO : analisis) {
-      if( analisisPOJO.getProject_tracking_task().equals(issue) ) {
+      if( analisisPOJO.getRevision().getProjectTrackingTask().equals(issue) ) {
         return analisisPOJO;
       }
     }

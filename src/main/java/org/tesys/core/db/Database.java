@@ -2,6 +2,7 @@ package org.tesys.core.db;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -10,7 +11,6 @@ import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
-
 import org.tesys.util.RESTClient;
 
 /**
@@ -93,6 +93,16 @@ public class Database {
     public RevisionPOJO[] getUnscanedRevisions() {
     	RevisionPOJO[] revisions = client.GET(RESOURCE_UNSCANNED_REVISIONS).readEntity(RevisionPOJO[].class);;
     	return revisions ;
+    }
+
+    public List<AnalisisPOJO> getAnalisis() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public List<MetricPOJO> getMetrics() {
+      // TODO Auto-generated method stub
+      return null;
     }
 
 }

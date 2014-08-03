@@ -33,15 +33,15 @@ public class SonarAnalisis {
           
         AnalisisPOJO nuevoAnalisisPorCommit = new AnalisisPOJO();
 
-        List<KeyValuePOJO> resultadosPrevios = analisisAcumuladoPrevio.getIndividualResults();
-        List<KeyValuePOJO> resultadosActuales = analisisAcumuladoActual.getIndividualResults();
+        List<KeyValuePOJO> resultadosPrevios = analisisAcumuladoPrevio.getResults();
+        List<KeyValuePOJO> resultadosActuales = analisisAcumuladoActual.getResults();
 
         for (int j=0; j<resultadosActuales.size(); j++) {
           
           Metrics metricHandler = null;
-          String metricName = resultadosActuales.get(j).key;
-          String valorActual = resultadosActuales.get(j).value;
-          String valorPrevio = resultadosPrevios.get(j).value;
+          String metricName = resultadosActuales.get(j).getKey();
+          String valorActual = resultadosActuales.get(j).getValue();
+          String valorPrevio = resultadosPrevios.get(j).getValue();
 
           if (!valorActual.equals("null")) {
 
@@ -64,11 +64,8 @@ public class SonarAnalisis {
             metricHandler = (Metrics) object;
 
             if (metricHandler != null) {
-              KeyValuePOJO kvp = new KeyValuePOJO();
-              kvp.key = metricName;
-              kvp.value = metricHandler.getDifferenceBetweenAnalysis();
-              
-              nuevoAnalisisPorCommit.add( kvp );
+
+              nuevoAnalisisPorCommit.add( new KeyValuePOJO(metricName, metricHandler.getDifferenceBetweenAnalysis() ) );
             }
 
           }
@@ -95,28 +92,26 @@ public class SonarAnalisis {
     List<AnalisisPOJO> result = new LinkedList<AnalisisPOJO>();
    
     for (AnalisisPOJO commitAnalisis : analisisPorCommit) {
-      AnalisisPOJO guardado =  Searcher.searchIssue(result, commitAnalisis.getProject_tracking_task());
+      AnalisisPOJO guardado =  Searcher.searchIssue(result, commitAnalisis.getRevision().getProjectTrackingTask());
       if( guardado == null ) {
         result.add( commitAnalisis );
       } else {
         
         
-        AnalisisPOJO nuevoAnalisisPorTarea = new AnalisisPOJO();
+        AnalisisPOJO nuevoAnalisisPorTarea = new AnalisisPOJO(guardado.getRevision());
         
-        nuevoAnalisisPorTarea.setDate( guardado.getDate() );
-        nuevoAnalisisPorTarea.setProject_tracking_task( guardado.getProject_tracking_task() );
 
-        List<KeyValuePOJO> resultadosPrevios = guardado.getIndividualResults();
-        List<KeyValuePOJO> resultadosActuales = commitAnalisis.getIndividualResults();
+        List<KeyValuePOJO> resultadosPrevios = guardado.getResults();
+        List<KeyValuePOJO> resultadosActuales = commitAnalisis.getResults();
         
         result.remove(guardado);
 
         for (int j=0; j<resultadosActuales.size(); j++) {
           
           Metrics metricHandler = null;
-          String metricName = resultadosActuales.get(j).key;
-          String valorActual = resultadosActuales.get(j).value;
-          String valorPrevio = resultadosPrevios.get(j).value;
+          String metricName = resultadosActuales.get(j).getKey();
+          String valorActual = resultadosActuales.get(j).getValue();
+          String valorPrevio = resultadosPrevios.get(j).getValue();
 
           MetricPOJO metric = Searcher.searchMetric(metricName, metrics);
           String metricType = metric.getType();
@@ -137,12 +132,8 @@ public class SonarAnalisis {
           metricHandler = (Metrics) object;
 
           if (metricHandler != null) {
-            
-            KeyValuePOJO kvp = new KeyValuePOJO();
-            kvp.key = metricName;
-            kvp.value = metricHandler.getNewAnalysisPerTask();
 
-            nuevoAnalisisPorTarea.add( kvp );
+            nuevoAnalisisPorTarea.add( new KeyValuePOJO(metricName, metricHandler.getNewAnalysisPerTask()) );
           }
 
 

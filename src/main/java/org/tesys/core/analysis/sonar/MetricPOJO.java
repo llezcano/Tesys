@@ -1,7 +1,16 @@
 package org.tesys.core.analysis.sonar;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.tesys.util.MD5;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MetricPOJO {
 
   private String key;

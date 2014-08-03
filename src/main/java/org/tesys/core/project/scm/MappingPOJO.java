@@ -6,12 +6,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tesys.util.MD5;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Esta clase es para el mapeo SCM - Jira
  * 
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MappingPOJO {
 
   private String projectTrackingUser;

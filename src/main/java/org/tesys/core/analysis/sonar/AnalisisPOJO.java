@@ -7,48 +7,51 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlAccessType;
 
-import org.tesys.util.MD5;
-//TODO cambiar nombre por -> AnalisysPOJO
+import org.tesys.core.project.scm.RevisionPOJO;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AnalisisPOJO implements Comparable<AnalisisPOJO>  {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
   
 
-  public long date;
-  public String scm_user;
-  public String project_tracking_task;
-  public String revision;
-  public String repository;
-  public boolean scaned = false;
-  public List<KeyValuePOJO> individualResults = new ArrayList<KeyValuePOJO>();
+  private RevisionPOJO revision;
+  private List<KeyValuePOJO> results;
+  private boolean scaned;
   
-  
-  
-  @Override
-  public boolean equals(Object obj) {
-    AnalisisPOJO otro = (AnalisisPOJO) obj;
-    if( this.getID().equals(otro.getID()) ) {
-      return true;
-    }
-    return false;
-    
+ 
+  public AnalisisPOJO(RevisionPOJO rev) {
+    results  = new ArrayList<KeyValuePOJO>();
+    this.revision = rev;
+    scaned = false;
   }
+  
+  public List<KeyValuePOJO> getResults() {
+    return results;
+  }
+ 
+
+  public void add(KeyValuePOJO k) {
+    results.add(k);
+  }
+  
+  public String getID() {
+    return this.revision.getID();
+  }
+  
   
   public AnalisisPOJO() {}
+
+  public RevisionPOJO getRevision() {
+    return revision;
+  }
+
+  public void setRevision(RevisionPOJO revision) {
+    this.revision = revision;
+  }
   
-  public void add(KeyValuePOJO kvp) {
-    individualResults.add(kvp);
-  }
-
-  @Override
-  public int compareTo(AnalisisPOJO analisis) {
-    if (date < analisis.getDate()) {
-      return 1;
-    }
-    return -1;
-  }
-
   public boolean isScaned() {
     return scaned;
   }
@@ -57,67 +60,14 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO>  {
     this.scaned = scaned;
   }
 
-  public List<KeyValuePOJO> getIndividualResults() {
-    return individualResults;
+  @Override
+  public int compareTo(AnalisisPOJO o) {
+    if (this.getRevision().getDate() < o.getRevision().getDate()) {
+      return -1;
+    }
+    return 1;
   }
 
-  public void setIndividualResults(List<KeyValuePOJO> individualResults) {
-    this.individualResults = individualResults;
-  }
-
-  public String getID() {
-    return MD5.generateId(String.valueOf(date));
-  }
-  
-  public long getDate() {
-    return date;
-  }
-
-
-  public void setDate(long date) {
-    this.date = date;
-  }
-
-
-  public String getScm_user() {
-    return scm_user;
-  }
-
-
-  public void setScm_user(String scm_user) {
-    this.scm_user = scm_user;
-  }
-
-
-  public String getProject_tracking_task() {
-    return project_tracking_task;
-  }
-
-
-  public void setProject_tracking_task(String project_tracking_task) {
-    this.project_tracking_task = project_tracking_task;
-  }
-
-
-  public String getRevision() {
-    return revision;
-  }
-
-
-  public void setRevision(String revision) {
-    this.revision = revision;
-  }
-
-
-  public String getRepository() {
-    return repository;
-  }
-
-
-  public void setRepository(String repository) {
-    this.repository = repository;
-  }
-  
   
 }
 
