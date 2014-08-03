@@ -47,18 +47,19 @@ public class ElasticSearchConnector {
       return elasticSearch.isValidDeveloper(name, repoID);
     }
     
+    //TODO DEPRECATE getRevisions()    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/revisions")
+    @Path("/revision")
     public RevisionPOJO[] getRevisions() {	
 	return elasticSearch.getRevisions() ;
     }
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/revisions/unscanned")
-    public RevisionPOJO[] getUnscanedRevisions() {
-	return elasticSearch.getUnscanedRevisions() ;
+    @Path("/revision/unscanned")
+    public RevisionPOJO[] getUnscannedRevisions() {
+    	return elasticSearch.getUnscannedRevisions() ;
     }
     
     

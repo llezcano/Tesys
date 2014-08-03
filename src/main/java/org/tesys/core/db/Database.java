@@ -2,7 +2,6 @@ package org.tesys.core.db;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -11,6 +10,7 @@ import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
+
 import org.tesys.util.RESTClient;
 
 /**
@@ -31,9 +31,15 @@ public class Database {
     private final static String RESOURCE_COMMIT = "commit/";
     private final static String RESOURCE_METRIC = "metric/";
     private final static String RESOURCE_ANALYSIS = "analysis/";
+    private final static String RESOURCE_UNSCANNED_REVISIONS= "revision/unscanned/";
+    private final static String RESOURCE_REVISIONS= "revision/";
+
+    
     private final static String REPO_PARAM_ID = "repo";
     
-    private final static String SLASH = "/";
+    
+    
+//    private final static String SLASH = "/";
 
     private final static String DEFAULT_LOCATION_CONNECTOR = "http://localhost:8080/core/rest/connectors/elasticsearch/"; //$NON-NLS-1$
 
@@ -76,28 +82,18 @@ public class Database {
 	client.PUT(RESOURCE_ANALYSIS+ID, analysis);
 
     }
+    
+    //TODO DEPRECATE getRevisions()
     public RevisionPOJO[] getRevisions() {
-	// TODO Database.getRevisions()
-	return null;
+    	client.GET(RESOURCE_REVISIONS);
+    	//TODO return
+    	return null;
     }
     
-
     public RevisionPOJO[] getUnscanedRevisions() {
-	// TODO Auto-generated method stub
-	return null;
+    	RevisionPOJO[] revisions = client.GET(RESOURCE_UNSCANNED_REVISIONS).readEntity(RevisionPOJO[].class);;
+    	return revisions ;
     }
-    
-    public List<MetricPOJO> getMetrics() {
-      //TODO
-      return null;
-    }
-    
-    public List<AnalisisPOJO> getAnalisis() {
-      //TODO
-      return null;
-    }
-    
-   
 
 }
 

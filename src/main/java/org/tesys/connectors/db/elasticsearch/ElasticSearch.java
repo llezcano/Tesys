@@ -1,7 +1,10 @@
 package org.tesys.connectors.db.elasticsearch;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
@@ -10,7 +13,12 @@ import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.util.RESTClient;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
 
 /**
  * Facade para Elastic Search, el cual se encarga de interactuar con la API REST
@@ -108,8 +116,9 @@ public class ElasticSearch {
     }
 
     public boolean isValidDeveloper(String name, String repoID) {
-	// TODO sacar el harcodeado y calcular automaticamente (por reflexion) los campos de match
-	// RESEARCH fijarse si aca me pueden inyectar una query y de ser asi arreglarlo
+	// TODO FIXME sacar el harcodeado y calcular automaticamente (por reflexion) los campos de match
+    	
+	// TODO RESEARCH fijarse si aca me pueden inyectar una query y de ser asi arreglarlo
 	String query = "{ \"query\": { \"bool\": { \"must\": [ { \"match\": { \"scmUser\": \""
 		+ name
 		+ "\" }}, { \"match\": {\"repository\": \""
@@ -122,143 +131,49 @@ public class ElasticSearch {
     }
 
     public RevisionPOJO[] getRevisions() {
+    	
 	// TODO getRevisions() GENERATE QUERY and Adapt data
+
 	return null;
     }
 
-    public RevisionPOJO[] getUnscanedRevisions() {
-	// TODO Auto-generated method stub
-	return null;
+    public RevisionPOJO[] getUnscannedRevisions() {
+    	// TODO FIXME : Sacar harcodeo. Cambiar \"scaned\" por el campo real del RevisionPOJO.
+    	String query = "{ \"query\": {\"query_string\": {\"default_field\":\"scaned\",\"query\":true} }} ";
+    	ArrayNode jsonResponse =  (ArrayNode) client.POST(this.pathToStore(INDEX_SCM, DTYPE_REVISION, QUERY), query)
+    												.readEntity(JsonNode.class)
+    												.get("hits")
+    												.get("hits") ;
+    	
+    	ObjectMapper mapper = new ObjectMapper();
+    	
+    	Iterator<JsonNode> it = jsonResponse.elements() ;
+    	ArrayList<RevisionPOJO> revs = new ArrayList<RevisionPOJO>();
+    	while ( it.hasNext() ) {
+    		JsonNode j = ((JsonNode) it.next()).get("_source") ;
+  
+    		try {
+				RevisionPOJO rev = mapper.readValue(j.toString(), RevisionPOJO.class) ;
+				revs.add(rev) ;
+			} catch (JsonParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		it.remove();
+    	}
+    	RevisionPOJO [] revsArray = new RevisionPOJO[revs.size()] ;
+    	revs.toArray(revsArray) ;
+    	System.out.println("cantidad= "+ revsArray.length) ;
+    	
+    	
+    	return revsArray ;
     }
 
 }
-
-// @GET
-// @Consumes(MediaType.APPLICATION_JSON)
-// @Produces(MediaType.APPLICATION_JSON)
-/*
- * @Path("{index}/{dtype}/{id}") public Response GET(@PathParam("index") String
- * index,
- * 
- * @PathParam("dtype") String dtype, @PathParam("id") String id) {
- * 
- * return client.GET(index + "/" + dtype + "/" + id); }
- * 
- * /** Usada solamente para busquedas, se debe utilizar PUT para updates o
- * implementar El otro metodo
- * 
- * 
- * Como search nomas esta limitado a 10 por defecto lo que se hace es verificar
- * en primer lugar cuantos datos tiene el lugar donde se va buscar
- * 
- * Una vez que se sabe la cantidad de datos se hace la busqueda y se pide que se
- * retorne Esa cantidad como maximo (aunque la query puede reducir el tamaño al
- * igual que el filtro)
- * 
- * @param index
- * 
- * @param dtype
- * 
- * @param query
- * 
- * @return
- */
-// TODO Habria que usar POJOS en vez de strings, el tema que los pojos son
-// medios complicados
-// @Consumes(MediaType.APPLICATION_JSON)
-// @Produces(MediaType.APPLICATION_JSON)
-/*
- * @POST
- * 
- * @Path("{index}/{dtype}") public String POST(@PathParam("index") String index,
- * 
- * @PathParam("dtype") String dtype, String query) {
- * 
- * String size = getSize(index, dtype);
- * 
- * JsonFactory factory = new JsonFactory(); ObjectMapper mapper = new
- * ObjectMapper(factory); JsonNode jsonQuery = null; try { jsonQuery =
- * mapper.readTree(query); } catch (IOException e) { e.printStackTrace(); }
- * 
- * ObjectNode ob = (ObjectNode) jsonQuery; ob.put("size", size);
- * 
- * Response response = client.POST(index + "/" + dtype + "/_search",
- * ob.toString());
- * 
- * JsonNode jsonResponse = response.readEntity(JsonNode.class);
- * 
- * // TODO si devuelve 0 resultados seguro se debe romper (testear todos // los
- * metodos con db vacia y // cosas asi)
- * 
- * JsonNode hits = jsonResponse.get("hits").get("hits");
- * 
- * Iterator<JsonNode> it = hits.iterator();
- * 
- * ArrayNode results = mapper.createArrayNode();
- * 
- * while (it.hasNext()) { results.add(it.next().get("_source")); }
- * 
- * ObjectNode finalResult = mapper.createObjectNode();
- * finalResult.put("results", results);
- * 
- * return finalResult.toString(); }
- * 
- * // // //EJEMPLO // // @GET // //@Consumes(MediaType.APPLICATION_JSON) //
- * //@Produces(MediaType.APPLICATION_JSON) //
- * @Path("getSCM-JIRA-MAPPING/{index}/{dtype}") // public void getMapping( )
- * /*index y dtype por rest
- */
-// {
-//
-// //cuantos hay
-// String size = getSize(index, dtype);
-//
-// //query para hacer la busqeuda en el elastic
-// /*
-// * { "query": { "bool": { "must": [ { "match": { "scm_user": "<usuario>"
-// }}, { "match": {
-// * "repository": "<repositorio>" }} ] } } }
-// *
-// * Dirigirse a la documentacion del lenguaje para mas informacion:
-// *
-// http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-body.html
-// */
-// JsonFactory factory = new JsonFactory();
-// ObjectMapper om = new ObjectMapper(factory);
-// factory.setCodec(om);
-//
-// //busca que son cada variable en SCMManager
-// ObjectNode node1 = om.createObjectNode();
-// node1.put(SCM_USER_DATA_ID, scmData.getAuthor());
-// ObjectNode node11 = om.createObjectNode();
-// node11.put(MATCH_QL, node1);
-//
-// ObjectNode node2 = om.createObjectNode();
-// node2.put(REPOSITORY_DATA_ID, scmData.getRepository());
-// ObjectNode node22 = om.createObjectNode();
-// node22.put(MATCH_QL, node2);
-//
-// ArrayNode an = om.createArrayNode();
-// an.add(node11);
-// an.add(node22);
-// ObjectNode must = om.createObjectNode();
-// must.put(MUST_QL, an);
-// ObjectNode bool = om.createObjectNode();
-// bool.put(BOOL_QL, must);
-// ObjectNode query = om.createObjectNode();
-// query.put(QUERY_QL, bool);
-//
-// //agregarle el size
-//
-// //query.put("size", size);??? ver si no rompe nada
-//
-//
-// //se llama al elastic
-// Response response = client.POST(index + "/" + dtype + "/_search",
-// query.toString());
-//
-// //Devuelve los datos con sida, asi que hay que sacarlos usando lo que se
-// usa en el metod post
-// }
-//
 

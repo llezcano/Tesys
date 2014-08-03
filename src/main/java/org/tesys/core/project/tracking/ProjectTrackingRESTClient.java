@@ -19,36 +19,6 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
   private static String RESOURCE_ISSUES = "issues/";
   private static String RESOURCE_USERS = "users/";
 
-
-  /**
-   * Main for testing.
-   * 
-   * @param args
-   * @throws MalformedURLException
-   */
-
-  public static void main(String args[]) throws MalformedURLException {
-
-    ProjectTrackingRESTClient project = new ProjectTrackingRESTClient();
-
-    // Query for user exists
-    System.out.println("Homero J. Simpson is a developer ? " + project.existUser("homerojsimpson"));
-    // Getting all users
-    User[] users = project.getUsers();
-    System.out.println("Users List: ");
-    System.out.println(java.util.Arrays.toString(users));
-    System.out.println("TOTAL = " + users.length);
-
-    // Query for issue exists
-    System.out.println("ADA-1 is a issue ? " + project.existUser("ADA-1"));
-    // Getting all issues
-    // Issue[] issues = project.getIssues() ;
-    // System.out.println("Issues List: ") ;
-    // System.out.println(java.util.Arrays.toString(issues)) ;
-    // System.out.println("TOTAL = " + issues.length) ;
-  }
-
-
   public ProjectTrackingRESTClient() {
     try {
 	client = new RESTClient(getConnectorLocation());
@@ -88,5 +58,38 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     IssuePOJO i = client.GET(RESOURCE_ISSUES + key).readEntity(IssuePOJO.class);
     return (i != null);
   }
+  
+  @Override
+  public Issue getIssue(String key) {
+    IssuePOJO i = client.GET(RESOURCE_ISSUES + key).readEntity(IssuePOJO.class);
+    return i ;
+  }
 
 }
+
+/*
+ 
+
+  public static void main(String args[]) throws MalformedURLException {
+
+    ProjectTrackingRESTClient project = new ProjectTrackingRESTClient();
+
+    // Query for user exists
+    System.out.println("Homero J. Simpson is a developer ? " + project.existUser("homerojsimpson"));
+    // Getting all users
+    User[] users = project.getUsers();
+    System.out.println("Users List: ");
+    System.out.println(java.util.Arrays.toString(users));
+    System.out.println("TOTAL = " + users.length);
+
+    // Query for issue exists
+    System.out.println("ADA-1 is a issue ? " + project.existUser("ADA-1"));
+    // Getting all issues
+    // Issue[] issues = project.getIssues() ;
+    // System.out.println("Issues List: ") ;
+    // System.out.println(java.util.Arrays.toString(issues)) ;
+    // System.out.println("TOTAL = " + issues.length) ;
+  }
+ 
+  
+ */
