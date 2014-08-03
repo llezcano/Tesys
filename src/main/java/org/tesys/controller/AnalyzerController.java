@@ -24,7 +24,6 @@ public class AnalyzerController {
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String performAnalysis() {
-
     return analizer.performAnalysis();
   }
 

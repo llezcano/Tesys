@@ -23,11 +23,11 @@ public class Analyzer {
   public String performAnalysis() {
     
     SonarAnalizer sn = SonarAnalizer.getInstance();
-    sn.storeMetrics();
+    //sn.storeMetrics();
     sn.executeSonarAnalysis();
 
-    ProcessData pd = ProcessData.getInstance();
-    pd.executeProcessor();
+    //ProcessData pd = ProcessData.getInstance();
+    //pd.executeProcessor();
 
     return "Analisis terminado";
   }

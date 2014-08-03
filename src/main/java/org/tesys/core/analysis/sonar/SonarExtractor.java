@@ -54,9 +54,7 @@ public class SonarExtractor {
 
       Object[] v = tmc[j].getValues();
 
-      AnalisisPOJO resultadoDeRevision = new AnalisisPOJO();
-      
-      resultadoDeRevision.setRevision( revisions[j] );
+      AnalisisPOJO resultadoDeRevision = new AnalisisPOJO(revisions[j]);
 
       for (int i = 0; i < tmco.length; i++) {
         
@@ -67,7 +65,10 @@ public class SonarExtractor {
         }
       }
 
-      sonar.delete(ProjectDeleteQuery.create(PROJECT_KEY));
+      try {
+        sonar.delete(ProjectDeleteQuery.create(PROJECT_KEY));
+      } catch(Exception e) {}
+      
       resultados.add(resultadoDeRevision);
     }
 

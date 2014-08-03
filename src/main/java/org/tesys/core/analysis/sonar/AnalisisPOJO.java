@@ -34,6 +34,7 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
  
 
   public void add(KeyValuePOJO k) {
+    if( results == null) System.out.println("WTF");
     results.add(k);
   }
   

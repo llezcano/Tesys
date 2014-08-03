@@ -139,7 +139,7 @@ public class ElasticSearch {
 
     public RevisionPOJO[] getUnscannedRevisions() {
     	// TODO FIXME : Sacar harcodeo. Cambiar \"scaned\" por el campo real del RevisionPOJO.
-    	String query = "{ \"query\": {\"query_string\": {\"default_field\":\"scaned\",\"query\":true} }} ";
+    	String query = "{ \"query\": {\"query_string\": {\"default_field\":\"scaned\",\"query\":false} }} ";
     	ArrayNode jsonResponse =  (ArrayNode) client.POST(this.pathToStore(INDEX_SCM, DTYPE_REVISION, QUERY), query)
     												.readEntity(JsonNode.class)
     												.get("hits")
