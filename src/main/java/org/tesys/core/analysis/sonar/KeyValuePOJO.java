@@ -15,6 +15,16 @@ public class KeyValuePOJO {
   @XmlValue
   private String value;
   
+  public KeyValuePOJO(String key, String value) {
+    super();
+    this.key = key;
+    this.value = value;
+  }
+  
+  
+  public KeyValuePOJO() {
+    //needed by jackson
+  }
   
   
   @Override
@@ -29,31 +39,31 @@ public class KeyValuePOJO {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     KeyValuePOJO other = (KeyValuePOJO) obj;
     if (key == null) {
-      if (other.key != null)
+      if (other.key != null) {
         return false;
-    } else if (!key.equals(other.key))
+      }
+    } else if (!key.equals(other.key)) {
       return false;
+    }
     if (value == null) {
-      if (other.value != null)
+      if (other.value != null) {
         return false;
-    } else if (!value.equals(other.value))
+      }
+    } else if (!value.equals(other.value)) {
       return false;
+    }
     return true;
-  }
-
-
-  public KeyValuePOJO(String key, String value) {
-    super();
-    this.key = key;
-    this.value = value;
   }
 
 
@@ -76,9 +86,5 @@ public class KeyValuePOJO {
     this.value = value;
   }
 
-
-  public KeyValuePOJO() {
-    //needed by jackson
-  }
 
 }

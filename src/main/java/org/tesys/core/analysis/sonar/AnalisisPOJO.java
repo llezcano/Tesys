@@ -21,6 +21,10 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
   private List<KeyValuePOJO> results;
   private boolean scaned;
   
+  public AnalisisPOJO() {
+    //needed by jackson
+  }
+  
  
   public AnalisisPOJO(RevisionPOJO rev) {
     results  = new ArrayList<KeyValuePOJO>();
@@ -34,7 +38,6 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
  
 
   public void add(KeyValuePOJO k) {
-    if( results == null) System.out.println("WTF");
     results.add(k);
   }
   
@@ -42,8 +45,6 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
     return this.revision.getProjectTrackingTask();
   }
   
-  
-  public AnalisisPOJO() {}
 
   public RevisionPOJO getRevision() {
     return revision;
@@ -68,6 +69,38 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
     }
     return 1;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((revision == null) ? 0 : revision.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    AnalisisPOJO other = (AnalisisPOJO) obj;
+    if (revision == null) {
+      if (other.revision != null) {
+        return false;
+      }
+    } else if ( this.revision.getDate() != (other.getRevision().getDate())) {
+      return false;
+    }
+    return true;
+  }
+  
+  
 
   
 }

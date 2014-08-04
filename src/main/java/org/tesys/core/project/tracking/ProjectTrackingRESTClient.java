@@ -1,8 +1,13 @@
 package org.tesys.core.project.tracking;
 
 import java.net.MalformedURLException;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
+=======
+import java.util.logging.Level;
+import java.util.logging.Logger;
+>>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
 
 import javax.ws.rs.core.GenericType;
 
@@ -18,6 +23,7 @@ import org.tesys.util.RESTClient;
  */
 public class ProjectTrackingRESTClient implements ProjectTracking {
 
+<<<<<<< HEAD
     private RESTClient client;
 
     // RESEARCH Discovery Resources from Connector
@@ -32,6 +38,21 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+=======
+  private RESTClient client;
+  
+  private static final Logger LOG = Logger.getLogger( ProjectTrackingRESTClient.class.getName() );
+
+  //RESEARCH Discovery Resources from Connector
+  private static String RESOURCE_ISSUES = "issues/";
+  private static String RESOURCE_USERS = "users/";
+
+  public ProjectTrackingRESTClient() {
+    try {
+	client = new RESTClient(getConnectorLocation());
+    } catch (MalformedURLException e) {
+      LOG.log( Level.SEVERE, e.toString(), e );
+>>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
     }
 
     public String getConnectorLocation() {

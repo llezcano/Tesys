@@ -4,13 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class UserPOJO implements User {
-
-  @Override
-  public String toString() {
-    return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress + ", displayName="
-        + displayName + ", active=" + active + "]";
-  }
-
+  
   public String name;
 
   public String emailAddress;
@@ -18,6 +12,12 @@ public class UserPOJO implements User {
   public String displayName;
 
   public boolean active;
+
+  @Override
+  public String toString() {
+    return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress + ", displayName="
+        + displayName + ", active=" + active + "]";
+  }
 
   @Override
   public String getName() {

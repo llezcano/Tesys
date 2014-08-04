@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
@@ -35,6 +37,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class ElasticSearch {
 
     private RESTClient client;
+    
+    private static final Logger LOG = Logger.getLogger( ElasticSearch.class.getName() );
 
     // QUERY
     public static final String QUERY = "_search";
@@ -61,8 +65,7 @@ public class ElasticSearch {
         try {
             client = new RESTClient( "http://localhost:9200/" );
         } catch (MalformedURLException e) {
-            // TODO ver si hay que hacer un exit que baje solo este servicio
-            e.printStackTrace();
+          LOG.log( Level.SEVERE, e.toString(), e );
         }
     }
 
@@ -85,6 +88,7 @@ public class ElasticSearch {
     
             return jsonResponse.get( "hits" ).get( "total" ).asInt();
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return 0 ;
         }
     }
@@ -96,6 +100,7 @@ public class ElasticSearch {
                                                     .get( "hits" ).get( "hits" );
             return response;
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return null;
         }
     }
@@ -107,6 +112,7 @@ public class ElasticSearch {
                                                     .get( "hits" ).get( "hits" );
             return response;
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return null;
         }
     }
@@ -119,6 +125,7 @@ public class ElasticSearch {
         try {
             it = arrayNode.elements();      
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return elements ;
         }
 
@@ -128,6 +135,7 @@ public class ElasticSearch {
                 Object elem = mapper.readValue( j.toString(), aClass );
                 elements.add( elem );
             } catch (Exception e) {
+                LOG.log( Level.SEVERE, e.toString(), e );
                 return null;
             }
             it.remove();
@@ -189,6 +197,7 @@ public class ElasticSearch {
             
             return (jsonResponse.get( "hits" ).get( "total" ).asInt() > 0);
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return false ;
         }
     }

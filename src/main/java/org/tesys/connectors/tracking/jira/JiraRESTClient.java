@@ -11,6 +11,8 @@ package org.tesys.connectors.tracking.jira;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.tesys.util.RESTClient;
 
@@ -18,6 +20,8 @@ import org.tesys.util.RESTClient;
 public class JiraRESTClient {
 
   private static final String API = "rest/api/2/";
+  
+  private static final Logger LOG = Logger.getLogger( JiraRESTClient.class.getName() );
 
   // resources from Jira API
   private static final String RESOURCE_GROUP = "group";
@@ -44,8 +48,7 @@ public class JiraRESTClient {
     try {
       client = new RESTClient(url, user, pass);
     } catch (MalformedURLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
 
   }

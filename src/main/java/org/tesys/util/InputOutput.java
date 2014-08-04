@@ -16,6 +16,11 @@ import java.nio.file.Files;
  * 
  */
 public class InputOutput {
+  
+  
+  private InputOutput() {
+    //to avoid the implicit one
+  }
 
   /**
    * Genera un String a partir de un archivo dado

@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -16,6 +18,8 @@ import org.tesys.core.project.scm.SCMManager;
 
 
 public class SonarAnalizer {
+  
+  private static final Logger LOG = Logger.getLogger( SonarAnalizer.class.getName() );
 
   private static final String USER_HOME = "user.home";
 
@@ -101,7 +105,7 @@ public class SonarAnalizer {
         break;
       }
       revisiones.remove(i-1);
-      i--;
+      i = i-1;
       
     }
 
@@ -115,9 +119,7 @@ public class SonarAnalizer {
       //Se realiza un checkout de la revision actual
       // TODO en realidad anda con repo = "" pero habria que usar el otro
       // scm.doCheckout(revSinEscanear[i].getRevision(), revSinEscanear[i].getRepository());
-      scm.doCheckout(revision.getRevision(), "");
-      
-      System.out.println( revision.getRevision() );
+      scm.doCheckout(revision.getRevision(), "", WORKSPACE);
       
       //Se analiza con sonar ejecutando una tarea ant
       analizar(BUILD_FILE);
@@ -256,7 +258,7 @@ public class SonarAnalizer {
             
           } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
               | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-            System.err.println( e.getMessage());
+            LOG.log( Level.SEVERE, e.toString(), e );
           }
 
         }
@@ -326,7 +328,7 @@ public class SonarAnalizer {
                       .getConstructors()[0].newInstance(valorActual, valorPrevio);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-              System.err.println( e.getMessage() );
+              LOG.log( Level.SEVERE, e.toString(), e );
             }
 
 

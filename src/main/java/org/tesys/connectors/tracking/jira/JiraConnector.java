@@ -3,6 +3,8 @@ package org.tesys.connectors.tracking.jira;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -28,7 +30,13 @@ import org.tesys.util.Strings;
  * 
  */
 
-// TODO definir con un Schema REST la definicion con la cual debe cumplir dicho Servicio.
+/* TODO analizar si realmente se necesita esta informacion en el modelo
+http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/priority
+http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/project
+http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
+http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/issuetype
+definir con un Schema REST la definicion con la cual debe cumplir dicho Servicio.
+*/
 
 @Path("/connectors/jira")
 @Singleton
@@ -42,6 +50,8 @@ public class JiraConnector implements JiraAdaptor {
   private static String PROP_URL = "host";
   private static String PROP_USER = "username";
   private static String PROP_PASS = "password";
+  
+  private static final Logger LOG = Logger.getLogger( JiraConnector.class.getName() );
 
   private JiraAdaptation jira;
 
@@ -78,8 +88,7 @@ public class JiraConnector implements JiraAdaptor {
     try {
       loadProperties();
     } catch (IOException e1) {
-      System.err.println("Jira Connector: Properties file not found");
-      System.exit(0);
+      LOG.log( Level.SEVERE, e1.toString(), e1 );
     }
 
     JiraRESTClient client = new JiraRESTClient(URL, user, pass);
@@ -87,8 +96,7 @@ public class JiraConnector implements JiraAdaptor {
     try {
       jira = new JiraAdaptation(client, userSchema, issueSchema);
     } catch (IOException e) {
-      e.printStackTrace();
-      System.exit(0);
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
 
   }
@@ -102,7 +110,7 @@ public class JiraConnector implements JiraAdaptor {
     try {
       return jira.getIssue(key);
     } catch (Exception e) {
-      System.err.println(e.getMessage());
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
     return null;
   }
@@ -116,7 +124,7 @@ public class JiraConnector implements JiraAdaptor {
     try {
       return jira.getUser(name);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
     return null;
 
@@ -131,7 +139,7 @@ public class JiraConnector implements JiraAdaptor {
     try {
       return jira.getAllUsers();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
     return null;
   }
@@ -145,11 +153,12 @@ public class JiraConnector implements JiraAdaptor {
     try {
       return jira.getAllIssues();
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
     return null;
   }
 
+<<<<<<< HEAD
   
   @GET
   @Path("/metric/")
@@ -168,4 +177,6 @@ public class JiraConnector implements JiraAdaptor {
   // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
 
   // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/issuetype
+=======
+>>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
 }

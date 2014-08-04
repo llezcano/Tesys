@@ -1,10 +1,13 @@
 package org.tesys.connectors.scm.svn;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+
 
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
@@ -18,6 +21,8 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 public class SVNConnector {
 
   private static final String URL = "svn://localhost/";
+  
+  private static final Logger LOG = Logger.getLogger( SVNConnector.class.getName() );
 
   private long checkout(SVNURL url, SVNRevision revision, File destPath, boolean isRecursive)
       throws SVNException {
@@ -52,8 +57,8 @@ public class SVNConnector {
     SVNURL location = null;
     try {
       location = SVNURL.parseURIEncoded(URL + svnco.getRepository());
-    } catch (SVNException e1) {
-      throw new RuntimeException("No se genero una URL valida");
+    } catch (SVNException e) {
+        LOG.log( Level.SEVERE, e.toString(), e );
     }
 
     SVNRevision svnr = SVNRevision.create(Integer.parseInt(revision));
@@ -63,8 +68,9 @@ public class SVNConnector {
     try {
       return checkout(location, svnr, destPath, false);
     } catch (SVNException e) {
-      throw new RuntimeException("No se pudo hacer el checkout");
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
+    return 0;
 
   }
 }

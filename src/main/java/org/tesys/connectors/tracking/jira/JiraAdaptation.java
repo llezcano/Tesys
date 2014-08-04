@@ -8,7 +8,12 @@ import org.tesys.connectors.tracking.jira.model.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+<<<<<<< HEAD
 import java.util.List;
+=======
+import java.util.logging.Level;
+import java.util.logging.Logger;
+>>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
 
 import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.User;
@@ -31,11 +36,68 @@ public class JiraAdaptation {
     private final static Integer MAX_SIZE_USER_QUERY = 49;
 
 
+<<<<<<< HEAD
     public JiraAdaptation( JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema ) throws JsonProcessingException, IOException {
         client = jiraClient;
         ObjectMapper mapper = new ObjectMapper();
         issueSchema = mapper.readTree( issueJsonSchema );
         userSchema = mapper.readTree( userJsonSchema );
+=======
+  private JsonNode issueSchema;
+
+  private JsonNode userSchema;
+
+  private JiraRESTClient client;
+
+  private final static Integer MAX_SIZE_ISSUE_QUERY = 1000;
+  private final static Integer MAX_SIZE_USER_QUERY = 49;
+  
+  private static final Logger LOG = Logger.getLogger( JiraAdaptation.class.getName() );
+
+  /**
+   * MAIN for testing
+   * 
+   * @param args
+   * @throws IOException
+   */
+  /*
+   * public static void main (String args[]) throws IOException { JiraRESTClient client = new
+   * JiraRESTClient("http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/", "grodriguez", "654321")
+   * ;
+   * 
+   * String user = InputOutput.readFile( "userSchema", Charset.defaultCharset()) ; String issue =
+   * InputOutput.readFile( "issueSchema", Charset.defaultCharset()) ;
+   * 
+   * JiraAdaptation jira = new JiraAdaptation(client, user, issue ) ;
+   * 
+   * 
+   * }
+   */
+
+  public JiraAdaptation(JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema)
+      throws JsonProcessingException, IOException {
+    client = jiraClient;
+    ObjectMapper mapper = new ObjectMapper();
+    issueSchema = mapper.readTree(issueJsonSchema);
+    userSchema = mapper.readTree(userJsonSchema);
+  }
+
+  /**
+   * Realiza una consulta (con poco costo) para conocer la cantidad Issues en Jira
+   * 
+   * @return Cantidad de Issues de Jira
+   */
+  public Integer getIssuesSize() {
+    String response_form_client = client.getIssues("", 0, 1); // Esto es para consultar el tamaño
+                                                              // maximo de issues
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.readTree(response_form_client).path("total").asInt();
+    } catch (JsonProcessingException e) {
+      LOG.log( Level.SEVERE, e.toString(), e );
+    } catch (IOException e) {
+      LOG.log( Level.SEVERE, e.toString(), e );
+>>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
     }
 
     /**
@@ -57,6 +119,7 @@ public class JiraAdaptation {
         }
         return 0;
     }
+<<<<<<< HEAD
 
     /**
      * Para probar las consultas JQL ingresar aqui
@@ -107,6 +170,49 @@ public class JiraAdaptation {
             start += size; // NEXT SCROLL
         }
         return issuesPOJO;
+=======
+    return issuesPOJO;
+  }
+
+  /**
+   * Devuelve todos los Issues del cliente Jira.
+   * 
+   * @return Arreglo de Issues.
+   * @throws JsonProcessingException
+   * @throws IOException
+   */
+  public Issue[] getAllIssues() throws JsonProcessingException, IOException {
+    return getIssues("", 0, getIssuesSize());
+  }
+
+  /**
+   * Devuelve el issue que machea con la Key dada
+   * 
+   * @param key Valor clave del issue (es unico)
+   * @return Issue que cumple con la key
+   * @throws JsonProcessingException
+   * @throws IOException
+   * @throws ClassCastException
+   */
+  public Issue getIssue(String key) throws JsonProcessingException, IOException, ClassCastException {
+    return getIssues("key=" + key, 0, 1)[0];
+  }
+
+  /**
+   * Realiza una consulta (con poco costo) para conocer la cantidad Usuarios en Jira
+   * 
+   * @return Cantidad de usuarios de Jira
+   */
+  public Integer getUsersSize() {
+    String clientJsonResponse = client.getUsers("jira-developers", 0, 1);
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.readTree(clientJsonResponse).path("users").path("size").asInt();
+    } catch (JsonProcessingException e) {
+      LOG.log( Level.SEVERE, e.toString(), e );
+    } catch (IOException e) {
+      LOG.log( Level.SEVERE, e.toString(), e );
+>>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
     }
 
     /**

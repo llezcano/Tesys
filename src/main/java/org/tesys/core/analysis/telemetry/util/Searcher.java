@@ -8,7 +8,10 @@ import org.tesys.core.analysis.sonar.MetricPOJO;
 
 public class Searcher {
 
-  
+  private Searcher() {
+    //to avoid the implicit one
+  }
+
   public static AnalisisPOJO searchIssue( List<AnalisisPOJO> analisis, String issue ) {
     
     for (AnalisisPOJO analisisPOJO : analisis) {

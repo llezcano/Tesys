@@ -1,6 +1,7 @@
 package org.tesys.core.project.scm;
 
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,8 +58,7 @@ public class SCMManager {
   private static final String SCM_MANAGER_USERINVALIDO = "SCMManager.userinvalido";
   private static final String SYNTAXERRORUSER = "SCMManager.syntaxerroruser";
   private static final String SCM_MANAGER_BASEDEDATOSCAIDA = "SCMManager.basededatoscaida";
-  
-  
+
   private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
   private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
   private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
@@ -165,8 +165,8 @@ public class SCMManager {
    * @param repository, repositorio que va por ejemplo: svn://localhost/<aca>
    * @return si se pudo hacer o no
    */
-  public boolean doCheckout(String revision, String repository) {
-    return scmFacade.doCheckout(revision, repository);
+  public boolean doCheckout(String revision, String repository, File workspace) {
+    return scmFacade.doCheckout(revision, repository, workspace);
   }
 
 
