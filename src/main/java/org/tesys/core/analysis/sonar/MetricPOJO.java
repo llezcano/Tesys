@@ -13,62 +13,72 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MetricPOJO {
 
-  private String key;
-  private String name;
-  private String description;
-  private String type;
-  private String domain;
+	private String key;
+	private String name;
+	private String description;
+	private String type;
+	private String domain;
 
-  public MetricPOJO(String key, String name, String description, String type, String domain) {
-    this.key = key;
-    this.name = name;
-    this.description = description;
-    this.type = type;
-    this.domain = domain;
-  }
-  
-  public String getID() {
-    return MD5.generateId(key);
-  }
+	public MetricPOJO() {
+	}
 
-  public String getKey() {
-    return key;
-  }
+	public MetricPOJO(String key, String name, String description, String type,
+			String domain) {
+		this.key = key;
+		this.name = name;
+		this.description = description;
+		this.type = type;
+		this.domain = domain;
+	}
 
-  public void setKey(String key) {
-    this.key = key;
-  }
+	public String getID() {
+		return MD5.generateId(key);
+	}
 
-  public String getName() {
-    return name;
-  }
+	public String getKey() {
+		return key;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	public void setKey(String key) {
+		this.key = key;
+	}
 
-  public String getDescription() {
-    return description;
-  }
+	public String getName() {
+		return name;
+	}
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-  public String getType() {
-    return type;
-  }
+	public String getDescription() {
+		return description;
+	}
 
-  public void setType(String type) {
-    this.type = type;
-  }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  public String getDomain() {
-    return domain;
-  }
+	public String getType() {
+		return type;
+	}
 
-  public void setDomain(String domain) {
-    this.domain = domain;
-  }
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	@Override
+	public String toString() {
+		return "MetricPOJO [key=" + key + ", name=" + name + ", description="
+				+ description + ", type=" + type + ", domain=" + domain + "]";
+	}
 
 }
