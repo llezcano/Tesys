@@ -56,7 +56,7 @@ public class SonarAnalisis {
                       .getConstructors()[0].newInstance(valorActual, valorPrevio);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-              System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
+              System.err.println( "reflection gone wrong"
                   + e.getMessage());
             }
 
@@ -124,7 +124,7 @@ public class SonarAnalisis {
                     .getConstructors()[0].newInstance(valorActual, valorPrevio);
           } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
               | SecurityException | InvocationTargetException | ClassNotFoundException e) {
-            System.err.println(Messages.getString("sonardatatypeerrorcommits") //$NON-NLS-1$
+            System.err.println( "reflection gone wrong"
                 + e.getMessage());
           }
 

@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.tesys.core.db.Database;
+import org.tesys.core.messages.Messages;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 
@@ -50,10 +51,10 @@ public class SCMManager {
 
   private static final String SCM_MANAGER_FORMATOFECHAINVALIDO = "SCMManager.formatofechainvalido";
   private static final String SCM_MANAGER_ISSUEINVALIDO = "SCMManager.issueinvalido";
-  private static final String SYNTAXERRORISSUE = "syntaxerrorissue";
-  private static final String SYTAXERRORMULTIPLECOMMANDS = "sytaxerrormultiplecommands";
+  private static final String SYNTAXERRORISSUE = "SCMManager.syntaxerrorissue";
+  private static final String SYTAXERRORMULTIPLECOMMANDS = "SCMManager.sytaxerrormultiplecommands";
   private static final String SCM_MANAGER_USERINVALIDO = "SCMManager.userinvalido";
-  private static final String SYNTAXERRORUSER = "syntaxerroruser";
+  private static final String SYNTAXERRORUSER = "SCMManager.syntaxerroruser";
   private static final String SCM_MANAGER_BASEDEDATOSCAIDA = "SCMManager.basededatoscaida";
   
   
@@ -124,7 +125,6 @@ public class SCMManager {
    */
   public boolean storeCommit(ScmPostCommitDataPOJO scmData) throws InvalidCommitException {
 
-    generateRevisionZero(scmData.getRepository());
     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
     String issue = null;
     Date formatDate = null;
@@ -262,29 +262,5 @@ public class SCMManager {
     }
 
   }
-
-  /**
-   * Este metodo inserta en la base de datos la revision 0 que es cuando el proyecto esta vacio, de
-   * esta forma cuando se analize la informacion se va a poder sacar metricas en relacion a otros
-   * commits con este
-   * 
-   * Hay que guardar un unico dato por cada repositorio, pero como el costo de preguntar si esta es
-   * casi igual a guardarlo se guarda directamente siempre que se hace un commit
-   * 
-   * @param repository
-   */
-
-  private void generateRevisionZero(String repository) {
-    
-    RevisionPOJO rev0 = new RevisionPOJO( 0, "null", "null", "0", repository);
-
-    try {
-      db.store( rev0.getID(), rev0);
-    } catch (Exception e) {
-      throw new InvalidCommitException(Messages.getString(SCM_MANAGER_BASEDEDATOSCAIDA), e );  //$NON-NLS-1$
-    }
-
-  }
-
 
 }

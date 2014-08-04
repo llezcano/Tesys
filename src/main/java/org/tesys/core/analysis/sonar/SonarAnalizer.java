@@ -15,8 +15,7 @@ public class SonarAnalizer {
   
   public static final File BUILD_FILE =
       new File(System.getProperty(USER_HOME), ".tesys/build.xml");
-  public static final File BUILD_FILE_REV0 =
-      new File(System.getProperty(USER_HOME), ".tesys/empty.xml");
+
   public static final File WORKSPACE =
       new File(System.getProperty(USER_HOME), ".tesys/workspace");
 
@@ -66,20 +65,15 @@ public class SonarAnalizer {
     RevisionPOJO[] revSinEscanear =  db.getUnscanedRevisions();
 
     for ( int i=0; i<revSinEscanear.length; i++ ) { 
-      if( "0".equals( revSinEscanear[i].getRevision() ) ) {
-        //purgeDirectory(WORKSPACE); 
-        analizar(BUILD_FILE_REV0);
-      } else { 
-      //TODO en realidad anda con repo = "" 
+        //TODO en realidad anda con repo = "" 
         //scm.doCheckout(revSinEscanear[i].getRevision(), revSinEscanear[i].getRepository()); 
         scm.doCheckout(revSinEscanear[i].getRevision(), "");
-        analizar(BUILD_FILE);
-      } 
+        analizar(BUILD_FILE); 
       
       
       revSinEscanear[i].setScaned(true);
 
-      //db.store( revSinEscanear[i].getID(), revSinEscanear[i] );
+      db.store( revSinEscanear[i].getID(), revSinEscanear[i] );
     }
       
     sr.storeAnalysis( se.getResults(revSinEscanear) );
