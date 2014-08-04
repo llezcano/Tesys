@@ -8,7 +8,9 @@ public class MD5 {
 
   private static MessageDigest md;
 
-  private MD5() {}
+  private MD5() {
+    //to avoid the implicit one
+  }
 
   /**
    * Este metodo genera el MD5 equivalente de un String dado. Si se quieren varios Strings hay que

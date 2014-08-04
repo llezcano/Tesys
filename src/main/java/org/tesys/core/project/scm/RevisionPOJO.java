@@ -27,7 +27,9 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
   protected String repository;
   private boolean scaned;
   
-  public RevisionPOJO() {}
+  public RevisionPOJO() {
+    //needed for jackson
+  }
   
   public RevisionPOJO(long date, String scmUser, String projectTrackingTask, String revision,
       String repository) {
@@ -101,12 +103,38 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     this.scaned = scaned;
   }
 
-  
+  @Override
   public int compareTo(RevisionPOJO rev) {
     if ( rev.getDate() < this.date ) {
       return 1;
     }
     return -1;
+  }
+  
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (date ^ (date >>> 32));
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    RevisionPOJO other = (RevisionPOJO) obj;
+    if (date != other.date) {
+      return false;
+    }
+    return true;
   }
 
 }

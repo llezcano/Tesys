@@ -11,6 +11,10 @@ import java.util.Scanner;
  * 
  */
 final public class Strings {
+  
+  private Strings() {
+    //to avoid the implicit one
+  }
 
   /**
    * Genera un String a partir de un InputStream

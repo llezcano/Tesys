@@ -50,8 +50,9 @@ public class DISTRIB implements Metrics {
       return ret.substring(0, ret.length() - 1);
 
     }
-
-    return null; // caso de que el anterior con el nuevo sean diferentes en longitud (puede pasar??)
+    
+    // caso de que el anterior con el nuevo sean diferentes en longitud (puede pasar??)
+    return null; 
   }
 
 
@@ -75,7 +76,8 @@ public class DISTRIB implements Metrics {
       return ret.substring(0, ret.length() - 1);
     }
 
-    return null; // caso de que el anterior con el nuevo sean diferentes en longitud (puede pasar??)
+ // caso de que el anterior con el nuevo sean diferentes en longitud (puede pasar??)
+    return null; 
   }
 
 }
