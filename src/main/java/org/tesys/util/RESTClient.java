@@ -22,112 +22,124 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
  */
 public class RESTClient implements HTTPClient {
 
-  private MediaType type = MediaType.APPLICATION_JSON_TYPE;
+    private MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
 
-  private URL URL;
-  private HttpAuthenticationFeature auth;
-  private Client client;
+    private URL url ;
+    private HttpAuthenticationFeature auth;
+    private Client client;
 
-  /**
-   * Main for test class and examples
-   * 
-   * @param args
-   */
-  /*
-    public static void main(String args[]) {
-    
-        try { 
-            RESTClient myClient = new RESTClient("http://localhost:9200/"); 
-            UserPOJO u = new UserPOJO() ;
-            u.setActive(true);
-            u.setDisplayName("pepeestareloco");
-            u.setEmailAddress("pepe@pepin");
-            u.setName("name");
-
-            Response response = myClient.POST("/a/b/c", u);
-           
-            //La case UserPOJO debe ser mappeable desde JSON. Lo cual lo logro con @XmlRootElement.
-      	    
-      	           
-      	    System.out.println(u) ;
-        
-        } catch (MalformedURLException e) { // TODO Auto-generated catch block e.printStackTrace();
-        System.exit(0); }
-        
+    /**
+     * Client constructor without authorization
+     * 
+     * @param url
+     * @throws MalformedURLException
+     */
+    public RESTClient( String url ) throws MalformedURLException {
+        this.url = new URL( url );
+        auth = null;
+        client = ClientBuilder.newClient();
     }
-   */
-  
-  /**
-   * Client constructor without authorization
-   * 
-   * @param url
-   * @throws MalformedURLException
-   */
-  public RESTClient(String url) throws MalformedURLException {
-    URL = new URL(url);
-    auth = null;
-    client = ClientBuilder.newClient();
-  }
 
-  /**
-   * Client constructor with authorization
-   * 
-   * @param url
-   * @throws MalformedURLException
-   */
-  public RESTClient(String url, String user, String pass) throws MalformedURLException {
-    URL = new URL(url);
-    auth = HttpAuthenticationFeature.basic(user, pass);
-    client = ClientBuilder.newClient();
-    // Setting client authorization
-    client.register(auth);
-  }
-  
-  public String getURL() {
-    return URL.toString();
-  }
+    public RESTClient( String url, MediaType mediaType ) throws MalformedURLException {
+        this.mediaType = mediaType ;
+        this.url = new URL( url );
+        auth = null;
+        client = ClientBuilder.newClient();
+    }
+    
+    
+    /**
+     * Client constructor with authorization
+     * 
+     * @param url
+     * @throws MalformedURLException
+     */
+    public RESTClient( String url, String user, String pass ) throws MalformedURLException {
+        this.url = new URL( url );
+        auth = HttpAuthenticationFeature.basic( user, pass );
+        client = ClientBuilder.newClient();
+        // Setting client authorization
+        client.register( auth );
+    }
 
-  public void setURL(String url) throws MalformedURLException {
-    URL = new URL(url);
-  }
 
-  public Response GET(String resource, Map<String, String> params) {
-    if (params == null)
-      return this.GET(resource);
+    public RESTClient( String url, String user, String pass, MediaType mediaType ) throws MalformedURLException {
+        this.url = new URL( url );
+        this.mediaType = mediaType ;
+        auth = HttpAuthenticationFeature.basic( user, pass );
+        client = ClientBuilder.newClient();
+        // Setting client authorization
+        client.register( auth );
+    }
+    
+    //MediaType type
+    public MediaType getMediaType() {
+        return mediaType;
+    }
 
-    WebTarget target = client.target(getURL()).path(resource);
-    // adding parameters
-    for (Map.Entry<String, String> param : params.entrySet())
-      target = target.queryParam(param.getKey(), param.getValue());
+    public void setMediaType( MediaType mediaType ) {
+        this.mediaType = mediaType;
+    }
 
-    // making request
-    return target.request(this.type).get();
-  }
+    public String getURL() {
+        return url.toString();
+    }
 
-  public Response GET(String resource) {
+    public void setURL( String url ) throws MalformedURLException {
+        this.url = new URL( url );
+    }
 
-    return client.target(this.getURL()).path(resource).request(this.type).get();
+    public Response GET( String resource, Map<String, String> params ) {
+        if (params == null)
+            return this.GET( resource );
 
-  }
+        WebTarget target = client.target( getURL() ).path( resource );
+        // adding parameters
+        for (Map.Entry<String, String> param : params.entrySet())
+            target = target.queryParam( param.getKey(), param.getValue() );
 
-  public Response PUT(String resource, Object serealizable) {
+        // making request
+        return target.request( this.mediaType ).get();
+    }
 
-    return client.target(this.getURL()).path(resource).request(this.type)
-        .put(Entity.entity(serealizable, this.type));
+    public Response GET( String resource ) {
 
-  }
+        return client
+                .target( this.getURL() )
+                .path( resource )
+                .request( this.mediaType )
+                .get();
 
-  public Response POST(String resource, Object serealizable) {
+    }
 
-    return client.target(this.getURL()).path(resource).request(this.type)
-        .post(Entity.entity(serealizable, this.type));
+    public Response PUT( String resource, Object serealizable ) {
 
-  }
+        return client
+                .target( this.getURL() )
+                .path( resource )
+                .request( this.mediaType )
+                .put( Entity.entity( serealizable, this.mediaType ) );
 
-  public Response DELETE(String resource) {
+    }
 
-    return client.target(this.getURL()).path(resource).request(this.type).delete();
+    public Response POST( String resource, Object serealizable ) {
 
-  }
+        return client
+                .target( this.getURL() )
+                .path( resource )
+                .request( this.mediaType )
+                .post( Entity.entity( serealizable, this.mediaType ) );
+
+    }
+
+    public Response DELETE( String resource ) {
+
+        return client
+                .target( this.getURL() )
+                .path( resource )
+                .request( this.mediaType )
+                .delete();
+
+    }
 
 }
