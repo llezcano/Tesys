@@ -28,7 +28,7 @@ public class SonarAnalisis {
       AnalisisPOJO analisisAcumuladoPrevio = analisisAcumulados.get(i - 1);
       AnalisisPOJO analisisAcumuladoActual = analisisAcumulados.get(i);
       
-      if( !(analisisAcumuladoPrevio.isScaned() &&  analisisAcumuladoActual.isScaned())) {
+      if( !(analisisAcumuladoPrevio.isScaned() && analisisAcumuladoActual.isScaned())) {
           
           
         AnalisisPOJO nuevoAnalisisPorCommit = new AnalisisPOJO();
@@ -81,18 +81,18 @@ public class SonarAnalisis {
   }
   
   /**
-   * Junta las metricas de uno o varios commits correspondientes a la misma tarea de jira
-   * 
-   * @param analisisJsonPorCommit analisis por commit generador por esta misma clase
-   * @param revisiones los datos de las revisiones generados por la clase svnrevisions
-   * @return analisis por tarea de jira
-   */
+* Junta las metricas de uno o varios commits correspondientes a la misma tarea de jira
+*
+* @param analisisJsonPorCommit analisis por commit generador por esta misma clase
+* @param revisiones los datos de las revisiones generados por la clase svnrevisions
+* @return analisis por tarea de jira
+*/
   public List<AnalisisPOJO> getAnalisisPorTarea( List<AnalisisPOJO> analisisPorCommit ) {
     
     List<AnalisisPOJO> result = new LinkedList<AnalisisPOJO>();
    
     for (AnalisisPOJO commitAnalisis : analisisPorCommit) {
-      AnalisisPOJO guardado =  Searcher.searchIssue(result, commitAnalisis.getRevision().getProjectTrackingTask());
+      AnalisisPOJO guardado = Searcher.searchIssue(result, commitAnalisis.getRevision().getProjectTrackingTask());
       if( guardado == null ) {
         result.add( commitAnalisis );
       } else {

@@ -39,7 +39,7 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
   }
   
   public String getID() {
-    return this.revision.getID();
+    return this.revision.getProjectTrackingTask();
   }
   
   

@@ -17,7 +17,7 @@ public class DISTRIB implements Metrics {
   public DISTRIB(String actual, String anterior) {
     this.actual = actual;
 
-    if (anterior == null || anterior.equals("null")) {
+    if (anterior == null || "null".equals(anterior)) {
       // Crear una nueva complejidad, se agarra como modelo la nueva y pone todos los valores en 0
       this.anterior = this.actual.replaceAll("=[0-9]+", "=0");
     } else {
