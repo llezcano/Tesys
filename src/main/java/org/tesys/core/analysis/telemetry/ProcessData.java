@@ -1,15 +1,15 @@
 package org.tesys.core.analysis.telemetry;
 
-
-import java.util.Collections;
-import java.util.List;
-
-import org.tesys.core.analysis.sonar.AnalisisPOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.db.Database;
-import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
+/**
+ * Esta clase, y en particular todo este pquete, es el encargado de recolectar
+ * datos de todas partes del sistema y juntarlos todo en una unica unidad de trabajo
+ * que va a ser identificada por el issue del project tracking y va a tener metricas
+ * de todos los provedores que esten acoplados al sistema
+ * 
+ */
 
 
 public class ProcessData {
@@ -29,25 +29,20 @@ public class ProcessData {
     return instance;
   }
 
-//TODO agregar los datos de cuanto trabajo por hora
-
-//TODO analizar si se puede hacer una forma mas facil de agregar nuevos valores 
-//(por ejemplo si se quiere agregar la wiki, aca habria que hacer bastante)
   
-
-
   public void executeProcessor() {
     
-    /*ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
+    ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
     
-    for (AnalisisPOJO analisisDeTarea : analisisPorTarea) {
-      Issue issue = pt.getIssue( analisisDeTarea.getRevision().getProjectTrackingTask() );
-      //TODO juntar el issuePOJO con analisisDeTarea
-      
-      //db.store( , ); TODO el BigPOJO
-    }*/
+    AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
+    Aggregator aggregator = aggregatorFactory.getAggregator();
+    
+    for( String key : pt.getIssuesKeys() ) {
+      IssueMetrics issueActual = new IssueMetrics( key );
+      IssueMetrics issueFinal = aggregator.agregateMetrics(issueActual);
+      db.store( issueFinal );
+    }
 
   }
-
 
 }
