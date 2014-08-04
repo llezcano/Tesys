@@ -1,7 +1,11 @@
 package org.tesys.core.project.scm;
 
+import java.io.File;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.tesys.core.db.Database;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -21,6 +25,8 @@ public class SCMFacade {
 
   private static final String DEFAULT_URL_SCM_CONNECTOR =
       "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
+  
+  private static final Logger LOG = Logger.getLogger( SCMFacade.class.getName() );
 
 
   private RESTClient client;
@@ -31,7 +37,7 @@ public class SCMFacade {
     try {
       client = new RESTClient(DEFAULT_URL_SCM_CONNECTOR);
     } catch (MalformedURLException e) {
-      System.err.println(e.getMessage());
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
   }
 
@@ -44,13 +50,14 @@ public class SCMFacade {
 
 
 
-  public boolean doCheckout(String revision, String repository) {
+  public boolean doCheckout(String revision, String repository, File workspace) {
 
     JsonFactory factory = new JsonFactory();
     ObjectMapper om = new ObjectMapper(factory);
     factory.setCodec(om);
     ObjectNode data = om.createObjectNode();
     data.put("repository", repository);
+    data.put("workspace", workspace.getAbsolutePath());
 
     if (client.PUT(revision, data.toString()).getStatus() / 100 == 2) {
       return true;

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -35,6 +37,8 @@ public class Database {
 	private static final String RESOURCE_METRIC = "metric/";
 	private static final String RESOURCE_ANALYSIS = "analysis/";
 	private static final String RESOURCE_UNSCANNED_REVISIONS = "revision/";
+	
+	private static final Logger LOG = Logger.getLogger( Database.class.getName() );
 
 	private final static String REPO_PARAM_ID = "repo";
 
@@ -50,7 +54,7 @@ public class Database {
 		try {
 			client = new RESTClient(DEFAULT_LOCATION_CONNECTOR);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+		  LOG.log( Level.SEVERE, e.toString(), e );
 		}
 	}
 
@@ -82,6 +86,7 @@ public class Database {
 	    try {
 	        return client.GET(RESOURCE_UNSCANNED_REVISIONS).readEntity(new GenericType<List<RevisionPOJO>>(){});
 	    } catch (Exception e) {
+	        LOG.log( Level.SEVERE, e.toString(), e );
 	        return new ArrayList<RevisionPOJO>();
 	    }
 	}
@@ -90,6 +95,7 @@ public class Database {
         try {
             return client.GET(RESOURCE_ANALYSIS).readEntity(new GenericType<List<AnalisisPOJO>>(){});
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return new ArrayList<AnalisisPOJO>();
         }	
     }
@@ -98,6 +104,7 @@ public class Database {
         try {
             return client.GET(RESOURCE_METRIC).readEntity(new GenericType<List<MetricPOJO>>(){});
         } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
             return new ArrayList<MetricPOJO>();
         }
 	}

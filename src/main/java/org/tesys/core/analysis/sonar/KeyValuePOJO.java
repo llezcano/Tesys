@@ -15,6 +15,16 @@ public class KeyValuePOJO {
   @XmlValue
   private String value;
   
+  public KeyValuePOJO(String key, String value) {
+    super();
+    this.key = key;
+    this.value = value;
+  }
+  
+  
+  public KeyValuePOJO() {
+    //needed by jackson
+  }
   
   
   @Override
@@ -57,13 +67,6 @@ public class KeyValuePOJO {
   }
 
 
-  public KeyValuePOJO(String key, String value) {
-    super();
-    this.key = key;
-    this.value = value;
-  }
-
-
   public String getKey() {
     return key;
   }
@@ -83,9 +86,5 @@ public class KeyValuePOJO {
     this.value = value;
   }
 
-
-  public KeyValuePOJO() {
-    //needed by jackson
-  }
 
 }

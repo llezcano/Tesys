@@ -6,6 +6,8 @@ import org.tesys.connectors.tracking.jira.model.*;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.User;
@@ -28,6 +30,8 @@ public class JiraAdaptation {
 
   private final static Integer MAX_SIZE_ISSUE_QUERY = 1000;
   private final static Integer MAX_SIZE_USER_QUERY = 49;
+  
+  private static final Logger LOG = Logger.getLogger( JiraAdaptation.class.getName() );
 
   /**
    * MAIN for testing
@@ -69,9 +73,9 @@ public class JiraAdaptation {
     try {
       return mapper.readTree(response_form_client).path("total").asInt();
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
     return 0;
   }
@@ -159,9 +163,9 @@ public class JiraAdaptation {
     try {
       return mapper.readTree(clientJsonResponse).path("users").path("size").asInt();
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
     return 0;
   }

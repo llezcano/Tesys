@@ -8,7 +8,7 @@ import org.tesys.core.analysis.sonar.MetricPOJO;
 
 public class Searcher {
 
-  public Searcher() {
+  private Searcher() {
     //to avoid the implicit one
   }
 

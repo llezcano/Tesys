@@ -2,6 +2,8 @@ package org.tesys.core.analysis.sonar;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.sonar.wsclient.Host;
 import org.sonar.wsclient.Sonar;
@@ -19,6 +21,8 @@ public class SonarExtractor {
 
   private Sonar sonar;
   private List<Metric> metricList;
+  
+  private static final Logger LOG = Logger.getLogger( SonarExtractor.class.getName() );
 
   //TODO hacer esto con variable asi se puede cambiar en vez de constantes
 
@@ -61,13 +65,16 @@ public class SonarExtractor {
         try {
           resultadoDeRevision.add( new KeyValuePOJO(tmco[i].getMetricKey(), v[i].toString()) );
         } catch (Exception e) {
+          LOG.log( Level.SEVERE, e.toString(), e );
           resultadoDeRevision.add( new KeyValuePOJO(tmco[i].getMetricKey(), "null") );
         }
       }
 
       try {
         sonar.delete(ProjectDeleteQuery.create(PROJECT_KEY));
-      } catch(Exception e) {}
+      } catch(Exception e) {
+        LOG.log( Level.SEVERE, e.toString(), e );
+      }
       
       resultados.add(resultadoDeRevision);
     }

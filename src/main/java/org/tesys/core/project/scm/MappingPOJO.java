@@ -25,6 +25,7 @@ public class MappingPOJO {
     //needed by jackson
   }
 
+
   public MappingPOJO(String project_tracking_user, String scm_user, String repository) {
     this.projectTrackingUser = project_tracking_user;
     this.scmUser = scm_user;
@@ -35,7 +36,6 @@ public class MappingPOJO {
     return MD5.generateId(projectTrackingUser + scmUser + repository);
   }
 
-  
   @Override
   public String toString() {
     return "MappingPOJO [project_tracking_user=" + projectTrackingUser + ", scm_user="
