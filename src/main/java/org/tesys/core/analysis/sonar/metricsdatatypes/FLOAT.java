@@ -7,7 +7,7 @@ public class FLOAT implements Metrics {
 
   public FLOAT(String actual, String anterior) {
     this.actual = Double.valueOf(actual);
-    if (anterior == null) {
+    if ("null".equals(anterior)) {
       this.anterior = 0.0;
     } else {
       this.anterior = Double.valueOf(anterior);

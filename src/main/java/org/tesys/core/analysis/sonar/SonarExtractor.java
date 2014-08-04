@@ -35,7 +35,7 @@ public class SonarExtractor {
 
   }
 
-  public List< AnalisisPOJO > getResults( RevisionPOJO [] revisions ) {
+  public List< AnalisisPOJO > getResults( List<RevisionPOJO> revisions ) {
 
     String[] met = new String[metricList.size()];
     int index = 0;
@@ -54,7 +54,7 @@ public class SonarExtractor {
 
       Object[] v = tmc[j].getValues();
 
-      AnalisisPOJO resultadoDeRevision = new AnalisisPOJO(revisions[j]);
+      AnalisisPOJO resultadoDeRevision = new AnalisisPOJO(revisions.get(j));
 
       for (int i = 0; i < tmco.length; i++) {
         

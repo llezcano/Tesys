@@ -30,42 +30,22 @@ public class ProcessData {
   }
 
 //TODO agregar los datos de cuanto trabajo por hora
-//TODO testear todo
+
 //TODO analizar si se puede hacer una forma mas facil de agregar nuevos valores 
-  //(por ejemplo si se quiere agregar la wiki, aca habria que hacer bastante)
+//(por ejemplo si se quiere agregar la wiki, aca habria que hacer bastante)
   
- //TODO me estoy olvidando de traer los analisis por tarea viejos para agregar los datos
 
 
   public void executeProcessor() {
     
-    
-    List<AnalisisPOJO> analisis = db.getAnalisis();
-    
-    List<MetricPOJO> metrics = db.getMetrics();
-
-    //ordenado por fecha de menor a mayor
-    Collections.sort(analisis);
-
-    SonarAnalisis sonarAnalisis = new SonarAnalisis( metrics );
-
-    // Se obtienen los analisis por commit individual
-    List<AnalisisPOJO> analisisPorCommit = sonarAnalisis.getAnalisisPorCommit(analisis);
-
-    //TODO guaradr en la base de datos que analisis fueron agregados a la tarea
-    
-    // se obtienen los analisis por tarea
-    List<AnalisisPOJO> analisisPorTarea =
-        sonarAnalisis.getAnalisisPorTarea( analisisPorCommit );
-
-    ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
+    /*ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
     
     for (AnalisisPOJO analisisDeTarea : analisisPorTarea) {
       Issue issue = pt.getIssue( analisisDeTarea.getRevision().getProjectTrackingTask() );
       //TODO juntar el issuePOJO con analisisDeTarea
       
       //db.store( , ); TODO el BigPOJO
-    }
+    }*/
 
   }
 

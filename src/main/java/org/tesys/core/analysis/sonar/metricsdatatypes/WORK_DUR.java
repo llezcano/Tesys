@@ -7,7 +7,7 @@ public class WORK_DUR implements Metrics {
 
   public WORK_DUR(String actual, String anterior) {
     this.actual = Integer.valueOf(actual);
-    if (anterior == null) {
+    if ("null".equals(anterior)) {
       this.anterior = 0;
     } else {
       this.anterior = Integer.valueOf(anterior);

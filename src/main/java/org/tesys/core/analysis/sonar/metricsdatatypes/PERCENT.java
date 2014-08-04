@@ -6,7 +6,7 @@ public class PERCENT implements Metrics {
 
   public PERCENT(String actual, String anterior) {
     this.actual = Double.valueOf(actual);
-    if (anterior == null) {
+    if ("null".equals(anterior)) {
       this.anterior = 0.0;
     } else {
       this.anterior = Double.valueOf(anterior);

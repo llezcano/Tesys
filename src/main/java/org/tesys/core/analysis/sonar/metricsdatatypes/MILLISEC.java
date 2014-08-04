@@ -6,7 +6,7 @@ public class MILLISEC implements Metrics {
 
   public MILLISEC(String actual, String anterior) {
     this.actual = Integer.valueOf(actual);
-    if (anterior == null) {
+    if ("null".equals(anterior)) {
       this.anterior = 0;
     } else {
       this.anterior = Integer.valueOf(anterior);
