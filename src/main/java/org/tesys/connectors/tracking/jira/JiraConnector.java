@@ -158,7 +158,6 @@ public class JiraConnector implements JiraAdaptor {
     return null;
   }
 
-<<<<<<< HEAD
   
   @GET
   @Path("/metric/")
@@ -177,6 +176,4 @@ public class JiraConnector implements JiraAdaptor {
   // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
 
   // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/issuetype
-=======
->>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
 }

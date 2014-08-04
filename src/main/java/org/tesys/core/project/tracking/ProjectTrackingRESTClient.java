@@ -1,13 +1,12 @@
 package org.tesys.core.project.tracking;
 
 import java.net.MalformedURLException;
-<<<<<<< HEAD
+
 import java.util.ArrayList;
 import java.util.List;
-=======
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
->>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
 
 import javax.ws.rs.core.GenericType;
 
@@ -23,36 +22,22 @@ import org.tesys.util.RESTClient;
  */
 public class ProjectTrackingRESTClient implements ProjectTracking {
 
-<<<<<<< HEAD
     private RESTClient client;
+
+    private static final Logger LOG = Logger.getLogger( ProjectTrackingRESTClient.class.getName() );
 
     // RESEARCH Discovery Resources from Connector
     private static String RESOURCE_ISSUES = "issues/";
     private static String RESOURCE_USERS = "users/";
     private static String RESOURCE_METRIC = "metric/";
-    
+
     public ProjectTrackingRESTClient() {
         try {
             client = new RESTClient( getConnectorLocation() );
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.log( Level.SEVERE, e.toString(), e );
         }
-=======
-  private RESTClient client;
-  
-  private static final Logger LOG = Logger.getLogger( ProjectTrackingRESTClient.class.getName() );
 
-  //RESEARCH Discovery Resources from Connector
-  private static String RESOURCE_ISSUES = "issues/";
-  private static String RESOURCE_USERS = "users/";
-
-  public ProjectTrackingRESTClient() {
-    try {
-	client = new RESTClient(getConnectorLocation());
-    } catch (MalformedURLException e) {
-      LOG.log( Level.SEVERE, e.toString(), e );
->>>>>>> 938a33bd5cd3771d9f53e482b7f2c15e318a58a1
     }
 
     public String getConnectorLocation() {
@@ -93,7 +78,8 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     @Override
     public List<MetricPOJO> getMetrics() {
         try {
-            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<MetricPOJO>>(){} );
+            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<MetricPOJO>>() {
+            } );
         } catch (Exception e) {
             return new ArrayList<MetricPOJO>();
         }
@@ -101,12 +87,12 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 
     @Override
     public List<String> getIssuesKeys() {
-        //TODO hacerlo en el Connector.
-        Issue[] issues = this.getIssues() ;
-        List<String> keys = new ArrayList<String>() ;
-        for (int i=0; i<issues.length; i++) {  
+        // TODO hacerlo en el Connector.
+        Issue[] issues = this.getIssues();
+        List<String> keys = new ArrayList<String>();
+        for (int i = 0; i < issues.length; i++) {
             if (issues[i] != null && issues[i].getKey() != null) {
-                keys.add( issues[i].getKey() ) ;
+                keys.add( issues[i].getKey() );
             }
         }
         return keys;
