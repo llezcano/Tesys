@@ -1,7 +1,7 @@
 package org.tesys.core.db;
 
 import java.net.MalformedURLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,17 +76,30 @@ public class Database {
 	public void store(String id, AnalisisPOJO analysis) {
 		client.PUT(RESOURCE_ANALYSIS + id, analysis);
 	}
-
+	
+	//TODO FIXME en todos los getter si el connector devuelve un response de error, entonces devolver null
 	public List<RevisionPOJO> getRevisions() {	
-		return client.GET(RESOURCE_UNSCANNED_REVISIONS).readEntity(new GenericType<List<RevisionPOJO>>(){});
+	    try {
+	        return client.GET(RESOURCE_UNSCANNED_REVISIONS).readEntity(new GenericType<List<RevisionPOJO>>(){});
+	    } catch (Exception e) {
+	        return new ArrayList<RevisionPOJO>();
+	    }
 	}
 
 	public List<AnalisisPOJO> getAnalisis() {		
-		return client.GET(RESOURCE_ANALYSIS).readEntity(new GenericType<List<AnalisisPOJO>>(){});
-	}
+        try {
+            return client.GET(RESOURCE_ANALYSIS).readEntity(new GenericType<List<AnalisisPOJO>>(){});
+        } catch (Exception e) {
+            return new ArrayList<AnalisisPOJO>();
+        }	
+    }
 
 	public List<MetricPOJO> getMetrics() {
-		return client.GET(RESOURCE_METRIC).readEntity(new GenericType<List<MetricPOJO>>(){});
+        try {
+            return client.GET(RESOURCE_METRIC).readEntity(new GenericType<List<MetricPOJO>>(){});
+        } catch (Exception e) {
+            return new ArrayList<MetricPOJO>();
+        }
 	}
 
 }
