@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.tesys.core.db.Database;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.core.JsonFactory;

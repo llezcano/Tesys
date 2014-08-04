@@ -74,7 +74,7 @@ public class SonarAnalizer {
     //no traer los analisis que no se usan?
     
     List<AnalisisPOJO> analisisAcumulados = getAnalisisAcumulados();
-    List<MetricPOJO> metricas = sonarExtractor.getMetrics();
+    List<SonarMetricPOJO> metricas = sonarExtractor.getMetrics();
     List<AnalisisPOJO> analisisPorCommit = getAnalisisPorCommit(analisisAcumulados, metricas);
     analisisAcumulados.clear();
     List<AnalisisPOJO> analisisPorTareaAlmacenados = db.getAnalisis();
@@ -82,7 +82,6 @@ public class SonarAnalizer {
     List<AnalisisPOJO> analisisPorTarea = getAnalisisPorTarea(analisisPorCommit, analisisPorTareaAlmacenados, metricas);    
     
     this.storeAnalysis(analisisPorTarea);
-    this.storeMetrics(metricas);
 
   }
   
@@ -163,17 +162,6 @@ public class SonarAnalizer {
       file.delete();
     }
   }
-  
-  
-  
-  public void storeMetrics(List<MetricPOJO> metrics) {
-
-    for (MetricPOJO metric : metrics) {
-      db.store( metric.getID(), metric );
-    }
-  }
-  
-  
 
   public void storeAnalysis(List<AnalisisPOJO> resultados) {
 
@@ -184,7 +172,7 @@ public class SonarAnalizer {
   }
   
   
-  public List<AnalisisPOJO> getAnalisisPorCommit(List<AnalisisPOJO> analisisAcumulados, List<MetricPOJO> metricas) {
+  public List<AnalisisPOJO> getAnalisisPorCommit(List<AnalisisPOJO> analisisAcumulados, List<SonarMetricPOJO> metricas) {
 
     /*
      * El acumulado en [0] ya esta guardado en la db por commit, aca nomas se va a usar
@@ -218,7 +206,7 @@ public class SonarAnalizer {
         String valorPrevio = resultadosPrevios.get(j).getValue();
         
         //dado "lines" se obtiene toda la informacion de ese tipo de metrica
-        MetricPOJO metric = Searcher.searchMetric(metricName, metricas);
+        SonarMetricPOJO metric = Searcher.searchMetric(metricName, metricas);
         //En particular el tipo (que los define Sonar), el caso de lines es INT
         //Y este tipo sirve para llamar el metricHandler apropiado
         String metricType = metric.getType();
@@ -282,7 +270,7 @@ public class SonarAnalizer {
    * @param revisiones los datos de las revisiones generados por la clase svnrevisions
    * @return analisis por tarea de jira
    */
-  public List<AnalisisPOJO> getAnalisisPorTarea( List<AnalisisPOJO> analisisPorCommit, List<AnalisisPOJO> analisisPorTareaAlmacenados, List<MetricPOJO> metricas ) {
+  public List<AnalisisPOJO> getAnalisisPorTarea( List<AnalisisPOJO> analisisPorCommit, List<AnalisisPOJO> analisisPorTareaAlmacenados, List<SonarMetricPOJO> metricas ) {
     
     List<AnalisisPOJO> analisisPorTareaGuardados = analisisPorTareaAlmacenados;
    
@@ -317,7 +305,7 @@ public class SonarAnalizer {
           String valorPrevio = Searcher.searchMetricValue(resultadosPrevios, metricName );
           
           if( valorPrevio != null ) {
-            MetricPOJO metric = Searcher.searchMetric(metricName, metricas);
+            SonarMetricPOJO metric = Searcher.searchMetric(metricName, metricas);
             String metricType = metric.getType();
 
             Object object = null;

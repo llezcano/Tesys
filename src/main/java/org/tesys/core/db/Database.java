@@ -12,7 +12,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.telemetry.MetricPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.util.RESTClient;

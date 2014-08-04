@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.telemetry.MetricPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.util.RESTClient;

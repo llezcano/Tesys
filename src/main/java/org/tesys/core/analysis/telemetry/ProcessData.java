@@ -40,7 +40,7 @@ public class ProcessData {
     for( String key : pt.getIssuesKeys() ) {
       IssueMetrics issueActual = new IssueMetrics( key );
       IssueMetrics issueFinal = aggregator.agregateMetrics(issueActual);
-      db.store( issueFinal );
+      db.store( issueFinal.getIssueId(), issueFinal );
     }
 
   }

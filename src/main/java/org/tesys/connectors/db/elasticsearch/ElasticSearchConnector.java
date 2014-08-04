@@ -14,7 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.telemetry.MetricPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 

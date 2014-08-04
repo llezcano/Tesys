@@ -83,11 +83,11 @@ public class SonarExtractor {
   }
 
 
-  public List<MetricPOJO> getMetrics() {
+  public List<SonarMetricPOJO> getMetrics() {
 
-    List<MetricPOJO> metrics = new LinkedList<MetricPOJO>();
+    List<SonarMetricPOJO> metrics = new LinkedList<SonarMetricPOJO>();
     for (Metric m : metricList) {
-      metrics.add(new MetricPOJO(m.getKey(), m.getName(), m.getDescription(), m.getType(), m
+      metrics.add(new SonarMetricPOJO(m.getKey(), m.getName(), m.getDescription(), m.getType(), m
           .getDomain()));
     }
 

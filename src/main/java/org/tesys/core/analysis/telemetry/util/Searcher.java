@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.KeyValuePOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.sonar.SonarMetricPOJO;
 
 public class Searcher {
 
@@ -44,8 +44,8 @@ public class Searcher {
    * @param metrics
    * @return
    */
-  public static MetricPOJO searchMetric(String field, List<MetricPOJO> metrics) {
-    for (MetricPOJO m : metrics) {
+  public static SonarMetricPOJO searchMetric(String field, List<SonarMetricPOJO> metrics) {
+    for (SonarMetricPOJO m : metrics) {
       if ( m.getKey().equals(field)) {
         return m;
       }
