@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.telemetry.IssueMetrics;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.core.project.scm.RevisionPOJO;
 
@@ -65,7 +66,6 @@ public class ElasticSearchConnector {
 		return elasticSearch.getMetrics();
 	}
 
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/revision")
@@ -85,7 +85,15 @@ public class ElasticSearchConnector {
 	public void store(@PathParam("id") String id, MappingPOJO mapping) {
 		elasticSearch.store(id, mapping);
 	}
-
+	
+	   
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/issuemetric/{id}")
+    public void store(@PathParam("id") String id, IssueMetrics issueMetric) {
+        elasticSearch.store(id, issueMetric);
+    }
+    
 	/**
 	 * Aqui se almacenan las descripciones de cada metrica individual
 	 * (Nombre,tipo,etc.)

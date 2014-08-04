@@ -1,8 +1,12 @@
 package org.tesys.core.project.tracking;
 
+import java.util.List;
+
+import org.tesys.core.analysis.sonar.MetricPOJO;
+
 /**
- * Interface para Connector de un Gestor de proyectos (Project Tracking). El cual sera el proovedor
- * de Issues y Users de un proyecto.
+ * Interface para Connector de un Gestor de proyectos (Project Tracking). El
+ * cual sera el proovedor de Issues y Users de un proyecto.
  * 
  * Sinonimos:
  * 
@@ -13,41 +17,59 @@ package org.tesys.core.project.tracking;
  */
 public interface ProjectTracking {
 
+    /**
+     * Consulta al Gestor de Proyectos todos los issues existentes.
+     * 
+     * @return Un arreglo de todos issues existentes.
+     */
+    public Issue[] getIssues();
 
-  /**
-   * Consulta al Gestor de Proyectos todos los issues existentes.
-   * 
-   * @return Un arreglo de todos issues existentes.
-   */
-  public Issue[] getIssues();
+    /**
+     * Consulta al Gestor de Proyectos todos los usuarios existentes.
+     * 
+     * @return Un arreglo de todos usuarios existentes.
+     */
+    public User[] getUsers();
 
-  /**
-   * Consulta al Gestor de Proyectos todos los usuarios existentes.
-   * 
-   * @return Un arreglo de todos usuarios existentes.
-   */
-  public User[] getUsers();
+    /**
+     * Consulta al Gestor de proyectos por la existencia de un issue con una
+     * clave determinada.
+     * 
+     * @param key
+     *            Campo clave del issue.
+     * @return Devuelve 'true' solo si existe un issue asociado a esa clave.
+     */
+    public boolean existIssue( String key );
 
-  /**
-   * Consulta al Gestor de proyectos por la existencia de un issue con una clave determinada.
-   * 
-   * @param key Campo clave del issue.
-   * @return Devuelve 'true' solo si existe un issue asociado a esa clave.
-   */
-  public boolean existIssue(String key);
+    /**
+     * Consulta al Gestor de proyectos por la existencia de un usuario con una
+     * clave determinada.
+     * 
+     * @param key
+     *            Campo clave del usuario
+     * @return Devuelve 'true' solo si existe un usuario con esa clave.
+     */
+    public boolean existUser( String key );
 
-  /**
-   * Consulta al Gestor de proyectos por la existencia de un usuario con una clave determinada.
-   * 
-   * @param key Campo clave del usuario
-   * @return Devuelve 'true' solo si existe un usuario con esa clave.
-   */
-  public boolean existUser(String key);
-  /**
-   * Retorna un Issue del Gestor de Proyectos dada una key
-   * 
-   * @param key Campo clave del usuario
-   * @return Devuelve el Issue con esa clave, o null si no existe Issue con dicha clave.
-   */
-  public Issue getIssue(String key);
+    /**
+     * Retorna un Issue del Gestor de Proyectos dada una key.
+     * 
+     * @param key
+     *            Campo clave del usuario
+     * @return Devuelve el Issue con esa clave, o null si no existe Issue con
+     *         dicha clave.
+     */
+    public Issue getIssue( String key );
+
+    /**
+     * Consulta las metricas brindadas del Gestor de Proyectos.
+     * 
+     * @param key
+     * 
+     * @return Devuelve las metricas asociadas al Gestor de Proyectos. dicha
+     *         clave.
+     */
+    public List<MetricPOJO> getMetrics();
+
+    public abstract List<String> getIssuesKeys();
 }

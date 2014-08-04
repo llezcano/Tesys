@@ -1,6 +1,7 @@
 package org.tesys.connectors.tracking.jira;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
+import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.Strings;
@@ -148,6 +150,14 @@ public class JiraConnector implements JiraAdaptor {
     return null;
   }
 
+  
+  @GET
+  @Path("/metric/")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Override
+  public List<MetricPOJO> getMetrics() {
+      return jira.getMetrics() ;
+  }
 
   // TODO analizar si realmente se necesita esta informacion en el modelo
 

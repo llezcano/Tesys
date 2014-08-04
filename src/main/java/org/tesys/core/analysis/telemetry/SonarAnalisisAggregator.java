@@ -6,6 +6,7 @@ public class SonarAnalisisAggregator extends AggregatorDecorator {
     super(aggregator);
   }
   
+  
   @Override
   public IssueMetrics agregateMetrics(IssueMetrics issueMetrics) {
     issueMetrics = super.agregateMetrics(issueMetrics);

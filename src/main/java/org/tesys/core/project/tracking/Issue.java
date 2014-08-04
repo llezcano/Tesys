@@ -1,24 +1,36 @@
 package org.tesys.core.project.tracking;
 
-
 public interface Issue {
 
-  public String getKey();
+    public String getKey();
 
-  public String getResolutiondate();
+    public String getResolutiondate();
 
-  public String getAggregatetimeoriginalestimate();
+    public String getAggregatetimeoriginalestimate();
 
-  public String getUpdated();
+    public String getUpdated();
 
-  public String getCreated();
+    public String getCreated();
 
-  public String getWorkratio();
+    public String getWorkratio();
 
-  public String getAggregatetimeestimate();
+    public String getAggregatetimeestimate();
 
-  public String getReporter();
+    public String getReporter();
 
-  public String[] getSubtasks();
+    public String[] getSubtasks();
 
+    public Progress getProgress();
+
+    public String getIssuetype();
+
+    public String getStatus();
+
+    public String getAssignee();
+
+    public void setResolutiondate( String resolutiondate );
+
+    public String getProject();
+
+    public String getPriority();
 }

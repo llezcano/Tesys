@@ -1,6 +1,7 @@
 package org.tesys.core.analysis.telemetry;
 
 import org.tesys.core.db.Database;
+import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 /**
@@ -32,15 +33,15 @@ public class ProcessData {
   
   public void executeProcessor() {
     
-    ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
+    ProjectTracking pt = new ProjectTrackingRESTClient();
     
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
-    
+    //TODO getAnalisis(key jira)
     for( String key : pt.getIssuesKeys() ) {
       IssueMetrics issueActual = new IssueMetrics( key );
       IssueMetrics issueFinal = aggregator.agregateMetrics(issueActual);
-      db.store( issueFinal );
+      db.store( issueFinal.getIssueId(), issueFinal );
     }
 
   }

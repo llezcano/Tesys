@@ -1,17 +1,21 @@
 package org.tesys.connectors.tracking.jira;
 
+import java.util.List;
+
+import org.tesys.core.analysis.sonar.MetricPOJO;
 import org.tesys.core.project.tracking.Issue;
 import org.tesys.core.project.tracking.User;
 
-
 public interface JiraAdaptor {
 
-  public Issue[] getIssues();
+    Issue[] getIssues();
 
-  public User[] getUsers();
+    User[] getUsers();
 
-  public Issue getIssue(String key);
+    Issue getIssue( String key );
 
-  public User getUser(String key);
+    User getUser( String key );
+
+    List<MetricPOJO> getMetrics();
 
 }

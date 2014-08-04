@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.telemetry.IssueMetrics;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.util.RESTClient;
@@ -47,6 +48,8 @@ public class ElasticSearch {
     public static final String DTYPE_USER = "user"; //$NON-NLS-1$
     public static final String DTYPE_ANALYSIS = "analysis";
     public static final String DTYPE_METRIC = "metric";
+    
+    public static final String DTYPE_ISSUE_METRIC = "issuemetric";
 
     public static final String REPOSITORY_DATA_ID = "repository"; //$NON-NLS-1$
     public static final String PROJECT_TRACKING_USER_DATA_ID = "project_tracking_user"; //$NON-NLS-1$
@@ -170,6 +173,10 @@ public class ElasticSearch {
     public void store( String id, MetricPOJO metric ) {
         client.POST( pathToStore( INDEX_ANALYZER, DTYPE_METRIC, id ), metric );
     }
+    
+    public void store( String id, IssueMetrics issueMetric ) {    
+        client.PUT( pathToStore( INDEX_ANALYZER, DTYPE_ISSUE_METRIC, id ), issueMetric );      
+    }
 
     public boolean isValidDeveloper( String name, String repoId ) {
         // TODO FIXME sacar el harcodeado y calcular automaticamente (por reflexion) los campos de match
@@ -197,4 +204,5 @@ public class ElasticSearch {
     public List<MetricPOJO> getMetrics() {
         return (List<MetricPOJO>) this.get( INDEX_ANALYZER, DTYPE_METRIC, MetricPOJO.class );
     }
+
 }
