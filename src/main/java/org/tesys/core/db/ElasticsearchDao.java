@@ -40,11 +40,11 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     protected static final String SCROLL = "/scroll";
     
     //Default resources
-    protected static final String DEFAULT_RESOURCE_MAPPING = "/scm/user" ;
-    protected static final String DEFAULT_RESOURCE_REVISION = "/scm/revision" ;
-    protected static final String DEFAULT_RESOURCE_ANALYSIS = "/analyzer/analysis" ;
-    protected static final String DEFAULT_RESOURCE_METRIC = "/analyzer/metric";
-    protected static final String DEFAULT_RESOURCE_ISSUE_METRIC = "/analyzer/issuemetric" ;
+    public static final String DEFAULT_RESOURCE_MAPPING = "/scm/user" ;
+    public static final String DEFAULT_RESOURCE_REVISION = "/scm/revision" ;
+    public static final String DEFAULT_RESOURCE_ANALYSIS = "/analyzer/analysis" ;
+    public static final String DEFAULT_RESOURCE_METRIC = "/analyzer/metric";
+    public static final String DEFAULT_RESOURCE_ISSUE_METRIC = "/analyzer/issuemetric" ;
 
     protected static final String ES_URL = "http://localhost:9200/";
 

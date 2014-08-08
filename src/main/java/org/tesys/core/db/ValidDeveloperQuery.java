@@ -12,14 +12,18 @@ public class ValidDeveloperQuery implements GenericQuery<Boolean> {
     private static final Logger LOG = Logger.getLogger( ValidDeveloperQuery.class.getName() );
     private ElasticsearchDao<MappingPOJO> dao ;  
 
-    public ValidDeveloperQuery( ElasticsearchDao<MappingPOJO> dao, String scmUser, String repository ) {
-        this.dao = dao ;
+    public ValidDeveloperQuery( String scmUser, String repository ) {
+        this.dao = 
+            new ElasticsearchDao<MappingPOJO>(MappingPOJO.class, 
+                ElasticsearchDao.DEFAULT_RESOURCE_MAPPING  );
         this.scmUser = scmUser ;
         this.repository = repository ;
     }
     
-    public ValidDeveloperQuery( ElasticsearchDao<MappingPOJO> dao) {
-        this.dao = dao ;
+    public ValidDeveloperQuery() {
+        this.dao = 
+            new ElasticsearchDao<MappingPOJO>(MappingPOJO.class, 
+                ElasticsearchDao.DEFAULT_RESOURCE_MAPPING  ); ;
     }
     
     @Override

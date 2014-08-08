@@ -8,7 +8,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.tesys.core.db.Database;
+import org.tesys.core.db.ElasticsearchDao;
+import org.tesys.core.db.ValidDeveloperQuery;
 import org.tesys.core.messages.Messages;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
@@ -68,7 +69,6 @@ public class SCMManager {
   private Pattern issuePattern;
   private Pattern userPattern;
   private Matcher matcher;
-  private Database db;
   private SCMFacade scmFacade;
   
   private static SCMManager instance = null;
@@ -76,7 +76,6 @@ public class SCMManager {
   private SCMManager() {
     issuePattern = Pattern.compile(ISSUE_REGEX);
     userPattern = Pattern.compile(USER_REGEX);
-    db = new Database();
     scmFacade = SCMFacade.getInstance();
   }
 
@@ -144,7 +143,11 @@ public class SCMManager {
     RevisionPOJO revision = new RevisionPOJO(formatDate.getTime(), scmData.getAuthor(), issue,
         scmData.getRevision(), scmData.getRepository());
 
-    db.store( revision.getID(), revision );
+    ElasticsearchDao<RevisionPOJO> dao = new ElasticsearchDao<RevisionPOJO>(
+        RevisionPOJO.class, 
+        ElasticsearchDao.DEFAULT_RESOURCE_REVISION  );
+    
+    dao.create(revision.getID(), revision);
 
     return true;
   }
@@ -226,9 +229,11 @@ public class SCMManager {
   private void mapUser(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
 
     boolean existeMapeo;
+
+    ValidDeveloperQuery query = new ValidDeveloperQuery( scmData.getAuthor(), scmData.getRepository());
     
     try {
-      existeMapeo = db.isValidDeveloper( scmData.getAuthor(), scmData.getRepository() );
+      existeMapeo = query.execute();
     } catch (Exception e) {
       throw new InvalidCommitException(Messages.getString(SCM_MANAGER_BASEDEDATOSCAIDA), e);
     }
@@ -255,7 +260,11 @@ public class SCMManager {
 
         MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(), scmData.getRepository());
 
-        db.store( mp.getID() , mp);
+        ElasticsearchDao<MappingPOJO> dao = new ElasticsearchDao<MappingPOJO>(
+            MappingPOJO.class, 
+            ElasticsearchDao.DEFAULT_RESOURCE_MAPPING  );
+        
+        dao.create(mp.getID(), mp);
 
       } else {
         throw new InvalidCommitException(Messages.getString(SYNTAXERRORUSER));

@@ -10,6 +10,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -46,7 +47,7 @@ public class Controller {
   }
 
   
-  //TODO cambiar los scripts del svn
+  //TODO cambiar el caracter # por otra cosa
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
@@ -98,8 +99,9 @@ public class Controller {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/metrics")
-  public List<Metric> getMetrics() {
-    return db.getMetrics();
+  public List<String> getMetrics() {
+    //return db.getMetrics();
+    return null;
   }
   
   @GET
@@ -114,7 +116,7 @@ public class Controller {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/newmetric")
-  public String addMetric( Metric m ) {
+  public String addMetric( String metric ) {
     //TODO return db.addMetric(m);
     return null;
   }
@@ -123,7 +125,7 @@ public class Controller {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/deletemetric")
-  public String deleteMetric( Metric m ) {
+  public String deleteMetric( String metric ) {
     // TODO return db.deleteMetric(m);
     return null;
   }
@@ -132,16 +134,20 @@ public class Controller {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/recommendate")
-  public List<Recommendation> recommnedate( Metric m, String issueType ) {
-    return recommender.recommendate(m, issueType);
+  @Path("/recommendate/{issuetype}")
+  public List<Recommendation> recommendate( String metric,
+      @PathParam("id") String issueType ) {
+    //return recommender.recommendate(m, issueType);
+    return null;
   }
   
+  
+  //TODO hacer por tipo de issue
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("/puntrecommendation")
-  public String recommnedate( Developer d, Boolean b  ) {
+  @Path("/puntrecommendation/{punt}")
+  public String puntRecommendation( Developer d, @PathParam("punt") Boolean b  ) {
     //TODO getDeveloper, penalizar y guardar
     return null;
   }
