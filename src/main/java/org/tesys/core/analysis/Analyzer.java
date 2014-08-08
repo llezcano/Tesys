@@ -22,8 +22,8 @@ public class Analyzer {
 
   public String performAnalysis() {
     
-    //SonarAnalizer sn = SonarAnalizer.getInstance();
-    //sn.executeSonarAnalysis();
+    SonarAnalizer sn = SonarAnalizer.getInstance();
+    sn.executeSonarAnalysis();
 
     //ProcessData pd = ProcessData.getInstance();
     //pd.executeProcessor();

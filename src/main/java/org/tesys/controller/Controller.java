@@ -15,7 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.tesys.core.analysis.Analyzer;
-import org.tesys.core.db.Database;
+import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.estructures.Developer;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.scm.InvalidCommitException;
@@ -30,19 +30,18 @@ import org.tesys.core.recommendations.Recommender;
 @Singleton
 public class Controller {
 
+  //TODO hacer los response bien
   private static final String FAIL_CODE = "0";
   private static final String OK_CODE = "1";
   
   private SCMManager scmManager;
   private Analyzer analizer;
-  private Database db;
   private Recommender recommender;
 
   @PostConstruct
   public void init() {
     scmManager = SCMManager.getInstance();
     analizer = Analyzer.getInstance();
-    db = new Database();
     recommender = new Recommender();
   }
 
@@ -92,9 +91,12 @@ public class Controller {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/developers")
   public List<Developer> getDevelopers() {
-    //return db.getDevelopers();
-    return null;
+    ElasticsearchDao<Developer> dao = 
+        new ElasticsearchDao<>(Developer.class, ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
+    return dao.readAll();
   }
+  
+  //TODO implementar todos estos
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)

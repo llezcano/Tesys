@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
-import org.tesys.core.db.Database;
+import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
 import org.tesys.util.Searcher;
@@ -26,14 +26,12 @@ public class SonarAnalizer {
   public static final File WORKSPACE = new File(System.getProperty(USER_HOME), ".tesys/workspace");
 
   private SCMManager scm;
-  private Database db;
   private SonarExtractor sonarExtractor;
 
   private static SonarAnalizer instance = null;
 
   private SonarAnalizer() {
     scm = SCMManager.getInstance();
-    db = new Database();
     sonarExtractor = new SonarExtractor();
   }
 
@@ -75,11 +73,16 @@ public class SonarAnalizer {
     List<SonarMetricPOJO> metricas = getMetrics();
     List<AnalisisPOJO> analisisPorCommit = getAnalisisPorCommit(analisisAcumulados, metricas);
     analisisAcumulados.clear();
-    List<AnalisisPOJO> analisisPorTareaAlmacenados = db.getAnalisis();
+    
+    ElasticsearchDao<AnalisisPOJO> dao = new ElasticsearchDao<AnalisisPOJO>(
+        AnalisisPOJO.class, 
+        ElasticsearchDao.DEFAULT_RESOURCE_ANALYSIS);
+    
+    List<AnalisisPOJO> analisisPorTareaAlmacenados = dao.readAll();
     
     List<AnalisisPOJO> analisisPorTarea = getAnalisisPorTarea(analisisPorCommit, analisisPorTareaAlmacenados, metricas);    
     
-    this.storeAnalysis(analisisPorTarea);
+    this.storeAnalysis(analisisPorTarea, dao);
 
   }
   
@@ -95,7 +98,13 @@ public class SonarAnalizer {
    * verdaderas metricas del commit en cuestion */
   
   public List<AnalisisPOJO> getAnalisisAcumulados() {
-    List<RevisionPOJO> revisiones = db.getRevisions();
+    
+    
+    ElasticsearchDao<RevisionPOJO> dao = new ElasticsearchDao<RevisionPOJO>(
+        RevisionPOJO.class, 
+        ElasticsearchDao.DEFAULT_RESOURCE_REVISION);
+    
+    List<RevisionPOJO> revisiones = dao.readAll();
     
     Collections.sort( revisiones );
     
@@ -126,7 +135,7 @@ public class SonarAnalizer {
 
       // Se indica que dicha revision ya fue escaneada asi mas adelante no se vuelve a escanear
       revision.setScaned(true);
-      db.store(revision.getID(), revision);
+      dao.update(revision.getID(), revision);
 
     }
     
@@ -165,10 +174,10 @@ public class SonarAnalizer {
     }
   }
 
-  public void storeAnalysis(List<AnalisisPOJO> resultados) {
-
+  public void storeAnalysis(List<AnalisisPOJO> resultados , ElasticsearchDao<AnalisisPOJO> dao) {
+    
     for (AnalisisPOJO analisis : resultados) {
-      db.store( analisis.getID() ,analisis );
+     dao.create( analisis.getID() ,analisis );
     }
 
   }

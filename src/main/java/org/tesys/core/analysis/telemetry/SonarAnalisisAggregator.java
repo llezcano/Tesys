@@ -6,18 +6,18 @@ import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.KeyValuePOJO;
 import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.analysis.sonar.SonarMetricPOJO;
-import org.tesys.core.db.Database;
+import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.SimpleValue;
 
 public class SonarAnalisisAggregator extends AggregatorDecorator {
 
-  Database db;
+  private ElasticsearchDao<AnalisisPOJO> dao;
   
   public SonarAnalisisAggregator(Aggregator aggregator) {
     super(aggregator);
-    db = new Database();
+    dao = new ElasticsearchDao<>(AnalisisPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_ANALYSIS);
   }
   
   @Override
@@ -38,7 +38,7 @@ public class SonarAnalisisAggregator extends AggregatorDecorator {
   public Issue agregateMetrics(Issue issueMetrics) {
     issueMetrics = super.agregateMetrics(issueMetrics);
     String key = issueMetrics.getIssueId();
-    AnalisisPOJO analisis = db.getAnalisis( key );
+    AnalisisPOJO analisis = dao.read(key);
     
     for (KeyValuePOJO value : analisis.getResults()) {
       

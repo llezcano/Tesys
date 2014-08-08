@@ -1,6 +1,6 @@
 package org.tesys.core.analysis.telemetry;
 
-import org.tesys.core.db.Database;
+import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.tracking.ProjectTracking;
@@ -18,12 +18,12 @@ import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 public class ProcessData {
 
-  private Database db;
+  private ElasticsearchDao<Issue> dao;
 
   private static ProcessData instance = null;
 
   private ProcessData() {
-    db = new Database();
+    dao = new ElasticsearchDao<>(Issue.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
   }
 
   public static ProcessData getInstance() {
@@ -48,8 +48,7 @@ public class ProcessData {
     for( String key : pt.getIssuesKeys() ) {
       Issue issueActual = new Issue( key );
       Issue issueFinal = aggregator.agregateMetrics(issueActual);
-      
-      db.store( issueFinal.getIssueId(), issueFinal );
+      dao.create( issueFinal.getIssueId(), issueFinal);
     }
 
   }
