@@ -16,8 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
-import org.tesys.core.analysis.sonar.MetricPOJO;
-import org.tesys.core.project.tracking.Issue;
+import org.tesys.core.estructures.Metric;
+import org.tesys.core.project.tracking.IssueInterface;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.Strings;
 
@@ -106,7 +106,7 @@ public class JiraConnector implements JiraAdaptor {
   @Path("/issues/{issue}")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
-  public Issue getIssue(@PathParam("issue") String key) {
+  public IssueInterface getIssue(@PathParam("issue") String key) {
     try {
       return jira.getIssue(key);
     } catch (Exception e) {
@@ -149,7 +149,7 @@ public class JiraConnector implements JiraAdaptor {
   @Path("/issues")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
-  public Issue[] getIssues() {
+  public IssueInterface[] getIssues() {
     try {
       return jira.getAllIssues();
     } catch (IOException e) {
@@ -163,7 +163,7 @@ public class JiraConnector implements JiraAdaptor {
   @Path("/metric/")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
-  public List<MetricPOJO> getMetrics() {
+  public List<Metric> getMetrics() {
       return jira.getMetrics() ;
   }
 

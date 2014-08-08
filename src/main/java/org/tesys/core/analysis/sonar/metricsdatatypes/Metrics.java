@@ -8,7 +8,7 @@ package org.tesys.core.analysis.sonar.metricsdatatypes;
  * y que se llaman por reflexion
  */
 public interface Metrics {
-  String getDifferenceBetweenAnalysis();
+  Double getDifferenceBetweenAnalysis();
 
-  String getNewAnalysisPerTask();
+  Double getNewAnalysisPerTask();
 }

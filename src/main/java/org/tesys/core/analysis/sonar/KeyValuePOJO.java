@@ -13,9 +13,9 @@ public class KeyValuePOJO {
   private String key;
   
   @XmlValue
-  private String value;
+  private Object value;
   
-  public KeyValuePOJO(String key, String value) {
+  public KeyValuePOJO(String key, Object value) {
     super();
     this.key = key;
     this.value = value;
@@ -77,12 +77,12 @@ public class KeyValuePOJO {
   }
 
 
-  public String getValue() {
+  public Object getValue() {
     return value;
   }
 
 
-  public void setValue(String value) {
+  public void setValue(Object value) {
     this.value = value;
   }
 

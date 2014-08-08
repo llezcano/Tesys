@@ -1,8 +1,11 @@
 package org.tesys.core.analysis.telemetry;
 
 import org.tesys.core.db.Database;
+import org.tesys.core.estructures.Issue;
+import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
+
 
 /**
  * Esta clase, y en particular todo este pquete, es el encargado de recolectar
@@ -37,10 +40,15 @@ public class ProcessData {
     
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
-    //TODO getAnalisis(key jira)
+    
+    for(Metric m : aggregator.getMetricsID() ) {
+      System.out.println( m.getNombre()+":"+ m.getDescripcion() );
+    }
+    
     for( String key : pt.getIssuesKeys() ) {
-      IssueMetrics issueActual = new IssueMetrics( key );
-      IssueMetrics issueFinal = aggregator.agregateMetrics(issueActual);
+      Issue issueActual = new Issue( key );
+      Issue issueFinal = aggregator.agregateMetrics(issueActual);
+      
       db.store( issueFinal.getIssueId(), issueFinal );
     }
 

@@ -1,6 +1,8 @@
 package org.tesys.connectors.tracking.jira;
 
-import org.tesys.core.analysis.sonar.MetricPOJO;
+
+import org.tesys.core.estructures.Metric;
+import org.tesys.core.estructures.SimpleValue;
 import org.tesys.core.project.tracking.IssuePOJO;
 import org.tesys.core.project.tracking.UserPOJO;
 import org.tesys.connectors.tracking.jira.model.*;
@@ -8,12 +10,11 @@ import org.tesys.connectors.tracking.jira.model.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.tesys.core.project.tracking.Issue;
+import org.tesys.core.project.tracking.IssueInterface;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.JSONFilter;
 
@@ -101,7 +102,7 @@ public class JiraAdaptation {
      * @throws IOException
      * @throws ClassCastException
      */
-    public Issue[] getIssues( String jql, Integer start, Integer end ) throws JsonProcessingException, IOException, ClassCastException {
+    public IssueInterface[] getIssues( String jql, Integer start, Integer end ) throws JsonProcessingException, IOException, ClassCastException {
         // TODO validate params
         Integer size = (MAX_SIZE_ISSUE_QUERY < end) ? MAX_SIZE_ISSUE_QUERY : end;
         // Init vars
@@ -109,7 +110,7 @@ public class JiraAdaptation {
         JSONFilter jf = new JSONFilter();
         boolean hasMore = true;
         ObjectMapper mapper = new ObjectMapper();
-        Issue[] issuesPOJO = new IssuePOJO[end - start];
+        IssueInterface[] issuesPOJO = new IssuePOJO[end - start];
         int count = 0;
 
         while (hasMore && count < end) {
@@ -140,7 +141,7 @@ public class JiraAdaptation {
    * @throws JsonProcessingException
    * @throws IOException
    */
-  public Issue[] getAllIssues() throws JsonProcessingException, IOException {
+  public IssueInterface[] getAllIssues() throws JsonProcessingException, IOException {
     return getIssues("", 0, getIssuesSize());
   }
 
@@ -153,7 +154,7 @@ public class JiraAdaptation {
    * @throws IOException
    * @throws ClassCastException
    */
-  public Issue getIssue(String key) throws JsonProcessingException, IOException, ClassCastException {
+  public IssueInterface getIssue(String key) throws JsonProcessingException, IOException, ClassCastException {
     return getIssues("key=" + key, 0, 1)[0];
   }
 
@@ -227,13 +228,14 @@ public class JiraAdaptation {
     }
     /**
      * Consulta la descripcion de las metricas asociadas al Issue desde el Jira
-     * 
+     * TODO el connector quizas no debe tener que depender de la estructura final, sino
+     * generar una estructura mas amigable y la estructura final la arma el core
      * @return
      */
-    public List<MetricPOJO> getMetrics() {
-        List<MetricPOJO> metrics = new ArrayList<MetricPOJO>();
-        metrics.add( new MetricPOJO( "work", "Worked Time", "Tiempo que tardo en resolver el Issue", "time", "effort" ) );
-        metrics.add( new MetricPOJO( "ework", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "time", "effort" ) );
+    public List<Metric> getMetrics() {
+        List<Metric> metrics = new ArrayList<Metric>();
+        metrics.add( new Metric( "work", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null) );
+        metrics.add( new Metric( "ework", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null ) );
         return metrics;
     }
 

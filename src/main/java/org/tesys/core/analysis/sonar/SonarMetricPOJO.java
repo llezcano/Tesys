@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MetricPOJO {
+public class SonarMetricPOJO {
 
 	private String key;
 	private String name;
@@ -19,10 +19,10 @@ public class MetricPOJO {
 	private String type;
 	private String domain;
 
-	public MetricPOJO() {
+	public SonarMetricPOJO() {
 	}
 
-	public MetricPOJO(String key, String name, String description, String type,
+	public SonarMetricPOJO(String key, String name, String description, String type,
 			String domain) {
 		this.key = key;
 		this.name = name;

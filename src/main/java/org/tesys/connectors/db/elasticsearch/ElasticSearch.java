@@ -10,8 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
-import org.tesys.core.analysis.telemetry.IssueMetrics;
+import org.tesys.core.estructures.Issue;
+import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.util.RESTClient;
@@ -178,11 +178,11 @@ public class ElasticSearch {
         client.POST( pathToStore( INDEX_ANALYZER, DTYPE_ANALYSIS, id ), analysis );
     }
 
-    public void store( String id, MetricPOJO metric ) {
+    public void store( String id, Metric metric ) {
         client.POST( pathToStore( INDEX_ANALYZER, DTYPE_METRIC, id ), metric );
     }
     
-    public void store( String id, IssueMetrics issueMetric ) {    
+    public void store( String id, Issue issueMetric ) {    
         client.PUT( pathToStore( INDEX_ANALYZER, DTYPE_ISSUE_METRIC, id ), issueMetric );      
     }
 
@@ -210,8 +210,8 @@ public class ElasticSearch {
         return (List<AnalisisPOJO>) this.get( INDEX_ANALYZER, DTYPE_ANALYSIS, AnalisisPOJO.class );
     }
 
-    public List<MetricPOJO> getMetrics() {
-        return (List<MetricPOJO>) this.get( INDEX_ANALYZER, DTYPE_METRIC, MetricPOJO.class );
+    public List<Metric> getMetrics() {
+        return (List<Metric>) this.get( INDEX_ANALYZER, DTYPE_METRIC, Metric.class );
     }
 
 }

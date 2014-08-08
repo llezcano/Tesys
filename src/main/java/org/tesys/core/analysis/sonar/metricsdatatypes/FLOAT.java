@@ -14,12 +14,16 @@ public class FLOAT implements Metrics {
     }
   }
 
-  public String getDifferenceBetweenAnalysis() {
-    return String.valueOf(actual - anterior);
+  public FLOAT(Double actual, Double anterior) {
+    this.actual = actual;
+    this.anterior = anterior;
   }
 
-  public String getNewAnalysisPerTask() {
-    return String.valueOf(actual + anterior);
+  public Double getDifferenceBetweenAnalysis() {
+    return actual - anterior;
   }
 
+  public Double getNewAnalysisPerTask() {
+    return actual + anterior;
+  }
 }

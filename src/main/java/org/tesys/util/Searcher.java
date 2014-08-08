@@ -1,10 +1,10 @@
-package org.tesys.core.analysis.telemetry.util;
+package org.tesys.util;
 
 import java.util.List;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
 import org.tesys.core.analysis.sonar.KeyValuePOJO;
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.analysis.sonar.SonarMetricPOJO;
 
 public class Searcher {
 
@@ -23,11 +23,11 @@ public class Searcher {
     return null;
   }
   
- public static String searchMetricValue( List<KeyValuePOJO> resultados, String metricKey ) {
+ public static Double searchMetricValue( List<KeyValuePOJO> resultados, String metricKey ) {
     
     for (KeyValuePOJO resultado : resultados) {
       if( resultado.getKey().equals(metricKey) ) {
-        return resultado.getValue();
+        return (Double)resultado.getValue();
       }
     }
 
@@ -44,8 +44,8 @@ public class Searcher {
    * @param metrics
    * @return
    */
-  public static MetricPOJO searchMetric(String field, List<MetricPOJO> metrics) {
-    for (MetricPOJO m : metrics) {
+  public static SonarMetricPOJO searchMetric(String field, List<SonarMetricPOJO> metrics) {
+    for (SonarMetricPOJO m : metrics) {
       if ( m.getKey().equals(field)) {
         return m;
       }

@@ -2,13 +2,11 @@ package org.tesys.core.analysis.sonar.metricsdatatypes;
 
 public class DATA implements Metrics {
 
-  public String getDifferenceBetweenAnalysis() {
-    // TODO si se sabe como manejar este tipo de dato implementar
+  public Double getDifferenceBetweenAnalysis() {
     return null;
   }
 
-  public String getNewAnalysisPerTask() {
-    // TODO si se sabe como manejar este tipo de dato implementar
+  public Double getNewAnalysisPerTask() {
     return null;
   }
 

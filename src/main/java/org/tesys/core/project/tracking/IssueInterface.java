@@ -1,6 +1,6 @@
 package org.tesys.core.project.tracking;
 
-public interface Issue {
+public interface IssueInterface {
 
     public String getKey();
 

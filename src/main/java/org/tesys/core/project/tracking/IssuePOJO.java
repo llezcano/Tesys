@@ -6,7 +6,7 @@ import java.util.Arrays;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class IssuePOJO implements Issue {
+public class IssuePOJO implements IssueInterface {
 
     private String key;
 

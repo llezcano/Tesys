@@ -2,7 +2,8 @@ package org.tesys.core.project.tracking;
 
 import java.util.List;
 
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.estructures.Metric;
+
 
 /**
  * Interface para Connector de un Gestor de proyectos (Project Tracking). El
@@ -22,7 +23,7 @@ public interface ProjectTracking {
      * 
      * @return Un arreglo de todos issues existentes.
      */
-    public Issue[] getIssues();
+    public IssueInterface[] getIssues();
 
     /**
      * Consulta al Gestor de Proyectos todos los usuarios existentes.
@@ -59,7 +60,7 @@ public interface ProjectTracking {
      * @return Devuelve el Issue con esa clave, o null si no existe Issue con
      *         dicha clave.
      */
-    public Issue getIssue( String key );
+    public IssueInterface getIssue( String key );
 
     /**
      * Consulta las metricas brindadas del Gestor de Proyectos.
@@ -69,7 +70,7 @@ public interface ProjectTracking {
      * @return Devuelve las metricas asociadas al Gestor de Proyectos. dicha
      *         clave.
      */
-    public List<MetricPOJO> getMetrics();
+    public List<Metric> getMetrics();
 
     public abstract List<String> getIssuesKeys();
 }

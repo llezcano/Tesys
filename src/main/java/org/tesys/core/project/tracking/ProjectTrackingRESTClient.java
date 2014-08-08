@@ -1,16 +1,14 @@
 package org.tesys.core.project.tracking;
 
 import java.net.MalformedURLException;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.GenericType;
 
-import org.tesys.core.analysis.sonar.MetricPOJO;
+import org.tesys.core.estructures.Metric;
 import org.tesys.util.RESTClient;
 
 /**
@@ -46,7 +44,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     }
 
     @Override
-    public Issue[] getIssues() {
+    public IssueInterface[] getIssues() {
         IssuePOJO[] issues = client.GET( RESOURCE_ISSUES ).readEntity( IssuePOJO[].class );
         return issues;
     }
@@ -70,25 +68,26 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     }
 
     @Override
-    public Issue getIssue( String key ) {
+    public IssueInterface getIssue( String key ) {
         IssuePOJO i = client.GET( RESOURCE_ISSUES + key ).readEntity( IssuePOJO.class );
         return i;
     }
 
     @Override
-    public List<MetricPOJO> getMetrics() {
+    public List<Metric> getMetrics() {
         try {
-            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<MetricPOJO>>() {
+            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<Metric>>() {
             } );
         } catch (Exception e) {
-            return new ArrayList<MetricPOJO>();
+          e.printStackTrace();
+            return new ArrayList<Metric>();
         }
     }
 
     @Override
     public List<String> getIssuesKeys() {
         // TODO hacerlo en el Connector.
-        Issue[] issues = this.getIssues();
+        IssueInterface[] issues = this.getIssues();
         List<String> keys = new ArrayList<String>();
         for (int i = 0; i < issues.length; i++) {
             if (issues[i] != null && issues[i].getKey() != null) {
