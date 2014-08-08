@@ -16,7 +16,7 @@ public class Recommender {
 
 
 
-  public void recommendate(Metric m, String type) {
+  public List<Recommendation> recommendate(Metric m, String type) {
     
     /*
     Developer arian = new Developer();
@@ -95,10 +95,7 @@ public class Recommender {
 
     Collections.sort(recomendaciones);
 
-    for (Recommendation recommendation : recomendaciones) {
-      System.out.println(recommendation);
-    }
-
+    return recomendaciones;
   }
 
 }
