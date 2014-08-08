@@ -102,6 +102,11 @@ public class RESTClient implements HTTPClient {
         return target.request( this.mediaType ).get();
     }
 
+    public Response GET(Map<String, String> params) {
+        return PUT("", params) ;
+    }
+
+    
     public Response GET( String resource ) {
 
         return client
@@ -112,24 +117,37 @@ public class RESTClient implements HTTPClient {
 
     }
 
-    public Response PUT( String resource, Object serealizable ) {
-
-        return client
-                .target( this.getURL() )
-                .path( resource )
-                .request( this.mediaType )
-                .put( Entity.entity( serealizable, this.mediaType ) );
-
+    public Response GET() {
+        return GET("") ;
     }
 
-    public Response POST( String resource, Object serealizable ) {
+    
+    public Response PUT( String resource, Object serializable ) {
 
         return client
                 .target( this.getURL() )
                 .path( resource )
                 .request( this.mediaType )
-                .post( Entity.entity( serealizable, this.mediaType ) );
+                .put( Entity.entity( serializable, this.mediaType ) );
 
+    }
+    
+    public Response PUT(Object serializable) {
+        return PUT("", serializable) ;
+    }
+
+    public Response POST( String resource, Object serializable ) {
+
+        return client
+                .target( this.getURL() )
+                .path( resource )
+                .request( this.mediaType )
+                .post( Entity.entity( serializable, this.mediaType ) );
+
+    }
+    
+    public Response POST(Object serializable) {
+        return POST("", serializable) ;
     }
 
     public Response DELETE( String resource ) {
@@ -141,5 +159,22 @@ public class RESTClient implements HTTPClient {
                 .delete();
 
     }
+    
+    public Response DELETE() {
+        return DELETE("") ;
+    }
 
+    public Response HEAD( String resource ) {
+
+        return client
+                .target( this.getURL() )
+                .path( resource )
+                .request( this.mediaType )
+                .head();
+
+    }
+    
+    public Response HEAD() {
+        return HEAD("") ;
+    }
 }
