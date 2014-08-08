@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
-import org.tesys.core.analysis.telemetry.util.Searcher;
 import org.tesys.core.db.Database;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.SCMManager;
+import org.tesys.util.Searcher;
 
 
 public class SonarAnalizer {
