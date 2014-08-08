@@ -31,7 +31,6 @@ public class MetricFactory {
   }*/
   
   public Metric getMetric(String jsonFormat) {
-    System.out.println(jsonFormat) ;
     ObjectMapper mapper = new ObjectMapper();
 
     JsonNode o = null;
@@ -47,6 +46,16 @@ public class MetricFactory {
     
   }
   
+  public Metric getMetric(JsonNode jsonFormat) {
+     
+      IValue v = getValue(jsonFormat.get("value"));
+      
+      return new Metric(jsonFormat.get("key").asText(), 
+                        jsonFormat.get("nombre").asText(),
+                        jsonFormat.get("descripcion").asText(), 
+                        jsonFormat.get("procedencia").asText(), v);
+
+    }
   
   
   public IValue getValue( JsonNode json ) {

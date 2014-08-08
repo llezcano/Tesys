@@ -181,7 +181,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
         }
     }
 
-    private String scan() {
+    protected String scan() {
         Map<String, String> param = new HashMap<String, String>();
         param.put( "search_type", "scan" );
         param.put( "scroll", "1m" );
@@ -195,7 +195,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
         }
     }
 
-    private List<String> extractKeys( ArrayNode arrayNode ) {
+    protected List<String> extractKeys( ArrayNode arrayNode ) {
         Iterator<JsonNode> it = null;
         List<String> keys = new ArrayList<String>();
 
@@ -229,7 +229,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
      * @return lista parametrizada que representa el JSON ingresado como
      *         parametro.
      */
-    private List<T> arrayJsonToList( ArrayNode arrayNode ) {
+    protected List<T> arrayJsonToList( ArrayNode arrayNode ) {
         ObjectMapper mapper = new ObjectMapper();
         Iterator<JsonNode> it = null;
         List<T> elements = new ArrayList<T>();
