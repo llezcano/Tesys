@@ -24,35 +24,16 @@ public class MetricFactory {
 
     Metric lineasPorBugs = new Metric("linbug", "lineas por bugs", 
         "lineas de codigo por cantidad de bugs", "User Made", mul);
-<<<<<<< HEAD
-    //en db
-    //getMetric(lineasPorBugs.toString());
- 
-    getMetric("{\"class\":\"org.tesys.core.estructures.Multiplicacion\",\"value\":{\"Multiplicacion\":[{\"class\":\"org.tesys.core.estructures.SimpleValue\", \"SimpleValue\":\"lines\"},{\"class\":\"org.tesys.core.estructures.SimpleValue\"\"SimpleValue\":\"bugs\"}]}}") ;
-  
-  }
-=======
+
     
     System.out.println(  getMetric(lineasPorBugs.toString()) );
     
   }*/
->>>>>>> 9b575271ee142e8169082791842f65d4290f0d2e
   
   public Metric getMetric(String jsonFormat) {
     System.out.println(jsonFormat) ;
     ObjectMapper mapper = new ObjectMapper();
-<<<<<<< HEAD
-    JsonNode actualObj = null;
-    
-    try {
 
-      actualObj = mapper.readTree(jsonFormat);
-    } catch (IOException e) {        }
-    
-    System.out.println(actualObj.get( "class" )) ;
-    IValue v = getValue(actualObj.get("value"));
-
-=======
     JsonNode o = null;
     try {
       o = mapper.readTree(jsonFormat);
@@ -62,7 +43,6 @@ public class MetricFactory {
     
     return new Metric(o.get("key").asText(), o.get("nombre").asText(), o.get("descripcion").asText(), 
         o.get("procedencia").asText(), v);
->>>>>>> 9b575271ee142e8169082791842f65d4290f0d2e
     
     
   }
