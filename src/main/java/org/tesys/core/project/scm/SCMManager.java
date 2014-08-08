@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.tesys.core.db.Database;
 import org.tesys.core.messages.Messages;
+import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 
@@ -191,7 +192,7 @@ public class SCMManager {
       if (matcher.find()) {
         throw new InvalidCommitException(Messages.getString(SYTAXERRORMULTIPLECOMMANDS)); //$NON-NLS-1$
       }
-      ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
+      ProjectTracking pt = new ProjectTrackingRESTClient();
       if (!pt.existIssue(issue)) {
         throw new InvalidCommitException(Messages.getString(SCM_MANAGER_ISSUEINVALIDO)); //$NON-NLS-1$
       }
@@ -246,7 +247,7 @@ public class SCMManager {
           throw new InvalidCommitException(Messages.getString(SYTAXERRORMULTIPLECOMMANDS));
         }
         
-        ProjectTrackingRESTClient pt = new ProjectTrackingRESTClient();
+        ProjectTracking pt = new ProjectTrackingRESTClient();
         if (!pt.existUser(user)) {
           throw new InvalidCommitException(Messages.getString(SCM_MANAGER_USERINVALIDO));
         }

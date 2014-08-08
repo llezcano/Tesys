@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
 import org.tesys.core.analysis.telemetry.util.Searcher;
 import org.tesys.core.db.Database;
@@ -23,7 +21,7 @@ public class SonarAnalizer {
 
   private static final String USER_HOME = "user.home";
 
-  public static final File BUILD_FILE = new File(System.getProperty(USER_HOME), ".tesys/build.xml");
+  public static final File BUILD_FILE = new File(System.getProperty(USER_HOME), ".tesys");
 
   public static final File WORKSPACE = new File(System.getProperty(USER_HOME), ".tesys/workspace");
 
@@ -74,7 +72,7 @@ public class SonarAnalizer {
     //no traer los analisis que no se usan?
     
     List<AnalisisPOJO> analisisAcumulados = getAnalisisAcumulados();
-    List<SonarMetricPOJO> metricas = sonarExtractor.getMetrics();
+    List<SonarMetricPOJO> metricas = getMetrics();
     List<AnalisisPOJO> analisisPorCommit = getAnalisisPorCommit(analisisAcumulados, metricas);
     analisisAcumulados.clear();
     List<AnalisisPOJO> analisisPorTareaAlmacenados = db.getAnalisis();
@@ -86,6 +84,9 @@ public class SonarAnalizer {
   }
   
   
+  public List<SonarMetricPOJO> getMetrics(){
+    return sonarExtractor.getMetrics();
+  }
   
   /* Se tienen todos los resultados del sonar pero estos resultados
    * son acumulados, lo que significa que el analisis de la revision 3 va a tener
@@ -135,19 +136,20 @@ public class SonarAnalizer {
     return sonarExtractor.getResults(revisiones);
 
   }
-  
 
   /**
-   * Executa una tarea ant ubicada en buildFile
+   * Executa sonar runner
+   *TODO sacar ant del pom
+   * 
    */
   private void analizar(File buildFile) {
-    Project p = new Project();
-    p.setUserProperty( "ant.file", buildFile.getAbsolutePath() );
-    p.init();
-    ProjectHelper helper = ProjectHelper.getProjectHelper();
-    p.addReference( "ant.projectHelper", helper );
-    helper.parse( p, buildFile );
-    p.executeTarget( p.getDefaultTarget() );
+    Process p;
+    try {
+        p = Runtime.getRuntime().exec("sonar-runner", new String[0], buildFile);
+        p.waitFor();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
   }
 
 
@@ -202,8 +204,8 @@ public class SonarAnalizer {
         //metric name es por ejemplo "lines"
         String metricName = resultadosActuales.get(j).getKey();
         //Los valores actuales y anteriores, por ejemplo 2 y 10, por lo que el valor final debe ser 8
-        String valorActual = resultadosActuales.get(j).getValue();
-        String valorPrevio = resultadosPrevios.get(j).getValue();
+        String valorActual = resultadosActuales.get(j).getValue().toString();
+        String valorPrevio = resultadosPrevios.get(j).getValue().toString();
         
         //dado "lines" se obtiene toda la informacion de ese tipo de metrica
         SonarMetricPOJO metric = Searcher.searchMetric(metricName, metricas);
@@ -232,7 +234,7 @@ public class SonarAnalizer {
           try {
             object =
                 Class.forName("org.tesys.core.analysis.sonar.metricsdatatypes"+ "." + metricType)
-                    .getConstructors()[0].newInstance(valorActual, valorPrevio);
+                    .getConstructors()[1].newInstance(valorActual, valorPrevio);
             
             
             metricHandler = (Metrics) object;
@@ -300,9 +302,9 @@ public class SonarAnalizer {
           
           Metrics metricHandler = null;
           String metricName = resultadosActuales.get(j).getKey();
-          String valorActual = resultadosActuales.get(j).getValue();
+          Double valorActual = (Double) resultadosActuales.get(j).getValue();
           
-          String valorPrevio = Searcher.searchMetricValue(resultadosPrevios, metricName );
+          Double valorPrevio = Searcher.searchMetricValue(resultadosPrevios, metricName );
           
           if( valorPrevio != null ) {
             SonarMetricPOJO metric = Searcher.searchMetric(metricName, metricas);

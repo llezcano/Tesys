@@ -12,7 +12,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import org.tesys.core.analysis.sonar.AnalisisPOJO;
-import org.tesys.core.analysis.telemetry.MetricPOJO;
+import org.tesys.core.estructures.Issue;
+import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.scm.RevisionPOJO;
 import org.tesys.core.project.scm.MappingPOJO;
 import org.tesys.util.RESTClient;
@@ -29,6 +30,7 @@ import org.tesys.util.RESTClient;
  * 
  */
 public class Database {
+
 	// RESEARCH Singleton Pattern Java Thread-Safe
 
 	// Estos RESOURCEs serian los del Connector de la DB
@@ -37,6 +39,7 @@ public class Database {
 	private static final String RESOURCE_METRIC = "metric/";
 	private static final String RESOURCE_ANALYSIS = "analysis/";
 	private static final String RESOURCE_UNSCANNED_REVISIONS = "revision/";
+	private static final String RESOURCE_ISSUE_METRIC = "issuemetric/";
 	
 	private static final Logger LOG = Logger.getLogger( Database.class.getName() );
 
@@ -64,7 +67,10 @@ public class Database {
 		Response response = client.GET(RESOURCE_USER_MAPPING + name, param);
 		return "true".equals(response.readEntity(String.class).toString());
 	}
-
+	
+    public void store( String id, Issue issueMetrics ) {
+        client.PUT( RESOURCE_ISSUE_METRIC + id, issueMetrics );
+    }
 	public void store(String id, MappingPOJO mapping) {
 		client.PUT(RESOURCE_USER_MAPPING + id, mapping);
 	}
@@ -73,7 +79,7 @@ public class Database {
 		client.PUT(RESOURCE_COMMIT + id, rev);
 	}
 
-	public void store(String id, MetricPOJO metric) {
+	public void store(String id, Metric metric) {
 		client.PUT(RESOURCE_METRIC + id, metric);
 	}
 
@@ -91,22 +97,26 @@ public class Database {
 	    }
 	}
 
-	public List<AnalisisPOJO> getAnalisis() {		
+
+
+    public List<AnalisisPOJO> getAnalisis() {
         try {
-            return client.GET(RESOURCE_ANALYSIS).readEntity(new GenericType<List<AnalisisPOJO>>(){});
+            return client.GET( RESOURCE_ANALYSIS ).readEntity( new GenericType<List<AnalisisPOJO>>() {
+            } );
         } catch (Exception e) {
             LOG.log( Level.SEVERE, e.toString(), e );
             return new ArrayList<AnalisisPOJO>();
-        }	
+        }
     }
 
-	public List<MetricPOJO> getMetrics() {
+    public List<Metric> getMetrics() {
         try {
-            return client.GET(RESOURCE_METRIC).readEntity(new GenericType<List<MetricPOJO>>(){});
+            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<Metric>>() {
+            } );
         } catch (Exception e) {
             LOG.log( Level.SEVERE, e.toString(), e );
-            return new ArrayList<MetricPOJO>();
+            return new ArrayList<Metric>();
         }
-	}
+    }
 
 }

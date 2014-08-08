@@ -1,17 +1,21 @@
 package org.tesys.connectors.tracking.jira;
 
-import org.tesys.core.project.tracking.Issue;
-import org.tesys.core.project.tracking.User;
+import java.util.List;
 
+import org.tesys.core.estructures.Metric;
+import org.tesys.core.project.tracking.IssueInterface;
+import org.tesys.core.project.tracking.User;
 
 public interface JiraAdaptor {
 
-  public Issue[] getIssues();
+    IssueInterface[] getIssues();
 
-  public User[] getUsers();
+    User[] getUsers();
 
-  public Issue getIssue(String key);
+    IssueInterface getIssue( String key );
 
-  public User getUser(String key);
+    User getUser( String key );
+
+    List<Metric> getMetrics();
 
 }

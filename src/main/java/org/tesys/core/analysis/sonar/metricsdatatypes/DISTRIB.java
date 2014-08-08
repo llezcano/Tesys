@@ -13,6 +13,7 @@ public class DISTRIB implements Metrics {
   private static final String EQUAL = "=";
 
   String actual, anterior;
+  Double dactual, danterior;
 
   public DISTRIB(String actual, String anterior) {
     this.actual = actual;
@@ -25,6 +26,10 @@ public class DISTRIB implements Metrics {
     }
   }
 
+  public DISTRIB(Double dactual, Double danterior) {
+    this.dactual = dactual;
+    this.danterior = danterior;
+  }
 
   /**
    * La diferencia se hace restando cada numero a la derecha del = Por lo que puede dar numeros
@@ -32,9 +37,9 @@ public class DISTRIB implements Metrics {
    * otra categoria a menos que lo haya eliminado
    */
 
-  public String getDifferenceBetweenAnalysis() {
+  public Double getDifferenceBetweenAnalysis() {
 
-    StringBuilder ret = new StringBuilder();
+    Double ret = new Double(0.0);
     String[] actCom = actual.split(SEMI_COLON);
     String[] antCom = anterior.split(SEMI_COLON);
 
@@ -42,12 +47,12 @@ public class DISTRIB implements Metrics {
       for (int i = 0; i < actCom.length; i++) {
         actCom[i].split(EQUAL);
         antCom[i].split(EQUAL);
-        ret.append(actCom[i].split(EQUAL)[0]
-            + EQUAL
-            + (Integer.parseInt(actCom[i].split(EQUAL)[1]) - Integer.parseInt(antCom[i]
-                .split(EQUAL)[1])) + SEMI_COLON);
+        ret += Double.valueOf(actCom[i].split(EQUAL)[0]) * 
+            Double.valueOf(Integer.parseInt(actCom[i].split(EQUAL)[1]) - 
+                Integer.parseInt(antCom[i].split(EQUAL)[1])) ;
       }
-      return ret.substring(0, ret.length() - 1);
+
+      return ret;
 
     }
     
@@ -59,8 +64,12 @@ public class DISTRIB implements Metrics {
   /**
    * La suma se maneja igual que la resta, suma todos los valores a la derecha del =
    */
+  
+  public Double getNewAnalysisPerTask() {
+    return dactual + danterior;
+  }
 
-  public String getNewAnalysisPerTask() {
+ /* public Double getNewAnalysisPerTask() {
 
     StringBuilder ret = new StringBuilder();
     String[] actCom = actual.split(SEMI_COLON);
@@ -78,6 +87,6 @@ public class DISTRIB implements Metrics {
 
  // caso de que el anterior con el nuevo sean diferentes en longitud (puede pasar??)
     return null; 
-  }
+  }*/
 
 }

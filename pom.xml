@@ -2,7 +2,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tesys</groupId>
 	<artifactId>core</artifactId>
@@ -43,12 +42,6 @@
 		<!-- sonar execution -->
 
 		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.7.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.codehaus.sonar</groupId>
 			<artifactId>sonar-ws-client</artifactId>
 			<version>2.11</version>
@@ -80,4 +73,3 @@
 	</build>
 
 </project>
-

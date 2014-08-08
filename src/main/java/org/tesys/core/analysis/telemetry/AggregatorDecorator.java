@@ -2,6 +2,9 @@ package org.tesys.core.analysis.telemetry;
 
 import java.util.List;
 
+import org.tesys.core.estructures.Issue;
+import org.tesys.core.estructures.Metric;
+
 public abstract class AggregatorDecorator implements Aggregator {
   protected Aggregator aggregator;
 
@@ -10,13 +13,13 @@ public abstract class AggregatorDecorator implements Aggregator {
   }
 
   @Override
-  public IssueMetrics agregateMetrics(IssueMetrics i) {
+  public Issue agregateMetrics(Issue i) {
     
     return aggregator.agregateMetrics(i);
   }
 
   @Override
-  public List<MetricPOJO> getMetricsID() {
+  public List<Metric> getMetricsID() {
     return aggregator.getMetricsID();
   }
   

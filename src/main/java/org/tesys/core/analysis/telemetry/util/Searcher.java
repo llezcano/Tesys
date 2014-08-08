@@ -23,11 +23,11 @@ public class Searcher {
     return null;
   }
   
- public static String searchMetricValue( List<KeyValuePOJO> resultados, String metricKey ) {
+ public static Double searchMetricValue( List<KeyValuePOJO> resultados, String metricKey ) {
     
     for (KeyValuePOJO resultado : resultados) {
       if( resultado.getKey().equals(metricKey) ) {
-        return resultado.getValue();
+        return (Double)resultado.getValue();
       }
     }
 

@@ -3,25 +3,29 @@ package org.tesys.core.analysis.sonar.metricsdatatypes;
 
 public class INT implements Metrics {
 
-  Integer actual, anterior;
+  Double actual, anterior;
 
   public INT(String actual, String anterior) {
-    this.actual = Integer.valueOf(actual);
+    this.actual = Double.valueOf(actual);
     if ("null".equals(anterior)) {
-      this.anterior = 0;
+      this.anterior = 0.0;
     } else {
-      this.anterior = Integer.valueOf(anterior);
+      this.anterior = Double.valueOf(anterior);
     }
 
   }
-
-  public String getDifferenceBetweenAnalysis() {
-    return String.valueOf(actual - anterior);
+  
+  public INT(Double actual, Double anterior) {
+    this.actual = actual;
+    this.anterior = anterior;
   }
 
-  public String getNewAnalysisPerTask() {
-    return String.valueOf(actual + anterior);
+  public Double getDifferenceBetweenAnalysis() {
+    return Double.valueOf(actual - anterior);
   }
 
+  public Double getNewAnalysisPerTask() {
+    return actual + anterior;
+  }
 
 }

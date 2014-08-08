@@ -1,6 +1,7 @@
 package org.tesys.connectors.tracking.jira;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
-import org.tesys.core.project.tracking.Issue;
+import org.tesys.core.estructures.Metric;
+import org.tesys.core.project.tracking.IssueInterface;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.Strings;
 
@@ -104,7 +106,7 @@ public class JiraConnector implements JiraAdaptor {
   @Path("/issues/{issue}")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
-  public Issue getIssue(@PathParam("issue") String key) {
+  public IssueInterface getIssue(@PathParam("issue") String key) {
     try {
       return jira.getIssue(key);
     } catch (Exception e) {
@@ -147,7 +149,7 @@ public class JiraConnector implements JiraAdaptor {
   @Path("/issues")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
-  public Issue[] getIssues() {
+  public IssueInterface[] getIssues() {
     try {
       return jira.getAllIssues();
     } catch (IOException e) {
@@ -156,4 +158,22 @@ public class JiraConnector implements JiraAdaptor {
     return null;
   }
 
+  
+  @GET
+  @Path("/metric/")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Override
+  public List<Metric> getMetrics() {
+      return jira.getMetrics() ;
+  }
+
+  // TODO analizar si realmente se necesita esta informacion en el modelo
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/priority
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/project
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/issuetype
 }

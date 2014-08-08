@@ -1,98 +1,99 @@
 package org.tesys.core.project.tracking;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.core.GenericType;
+
+import org.tesys.core.estructures.Metric;
 import org.tesys.util.RESTClient;
 
-
 /**
- * Este ProjectTracking es un cliente REST para el Connector de un Project Manager.
+ * Este ProjectTracking es un cliente REST para el Connector de un Project
+ * Manager.
  * 
  * @author rulo
  * 
  */
 public class ProjectTrackingRESTClient implements ProjectTracking {
 
-  private RESTClient client;
-  
-  private static final Logger LOG = Logger.getLogger( ProjectTrackingRESTClient.class.getName() );
+    private RESTClient client;
 
-  //RESEARCH Discovery Resources from Connector
-  private static String RESOURCE_ISSUES = "issues/";
-  private static String RESOURCE_USERS = "users/";
+    private static final Logger LOG = Logger.getLogger( ProjectTrackingRESTClient.class.getName() );
 
-  public ProjectTrackingRESTClient() {
-    try {
-	client = new RESTClient(getConnectorLocation());
-    } catch (MalformedURLException e) {
-      LOG.log( Level.SEVERE, e.toString(), e );
+    // RESEARCH Discovery Resources from Connector
+    private static String RESOURCE_ISSUES = "issues/";
+    private static String RESOURCE_USERS = "users/";
+    private static String RESOURCE_METRIC = "metric/";
+
+    public ProjectTrackingRESTClient() {
+        try {
+            client = new RESTClient( getConnectorLocation() );
+        } catch (MalformedURLException e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        }
+
     }
-  }
 
+    public String getConnectorLocation() {
+        // RESEARCH Discovery Services
+        return "http://localhost:8080/core/rest/connectors/jira";
+    }
 
-  public String getConnectorLocation() {
-    //RESEARCH Discovery Services
-    return "http://localhost:8080/core/rest/connectors/jira";
-  }
+    @Override
+    public IssueInterface[] getIssues() {
+        IssuePOJO[] issues = client.GET( RESOURCE_ISSUES ).readEntity( IssuePOJO[].class );
+        return issues;
+    }
 
-  @Override
-  public Issue[] getIssues() {
-    IssuePOJO[] issues = client.GET(RESOURCE_ISSUES).readEntity(IssuePOJO[].class);
-    return issues;
-  }
+    @Override
+    public User[] getUsers() {
+        UserPOJO[] users = client.GET( RESOURCE_USERS ).readEntity( UserPOJO[].class );
+        return users;
+    }
 
-  @Override
-  public User[] getUsers() {
-    UserPOJO[] users = client.GET(RESOURCE_USERS).readEntity(UserPOJO[].class);
-    return users;
-  }
+    @Override
+    public boolean existUser( String key ) {
+        UserPOJO u = client.GET( RESOURCE_USERS + key ).readEntity( UserPOJO.class );
+        return (u != null);
+    }
 
+    @Override
+    public boolean existIssue( String key ) {
+        IssuePOJO i = client.GET( RESOURCE_ISSUES + key ).readEntity( IssuePOJO.class );
+        return (i != null);
+    }
 
-  @Override
-  public boolean existUser(String key) {
-    UserPOJO u = client.GET(RESOURCE_USERS + key).readEntity(UserPOJO.class);
-    return (u != null);
-  }
+    @Override
+    public IssueInterface getIssue( String key ) {
+        IssuePOJO i = client.GET( RESOURCE_ISSUES + key ).readEntity( IssuePOJO.class );
+        return i;
+    }
 
-  @Override
-  public boolean existIssue(String key) {
-    IssuePOJO i = client.GET(RESOURCE_ISSUES + key).readEntity(IssuePOJO.class);
-    return (i != null);
-  }
-  
-  @Override
-  public Issue getIssue(String key) {
-    IssuePOJO i = client.GET(RESOURCE_ISSUES + key).readEntity(IssuePOJO.class);
-    return i ;
-  }
+    @Override
+    public List<Metric> getMetrics() {
+        try {
+            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<Metric>>() {
+            } );
+        } catch (Exception e) {
+          e.printStackTrace();
+            return new ArrayList<Metric>();
+        }
+    }
 
+    @Override
+    public List<String> getIssuesKeys() {
+        // TODO hacerlo en el Connector.
+        IssueInterface[] issues = this.getIssues();
+        List<String> keys = new ArrayList<String>();
+        for (int i = 0; i < issues.length; i++) {
+            if (issues[i] != null && issues[i].getKey() != null) {
+                keys.add( issues[i].getKey() );
+            }
+        }
+        return keys;
+    }
 }
-
-/*
- 
-
-  public static void main(String args[]) throws MalformedURLException {
-
-    ProjectTrackingRESTClient project = new ProjectTrackingRESTClient();
-
-    // Query for user exists
-    System.out.println("Homero J. Simpson is a developer ? " + project.existUser("homerojsimpson"));
-    // Getting all users
-    User[] users = project.getUsers();
-    System.out.println("Users List: ");
-    System.out.println(java.util.Arrays.toString(users));
-    System.out.println("TOTAL = " + users.length);
-
-    // Query for issue exists
-    System.out.println("ADA-1 is a issue ? " + project.existUser("ADA-1"));
-    // Getting all issues
-    // Issue[] issues = project.getIssues() ;
-    // System.out.println("Issues List: ") ;
-    // System.out.println(java.util.Arrays.toString(issues)) ;
-    // System.out.println("TOTAL = " + issues.length) ;
-  }
- 
-  
- */

@@ -13,12 +13,17 @@ public class PERCENT implements Metrics {
     }
   }
 
-  public String getDifferenceBetweenAnalysis() {
-    return String.valueOf(actual - anterior);
+  public PERCENT(Double actual, Double anterior) {
+    this.actual = actual;
+    this.anterior = anterior;
   }
 
-  public String getNewAnalysisPerTask() {
-    return String.valueOf(actual + anterior);
+  public Double getDifferenceBetweenAnalysis() {
+    return actual - anterior;
+  }
+
+  public Double getNewAnalysisPerTask() {
+    return actual + anterior;
   }
 
 }
