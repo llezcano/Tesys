@@ -3,6 +3,7 @@ package org.tesys.core.estructures;
 
 
 
+
 /**
  * Esta clase representa una metrica, una metrica es un medio por
  * el cual se pueden ordenar issues, estas metricas pueden estar definidas por los
@@ -19,6 +20,8 @@ package org.tesys.core.estructures;
  * los tipos de metricas/mediciones que este programa puede soportar
  *
  */
+
+
 public class Metric {
   
   private String key;
@@ -26,10 +29,6 @@ public class Metric {
   private String descripcion;
   private String procedencia;
   private IValue value;
-
-  public Metric() {
-    //for jackson
-  }
   
   public Metric(String key, String nombre, String descripcion, String procedencia, IValue value) {
     super();
@@ -71,9 +70,20 @@ public class Metric {
   public void setValue(IValue value) {
     this.value = value;
   }
-  public Double getValue(Issue issue) {
-    return value.getValue(issue);
+  
+  public Double evaluate(Issue issue) {
+    return value.evaluate(issue);
   }
+
+
+  @Override
+  public String toString() {
+    return "{\"key\":\"" + key + "\", \"nombre\":\"" + nombre + "\", \"descripcion\":\"" + descripcion
+        + "\", \"procedencia\":\"" + procedencia + "\", \"value\":" + value + "}";
+  }
+  
+  
+  
   
   
   

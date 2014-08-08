@@ -43,7 +43,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     private static ObjectMapper createDefaultMapper() {
         final ObjectMapper result = new ObjectMapper();
         result.enable(SerializationFeature.INDENT_OUTPUT);
-        result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);  
 
         return result;
     }

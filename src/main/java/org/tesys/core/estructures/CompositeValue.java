@@ -9,5 +9,21 @@ public abstract class CompositeValue implements IValue {
     this.izq = izq;
     this.der = der;
   }
+  
+  public IValue getIzq() {
+    return izq;
+  }
+
+  public void setIzq(IValue izq) {
+    this.izq = izq;
+  }
+
+  public IValue getDer() {
+    return der;
+  }
+
+  public void setDer(IValue der) {
+    this.der = der;
+  }
 
 }

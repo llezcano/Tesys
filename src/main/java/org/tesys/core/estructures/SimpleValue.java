@@ -19,7 +19,12 @@ public class SimpleValue implements IValue  {
   }
 
   @Override
-  public Double getValue(Issue issue) {
+  public String toString() {
+    return "{\"SimpleValue\":\"" +key+"\"}" ;
+  }
+
+  @Override
+  public Double evaluate(Issue issue) {
     return issue.getMetrics().get(key);
   }
   
