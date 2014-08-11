@@ -72,8 +72,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
         try {
             client = new RESTClient( ES_URL );
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+          LOG.log( Level.SEVERE, e.toString(), e );
         }
     }
 

@@ -35,6 +35,10 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
   public List<KeyValuePOJO> getResults() {
     return results;
   }
+  
+  public void setResults(List<KeyValuePOJO> results) {
+    this.results = results;
+  }
  
 
   public void add(KeyValuePOJO k) {

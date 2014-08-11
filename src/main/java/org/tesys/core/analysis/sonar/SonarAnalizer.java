@@ -148,7 +148,6 @@ public class SonarAnalizer {
 
   /**
    * Executa sonar runner
-   *TODO sacar ant del pom
    * 
    */
   private void analizar(File buildFile) {
@@ -157,7 +156,7 @@ public class SonarAnalizer {
         p = Runtime.getRuntime().exec("sonar-runner", new String[0], buildFile);
         p.waitFor();
     } catch (Exception e) {
-        e.printStackTrace();
+      LOG.log( Level.SEVERE, e.toString(), e );
     }
   }
 

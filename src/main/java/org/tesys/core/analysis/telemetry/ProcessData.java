@@ -1,5 +1,7 @@
 package org.tesys.core.analysis.telemetry;
 
+import java.util.List;
+
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
@@ -18,12 +20,14 @@ import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
 public class ProcessData {
 
-  private ElasticsearchDao<Issue> dao;
+  private ElasticsearchDao<Issue> daoi;
+  private ElasticsearchDao<Metric> daom;
 
   private static ProcessData instance = null;
 
   private ProcessData() {
-    dao = new ElasticsearchDao<>(Issue.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+    daoi = new ElasticsearchDao<Issue>(Issue.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+    daom = new ElasticsearchDao<Metric>(Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_METRIC);
   }
 
   public static ProcessData getInstance() {
@@ -40,16 +44,20 @@ public class ProcessData {
     
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
-    
-    for(Metric m : aggregator.getMetricsID() ) {
-      System.out.println( m.getNombre()+":"+ m.getDescripcion() );
-    }
-    
+
     for( String key : pt.getIssuesKeys() ) {
       Issue issueActual = new Issue( key );
       Issue issueFinal = aggregator.agregateMetrics(issueActual);
-      dao.create( issueFinal.getIssueId(), issueFinal);
+      daoi.create( issueFinal.getIssueId(), issueFinal);
     }
+    
+    /*List<Metric> metrics = aggregator.getMetricsID();
+    
+    for (Metric metric : metrics) {
+      daom.create(metric.getKey(), metric);
+    }*/
+    
+    //TODO crear los developers
 
   }
 

@@ -30,7 +30,6 @@ import org.tesys.core.recommendations.Recommender;
 @Singleton
 public class Controller {
 
-  //TODO hacer los response bien
   private static final String FAIL_CODE = "0";
   private static final String OK_CODE = "1";
   
@@ -45,8 +44,7 @@ public class Controller {
     recommender = new Recommender();
   }
 
-  
-  //TODO cambiar el caracter # por otra cosa
+
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
@@ -144,7 +142,7 @@ public class Controller {
   }
   
   
-  //TODO hacer por tipo de issue
+  //TODO hacer por tipo de issue??
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
