@@ -234,8 +234,8 @@ public class JiraAdaptation {
      */
     public List<Metric> getMetrics() {
         List<Metric> metrics = new ArrayList<Metric>();
-        metrics.add( new Metric( "work", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null) );
-        metrics.add( new Metric( "ework", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null ) );
+        metrics.add( new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null) );
+        metrics.add( new Metric( "estimated", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null ) );
         return metrics;
     }
 

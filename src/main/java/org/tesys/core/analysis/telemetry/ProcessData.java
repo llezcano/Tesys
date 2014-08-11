@@ -45,11 +45,12 @@ public class ProcessData {
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
 
-    for( String key : pt.getIssuesKeys() ) {
-      Issue issueActual = new Issue( key );
+    //for( String key : pt.getIssuesKeys() ) {
+      Issue issueActual = new Issue( "RUBY-7" );
+      System.out.println( issueActual.getIssueId() );
       Issue issueFinal = aggregator.agregateMetrics(issueActual);
       daoi.create( issueFinal.getIssueId(), issueFinal);
-    }
+    //}
     
     /*List<Metric> metrics = aggregator.getMetricsID();
     
