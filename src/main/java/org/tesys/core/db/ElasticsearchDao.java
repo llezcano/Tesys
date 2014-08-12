@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.tesys.core.estructures.Issue;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,7 +46,9 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_METRIC = "/analyzer/metric";
     public static final String DEFAULT_RESOURCE_ISSUE_METRIC = "/analyzer/issuemetric" ;
     public static final String DEFAULT_RESOURCE_DEVELOPERS = "/analyzer/developers" ;
+    public static final String DEFAULT_RESOURCE_ISSUE_TYPE = "/analyzer/issuetype" ;
 
+    
     protected static final String ES_URL = "http://192.168.0.2:9200/";
 
     protected String resource;
