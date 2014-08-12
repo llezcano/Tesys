@@ -2,8 +2,8 @@ package org.tesys.connectors.tracking.jira;
 
 import java.util.List;
 
-import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.tracking.IssueInterface;
+import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.project.tracking.User;
 
 public interface JiraAdaptor {
@@ -17,5 +17,7 @@ public interface JiraAdaptor {
     User getUser( String key );
 
     List<String> getMetrics();
+    
+    List<IssueTypePOJO> getIssueTypes() ;
 
 }
