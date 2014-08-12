@@ -73,4 +73,6 @@ public interface ProjectTracking {
     public List<Metric> getMetrics();
 
     public abstract List<String> getIssuesKeys();
+    
+    public List<IssueTypePOJO> getIssueTypes() ;
 }

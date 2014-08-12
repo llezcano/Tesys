@@ -7,7 +7,6 @@ import java.util.List;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.SimpleValue;
-import org.tesys.core.project.tracking.IssueInterface;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 

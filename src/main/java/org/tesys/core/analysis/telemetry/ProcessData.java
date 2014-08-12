@@ -9,7 +9,7 @@ import org.tesys.core.estructures.Developer;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.tracking.IssueInterface;
-import org.tesys.core.project.tracking.IssuePOJO;
+import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 import org.tesys.core.project.tracking.User;
@@ -37,7 +37,7 @@ public class ProcessData {
     daoi = new ElasticsearchDao<Issue>(Issue.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
     daom = new ElasticsearchDao<Metric>(Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_METRIC);
     daod = new ElasticsearchDao<Developer>(Developer.class, ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
-    daoit = new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, ElasticsearchDao.DEFAUL);
+    daoit = new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_TYPE);
   }
 
   public static ProcessData getInstance() {
@@ -55,11 +55,11 @@ public class ProcessData {
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
     
-    //this.processIssues(pt, aggregator);
+    this.processIssues(pt, aggregator);
     
-    //this.processMetrics(aggregator);
+    this.processMetrics(aggregator);
 
-    //this.processDevelopers(pt);
+    this.processDevelopers(pt);
     
     this.processIssuesTypes(pt);
 
@@ -75,7 +75,7 @@ public class ProcessData {
     List<IssueTypePOJO> issuesType = pt.getIssueTypes();
     
     for (IssueTypePOJO it : issuesType) {
-      daoit.create( it , it );
+      daoit.create( String.valueOf( it.getId() ) , it );
     }
     
   }

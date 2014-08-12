@@ -7,7 +7,6 @@ import java.util.logging.Level;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.tesys.core.estructures.*;
 
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.MetricFactory;

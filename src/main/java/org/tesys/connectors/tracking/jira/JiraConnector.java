@@ -176,15 +176,4 @@ public class JiraConnector implements JiraAdaptor {
   }
 
 
-<<<<<<< HEAD
-=======
-  // TODO analizar si realmente se necesita esta informacion en el modelo
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/priority
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/project
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
-
->>>>>>> ceea481a766083189562ad6b56732ec504a256af
 }

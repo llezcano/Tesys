@@ -106,6 +106,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
         return keys;
     }
     
+    @Override
     public List<IssueTypePOJO> getIssueTypes() {
         try {
             return client.GET( RESOURCE_ISSUE_TYPE ).readEntity( new GenericType<List<IssueTypePOJO>>() {} );        

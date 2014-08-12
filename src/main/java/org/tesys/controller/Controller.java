@@ -23,6 +23,7 @@ import org.tesys.core.project.scm.InvalidCommitException;
 import org.tesys.core.project.scm.SCMManager;
 import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 import org.tesys.core.project.scm.ScmPreCommitDataPOJO;
+import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.recommendations.Recommendation;
 import org.tesys.core.recommendations.Recommender;
 
@@ -159,7 +160,7 @@ public class Controller {
   public List<IssueTypePOJO> getIssuesTypes() {
     ElasticsearchDao<IssueTypePOJO> dao = 
         new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, 
-            ElasticsearchDao.DEFAULT_RESOURCE_);
+            ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_TYPE);
     return dao.readAll();
   }
   
