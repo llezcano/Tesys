@@ -34,14 +34,19 @@ public class MetricFactory {
     ObjectMapper mapper = new ObjectMapper();
 
     JsonNode o = null;
+    Metric m ;
     try {
       o = mapper.readTree(jsonFormat);
-    } catch (IOException e) {}
+      IValue v = getValue(o.get("value"));
+      m = new Metric(o.get("key").asText(), o.get("nombre").asText(), o.get("descripcion").asText(), 
+              o.get("procedencia").asText(), v);
+    } catch (IOException e) {
+        return null ;
+    }
     
-    IValue v = getValue(o.get("value"));
+    return m ;
     
-    return new Metric(o.get("key").asText(), o.get("nombre").asText(), o.get("descripcion").asText(), 
-        o.get("procedencia").asText(), v);
+
     
     
   }
