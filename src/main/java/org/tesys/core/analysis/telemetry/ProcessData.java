@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.tesys.core.db.ElasticsearchDao;
+import org.tesys.core.db.MetricDao;
 import org.tesys.core.estructures.Developer;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
@@ -27,7 +28,7 @@ import org.tesys.core.project.tracking.User;
 public class ProcessData {
 
   private ElasticsearchDao<Issue> daoi;
-  private ElasticsearchDao<Metric> daom;
+  private MetricDao daom;
   private ElasticsearchDao<Developer> daod;
   private ElasticsearchDao<IssueTypePOJO> daoit;
 
@@ -35,7 +36,7 @@ public class ProcessData {
 
   private ProcessData() {
     daoi = new ElasticsearchDao<Issue>(Issue.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
-    daom = new ElasticsearchDao<Metric>(Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_METRIC);
+    daom = new MetricDao();
     daod = new ElasticsearchDao<Developer>(Developer.class, ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
     daoit = new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_TYPE);
   }
@@ -55,13 +56,13 @@ public class ProcessData {
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
     
-    this.processIssues(pt, aggregator);
+    //this.processIssues(pt, aggregator);
     
     this.processMetrics(aggregator);
 
-    this.processDevelopers(pt);
+    //this.processDevelopers(pt);
     
-    this.processIssuesTypes(pt);
+    //this.processIssuesTypes(pt);
 
 
   }

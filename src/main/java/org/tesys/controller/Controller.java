@@ -13,13 +13,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.tesys.core.analysis.Analyzer;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.estructures.Developer;
 import org.tesys.core.estructures.Metric;
-import org.tesys.core.project.scm.InvalidCommitException;
+import org.tesys.core.estructures.MetricFactory;
 import org.tesys.core.project.scm.SCMManager;
 import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 import org.tesys.core.project.scm.ScmPreCommitDataPOJO;
@@ -65,7 +68,7 @@ public class Controller {
       if( scmManager.isCommitAllowed(scmData) ) {
         return OK_CODE;
       }
-    } catch (InvalidCommitException e) {
+    } catch (Exception e) {
       return e.getMessage();
     }
     return FAIL_CODE;
@@ -104,7 +107,7 @@ public class Controller {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/analyzer")
-  public String performAnalysis() {
+  public Response performAnalysis() {
     return analizer.performAnalysis();
   }
   
@@ -143,6 +146,11 @@ public class Controller {
     for (Metric m : metrics) {
       metricsJson.add( m.toString() );
     }
+    
+    GenericEntity<List<String>> entity = new GenericEntity<List<String>>(metricsJson) {};
+    ResponseBuilder response = Response.ok();
+    response.entity(entity);
+    
     return metricsJson;
     
   }
@@ -170,14 +178,24 @@ public class Controller {
    * o productividad dividido bugs como seguridad
    */
   
-  //TODO implementar todos estos
+
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/newmetric")
-  public String addMetric( String metric ) {
-    //TODO return db.addMetric(m);
-    return null;
+  public Response addMetric( String metric ) {
+    MetricFactory mf = new MetricFactory();
+    Metric m = mf.getMetric(metric);
+    
+    ElasticsearchDao<Metric> dao = 
+        new ElasticsearchDao<Metric>(Metric.class, 
+            ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+    
+    dao.create(m.getKey(), m);
+    
+    ResponseBuilder response = Response.ok();
+    return response.build();
+
   }
   
   /**
@@ -189,9 +207,16 @@ public class Controller {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/deletemetric")
-  public String deleteMetric( String metric ) {
-    // TODO return db.deleteMetric(m);
-    return null;
+  public Response deleteMetric( String metricKey ) {
+
+    ElasticsearchDao<Metric> dao = 
+        new ElasticsearchDao<Metric>(Metric.class, 
+            ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+    
+    dao.delete( metricKey );
+    
+    ResponseBuilder response = Response.ok();
+    return response.build();
   }
   
   /**
@@ -206,8 +231,9 @@ public class Controller {
   @Path("/recommendate/{issuetype}")
   public List<Recommendation> recommendate( String metric,
       @PathParam("id") String issueType ) {
-    //return recommender.recommendate(m, issueType);
-    return null;
+    MetricFactory mf = new MetricFactory();
+    Metric m = mf.getMetric(metric);
+    return recommender.recommendate(m, issueType);
   }
   
   

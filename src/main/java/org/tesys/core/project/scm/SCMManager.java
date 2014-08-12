@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.db.ValidDeveloperQuery;
 import org.tesys.core.messages.Messages;
@@ -97,12 +98,12 @@ public class SCMManager {
    * @param scmData Datos previos a hacer un commit (autor, mensaje y repos)
    * @return
    */
-  public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) throws InvalidCommitException {
+  public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData) throws Exception {
     try {
       //cada uno de estos se puede hacer con un thread aparte
       getIssue(scmData.getMessage());
       mapUser(scmData);
-    } catch (InvalidCommitException e) {
+    } catch (Exception e) {
       throw e;
     }
 
@@ -148,6 +149,20 @@ public class SCMManager {
         ElasticsearchDao.DEFAULT_RESOURCE_REVISION  );
     
     dao.create(revision.getID(), revision);
+
+    /**
+     * Una vez guardado el commit se programa un analisis del sonar
+     */
+    Thread t = new Thread(new Runnable() {
+      public void run() {
+           try {
+            Thread.sleep(5000);
+          } catch (InterruptedException e) {}
+           SonarAnalizer sa = SonarAnalizer.getInstance();
+           sa.executeSonarAnalysis();
+      }
+    });
+    t.start();
 
     return true;
   }

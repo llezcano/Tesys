@@ -19,8 +19,8 @@ public class MetricDao extends ElasticsearchDao<Metric> {
     protected MetricFactory factory = new MetricFactory() ;
     
     
-    public MetricDao( String resource ) {
-        super( Metric.class, resource );
+    public MetricDao( ) {
+        super( Metric.class, DEFAULT_RESOURCE_METRIC );
     }
 
 

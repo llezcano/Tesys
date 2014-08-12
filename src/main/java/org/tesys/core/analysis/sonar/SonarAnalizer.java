@@ -64,14 +64,18 @@ public class SonarAnalizer {
    * estar correctamente configurado para encontrar los codigos en ese lugar
    * 
    */
-  public void executeSonarAnalysis() {
-    
-    //TODO mejorar performace
-    //por ejemplo cuando analisisAcumulados es < 2 cortar todo
-    //en ves de re calcular la revision previo se puede ir guardando la anterior
-    //no traer los analisis que no se usan?
-    
+  public synchronized void executeSonarAnalysis() {
+
     List<AnalisisPOJO> analisisAcumulados = getAnalisisAcumulados();
+    
+    /*
+     * Caso del primer commit, no es necesario analizar porque
+     * no se puede comparar con nada
+     */
+    if( analisisAcumulados.size() == 0 ) {
+      return;
+    }
+    
     List<SonarMetricPOJO> metricas = getMetrics();
     List<AnalisisPOJO> analisisPorCommit = getAnalisisPorCommit(analisisAcumulados, metricas);
     analisisAcumulados.clear();
@@ -81,7 +85,6 @@ public class SonarAnalizer {
         ElasticsearchDao.DEFAULT_RESOURCE_ANALYSIS);
     
     List<AnalisisPOJO> analisisPorTareaAlmacenados = dao.readAll();
-    
     List<AnalisisPOJO> analisisPorTarea = getAnalisisPorTarea(analisisPorCommit, analisisPorTareaAlmacenados, metricas);    
     
     this.storeAnalysis(analisisPorTarea, dao);
