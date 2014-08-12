@@ -111,8 +111,8 @@ public class JiraConnector implements JiraAdaptor {
       return jira.getIssue(key);
     } catch (Exception e) {
       LOG.log( Level.SEVERE, e.toString(), e );
+      return null;
     }
-    return null;
   }
 
 
@@ -125,8 +125,8 @@ public class JiraConnector implements JiraAdaptor {
       return jira.getUser(name);
     } catch (IOException e) {
       LOG.log( Level.SEVERE, e.toString(), e );
+      return null;
     }
-    return null;
 
   }
 
@@ -140,8 +140,8 @@ public class JiraConnector implements JiraAdaptor {
       return jira.getAllUsers();
     } catch (IOException e) {
       LOG.log( Level.SEVERE, e.toString(), e );
+      return null;
     }
-    return null;
   }
 
 
@@ -154,8 +154,8 @@ public class JiraConnector implements JiraAdaptor {
       return jira.getAllIssues();
     } catch (IOException e) {
       LOG.log( Level.SEVERE, e.toString(), e );
+      return null;
     }
-    return null;
   }
 
   
@@ -163,7 +163,7 @@ public class JiraConnector implements JiraAdaptor {
   @Path("/metric/")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
-  public List<Metric> getMetrics() {
+  public List<String> getMetrics() {
       return jira.getMetrics() ;
   }
 

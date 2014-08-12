@@ -16,6 +16,6 @@ public interface JiraAdaptor {
 
     User getUser( String key );
 
-    List<Metric> getMetrics();
+    List<String> getMetrics();
 
 }

@@ -226,16 +226,17 @@ public class JiraAdaptation {
         return usersPOJO;
 
     }
+    
     /**
      * Consulta la descripcion de las metricas asociadas al Issue desde el Jira
      * TODO el connector quizas no debe tener que depender de la estructura final, sino
      * generar una estructura mas amigable y la estructura final la arma el core
      * @return
      */
-    public List<Metric> getMetrics() {
-        List<Metric> metrics = new ArrayList<Metric>();
-        metrics.add( new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null) );
-        metrics.add( new Metric( "estimated", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null ) );
+    public List<String> getMetrics() {
+        List<String> metrics = new ArrayList<String>();
+        metrics.add( (new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null)).toString() );
+        metrics.add( (new Metric( "estimated", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null )).toString() );
         return metrics;
     }
 
