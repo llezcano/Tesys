@@ -2,6 +2,7 @@ package org.tesys.connectors.tracking.jira;
 
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.tracking.IssuePOJO;
+import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.project.tracking.UserPOJO;
 import org.tesys.connectors.tracking.jira.model.*;
 
@@ -224,6 +225,10 @@ public class JiraAdaptation {
         metrics.add( (new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null )).toString() );
         metrics.add( (new Metric( "estimated", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null )).toString() );
         return metrics;
+    }
+    
+    public List<IssueTypePOJO> getIssueTypes(){
+        return client.getIssueTypes() ;
     }
 
 }

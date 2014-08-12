@@ -12,11 +12,12 @@ import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.MetricFactory;
 import org.tesys.util.RESTClient;
 
+
 /**
  * Este ProjectTracking es un cliente REST para el Connector de un Project
  * Manager.
  * 
- * @author rulo
+ * @author leandro
  * 
  */
 public class ProjectTrackingRESTClient implements ProjectTracking {
@@ -29,7 +30,9 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     private static String RESOURCE_ISSUES = "issues/";
     private static String RESOURCE_USERS = "users/";
     private static String RESOURCE_METRIC = "metric/";
+    private static String RESOURCE_ISSUE_TYPE = "issues/types/" ;
 
+    
     public ProjectTrackingRESTClient() {
         try {
             client = new RESTClient( getConnectorLocation() );
@@ -101,5 +104,15 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
             }
         }
         return keys;
+    }
+    
+    public List<IssueTypePOJO> getIssueTypes() {
+        try {
+            return client.GET( RESOURCE_ISSUE_TYPE ).readEntity( new GenericType<List<IssueTypePOJO>>() {} );        
+        } catch (Exception e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+            return new ArrayList<IssueTypePOJO>();
+        }
+        
     }
 }

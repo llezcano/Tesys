@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
 import org.tesys.core.project.tracking.IssueInterface;
+import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.Strings;
 
@@ -165,5 +166,25 @@ public class JiraConnector implements JiraAdaptor {
   public List<String> getMetrics() {
       return jira.getMetrics() ;
   }
+  
+  @GET
+  @Path("/issues/types")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Override
+  public List<IssueTypePOJO> getIssueTypes() {
+      return jira.getIssueTypes() ;
+  }
 
+
+<<<<<<< HEAD
+=======
+  // TODO analizar si realmente se necesita esta informacion en el modelo
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/priority
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/project
+
+  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
+
+>>>>>>> ceea481a766083189562ad6b56732ec504a256af
 }
