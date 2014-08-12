@@ -1,8 +1,6 @@
 package org.tesys.connectors.tracking.jira;
 
-
 import org.tesys.core.estructures.Metric;
-import org.tesys.core.estructures.SimpleValue;
 import org.tesys.core.project.tracking.IssuePOJO;
 import org.tesys.core.project.tracking.UserPOJO;
 import org.tesys.connectors.tracking.jira.model.*;
@@ -25,63 +23,43 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class JiraAdaptation {
 
-  private JsonNode issueSchema;
+    private JsonNode issueSchema;
 
-  private JsonNode userSchema;
+    private JsonNode userSchema;
 
-  private JiraRESTClient client;
+    private JiraRESTClient client;
 
-  private final static Integer MAX_SIZE_ISSUE_QUERY = 1000;
-  private final static Integer MAX_SIZE_USER_QUERY = 49;
-  
-  private static final Logger LOG = Logger.getLogger( JiraAdaptation.class.getName() );
+    private final static Integer MAX_SIZE_ISSUE_QUERY = 1000;
+    private final static Integer MAX_SIZE_USER_QUERY = 49;
 
-  /**
-   * MAIN for testing
-   * 
-   * @param args
-   * @throws IOException
-   */
-  /*
-   * public static void main (String args[]) throws IOException { JiraRESTClient client = new
-   * JiraRESTClient("http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/", "grodriguez", "654321")
-   * ;
-   * 
-   * String user = InputOutput.readFile( "userSchema", Charset.defaultCharset()) ; String issue =
-   * InputOutput.readFile( "issueSchema", Charset.defaultCharset()) ;
-   * 
-   * JiraAdaptation jira = new JiraAdaptation(client, user, issue ) ;
-   * 
-   * 
-   * }
-   */
+    private static final Logger LOG = Logger.getLogger( JiraAdaptation.class.getName() );
 
-  public JiraAdaptation(JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema)
-      throws JsonProcessingException, IOException {
-    client = jiraClient;
-    ObjectMapper mapper = new ObjectMapper();
-    issueSchema = mapper.readTree(issueJsonSchema);
-    userSchema = mapper.readTree(userJsonSchema);
-  }
-
-  /**
-   * Realiza una consulta (con poco costo) para conocer la cantidad Issues en Jira
-   * 
-   * @return Cantidad de Issues de Jira
-   */
-  public Integer getIssuesSize() {
-    String response_form_client = client.getIssues("", 0, 1); // Esto es para consultar el tamaño
-                                                              // maximo de issues
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      return mapper.readTree(response_form_client).path("total").asInt();
-    } catch (JsonProcessingException e) {
-      LOG.log( Level.SEVERE, e.toString(), e );
-    } catch (IOException e) {
-      LOG.log( Level.SEVERE, e.toString(), e );
+    public JiraAdaptation( JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema ) throws JsonProcessingException, IOException {
+        client = jiraClient;
+        ObjectMapper mapper = new ObjectMapper();
+        issueSchema = mapper.readTree( issueJsonSchema );
+        userSchema = mapper.readTree( userJsonSchema );
     }
-    return 0;
-   }
+
+    /**
+     * Realiza una consulta (con poco costo) para conocer la cantidad Issues en
+     * Jira
+     * 
+     * @return Cantidad de Issues de Jira
+     */
+    public Integer getIssuesSize() {
+        String response_form_client = client.getIssues( "", 0, 1 ); 
+        // Esto es  para consultar el tamaño maximo de issues
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readTree( response_form_client ).path( "total" ).asInt();
+        } catch (JsonProcessingException e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        } catch (IOException e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        }
+        return 0;
+    }
 
     /**
      * Para probar las consultas JQL ingresar aqui
@@ -131,48 +109,50 @@ public class JiraAdaptation {
             }
             start += size; // NEXT SCROLL
         }
-    return issuesPOJO;
-  }
-
-  /**
-   * Devuelve todos los Issues del cliente Jira.
-   * 
-   * @return Arreglo de Issues.
-   * @throws JsonProcessingException
-   * @throws IOException
-   */
-  public IssueInterface[] getAllIssues() throws JsonProcessingException, IOException {
-    return getIssues("", 0, getIssuesSize());
-  }
-
-  /**
-   * Devuelve el issue que machea con la Key dada
-   * 
-   * @param key Valor clave del issue (es unico)
-   * @return Issue que cumple con la key
-   * @throws JsonProcessingException
-   * @throws IOException
-   * @throws ClassCastException
-   */
-  public IssueInterface getIssue(String key) throws JsonProcessingException, IOException, ClassCastException {
-    return getIssues("key=" + key, 0, 1)[0];
-  }
-
-  /**
-   * Realiza una consulta (con poco costo) para conocer la cantidad Usuarios en Jira
-   * 
-   * @return Cantidad de usuarios de Jira
-   */
-  public Integer getUsersSize() {
-    String clientJsonResponse = client.getUsers("jira-developers", 0, 1);
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      return mapper.readTree(clientJsonResponse).path("users").path("size").asInt();
-    } catch (JsonProcessingException e) {
-      LOG.log( Level.SEVERE, e.toString(), e );
-    } catch (IOException e) {
-      LOG.log( Level.SEVERE, e.toString(), e );
+        return issuesPOJO;
     }
+
+    /**
+     * Devuelve todos los Issues del cliente Jira.
+     * 
+     * @return Arreglo de Issues.
+     * @throws JsonProcessingException
+     * @throws IOException
+     */
+    public IssueInterface[] getAllIssues() throws JsonProcessingException, IOException {
+        return getIssues( "", 0, getIssuesSize() );
+    }
+
+    /**
+     * Devuelve el issue que machea con la Key dada
+     * 
+     * @param key
+     *            Valor clave del issue (es unico)
+     * @return Issue que cumple con la key
+     * @throws JsonProcessingException
+     * @throws IOException
+     * @throws ClassCastException
+     */
+    public IssueInterface getIssue( String key ) throws JsonProcessingException, IOException, ClassCastException {
+        return getIssues( "key=" + key, 0, 1 )[0];
+    }
+
+    /**
+     * Realiza una consulta (con poco costo) para conocer la cantidad Usuarios
+     * en Jira
+     * 
+     * @return Cantidad de usuarios de Jira
+     */
+    public Integer getUsersSize() {
+        String clientJsonResponse = client.getUsers( "jira-developers", 0, 1 );
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readTree( clientJsonResponse ).path( "users" ).path( "size" ).asInt();
+        } catch (JsonProcessingException e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        } catch (IOException e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        }
         return 0;
     }
 
@@ -191,7 +171,8 @@ public class JiraAdaptation {
     }
 
     public User[] getUsers( Integer start, Integer end ) throws JsonProcessingException, IOException {
-        Integer size = (MAX_SIZE_USER_QUERY < end) ? MAX_SIZE_ISSUE_QUERY : end;
+        Integer size = (end < MAX_SIZE_USER_QUERY) ? end : MAX_SIZE_USER_QUERY;
+
         Iterator<JsonNode> it;
         JSONFilter jf = new JSONFilter();
 
@@ -205,7 +186,8 @@ public class JiraAdaptation {
 
         int count = 0;
         while (hasMore && count < end) {
-            String clientJsonResponse = client.getUsers( "jira-developers", start, end );
+
+            String clientJsonResponse = client.getUsers( "jira-developers", start, start + MAX_SIZE_USER_QUERY );
 
             ArrayNode users = (ArrayNode) (mapper.readTree( clientJsonResponse ).path( "users" ).path( "items" ));
 
@@ -218,24 +200,28 @@ public class JiraAdaptation {
                 JsonNode json = jf.filter( user, userSchema );
 
                 UserPOJO u = mapper.readValue( json.toString(), UserPOJO.class );
-                usersPOJO[count++] = u;
+                usersPOJO[count] = u;
+                count++;
 
             }
-            start += size;
+            start += size + 1;
         }
+
         return usersPOJO;
 
     }
-    
+
     /**
      * Consulta la descripcion de las metricas asociadas al Issue desde el Jira
-     * TODO el connector quizas no debe tener que depender de la estructura final, sino
-     * generar una estructura mas amigable y la estructura final la arma el core
+     * TODO el connector quizas no debe tener que depender de la estructura
+     * final, sino generar una estructura mas amigable y la estructura final la
+     * arma el core
+     * 
      * @return
      */
     public List<String> getMetrics() {
         List<String> metrics = new ArrayList<String>();
-        metrics.add( (new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null)).toString() );
+        metrics.add( (new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null )).toString() );
         metrics.add( (new Metric( "estimated", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null )).toString() );
         return metrics;
     }
