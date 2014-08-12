@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.tesys.core.estructures.Issue;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,13 +48,14 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_ISSUE_METRIC = "/analyzer/issuemetric" ;
     public static final String DEFAULT_RESOURCE_DEVELOPERS = "/analyzer/developers" ;
 
-    protected static final String ES_URL = "http://localhost:9200/";
+    protected static final String ES_URL = "http://192.168.0.2:9200/";
 
     protected String resource;
 
     protected RESTClient client;
 
     protected Class<T> inferedClass;
+
     
     /**
      * Debo pasar la clase como parametro debido a que los tipos genericos
@@ -113,14 +115,14 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
             LOG.log( Level.SEVERE, e.toString(), e );
         }
     }
-
+    
     public List<T> readAll() {
-        String scrollId = scan();
+        Integer size = this.getSize() ;
+        
         Map<String, String> param = new HashMap<String, String>();
-        param.put( "scroll", "1m" );
-        param.put( "scroll_id", scrollId );
+        param.put( "size", size.toString() );
         try {
-            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( QUERY ).path( SCROLL ).toString(), param )
+            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( QUERY ).toString(), param )
                                                          .readEntity( JsonNode.class ).get( "hits" ).get( "hits" );
             return arrayJsonToList( jsonResponse );
         } catch (Exception e) {
@@ -130,13 +132,12 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     }
 
     public List<String> readAllKeys() {
-        String scrollId = scan();
+        Integer size = this.getSize() ;
         Map<String, String> param = new HashMap<String, String>();
-        param.put( "scroll", "1m" );
-        param.put( "scroll_id", scrollId );
+        param.put( "size", size.toString() );
         param.put( "fields", "" );
         try {
-            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( QUERY ).path( SCROLL ).toString(), param )
+            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( QUERY ).toString(), param )
                                                          .readEntity( JsonNode.class ).get( "hits" ).get( "hits" );
             return extractKeys( jsonResponse );
         } catch (Exception e) {
