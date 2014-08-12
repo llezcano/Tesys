@@ -56,13 +56,13 @@ public class ProcessData {
     AggregatorFactory aggregatorFactory = new ConcreteAggregatorFactory();
     Aggregator aggregator = aggregatorFactory.getAggregator();
     
-    //this.processIssues(pt, aggregator);
+    this.processIssues(pt, aggregator);
     
     this.processMetrics(aggregator);
 
-    //this.processDevelopers(pt);
+    this.processDevelopers(pt);
     
-    //this.processIssuesTypes(pt);
+    this.processIssuesTypes(pt);
 
 
   }

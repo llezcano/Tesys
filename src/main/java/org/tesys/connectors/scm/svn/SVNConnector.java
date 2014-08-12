@@ -19,8 +19,6 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
 @Path("/connectors/svn")
 public class SVNConnector {
-
-  private static final String URL = "svn://localhost/";
   
   private static final Logger LOG = Logger.getLogger( SVNConnector.class.getName() );
 
@@ -45,6 +43,11 @@ public class SVNConnector {
    * No hay una forma facil de cambiar esto porque el servidor tiene rutas relativas Asi que si se
    * desea cambiar hay que analizar bien como implementarlo
    * 
+   * El repositorio debe ser una ruta absolata de donde se puede realizar un checkout
+   * pe: svn://localhost/repo
+   * 
+   * Depende de como este cofigurado el svnserve
+   * 
    * @param revision se pone en la url un numero que indica la revision que se quiere hacer co
    * @param svnco Este POJO basicamente tiene el repositorio del que se quiere hacer co
    * @return
@@ -56,7 +59,7 @@ public class SVNConnector {
 
     SVNURL location = null;
     try {
-      location = SVNURL.parseURIEncoded(URL + svnco.getRepository());
+      location = SVNURL.parseURIEncoded( svnco.getRepository());
     } catch (SVNException e) {
         LOG.log( Level.SEVERE, e.toString(), e );
     }

@@ -27,7 +27,7 @@ public class Analyzer {
     ProcessData pd = ProcessData.getInstance();
     pd.executeProcessor();
 
-    ResponseBuilder response = Response.ok("{\"analisis_terminado\":true}");
+    ResponseBuilder response = Response.ok("{\"analysis\":\"finished\"}");
     return response.build();
   }
 

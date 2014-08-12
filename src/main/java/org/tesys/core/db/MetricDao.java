@@ -1,12 +1,13 @@
 package org.tesys.core.db;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.ws.rs.core.UriBuilder;
-
 
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.MetricFactory;
@@ -62,6 +63,23 @@ public class MetricDao extends ElasticsearchDao<Metric> {
             LOG.log( Level.SEVERE, e.toString(), e );
         }
     }
+    
+    
+    public List<Metric> readAll() {
+      Integer size = this.getSize() ;
+      
+      Map<String, String> param = new HashMap<String, String>();
+      param.put( "size", size.toString() );
+      try {
+          ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( resource ).path( QUERY ).toString(), param )
+                                                       .readEntity( JsonNode.class ).get( "hits" ).get( "hits" );
+          return arrayJsonToList( jsonResponse );
+      } catch (Exception e) {
+          LOG.log( Level.SEVERE, e.toString(), e );
+          return new ArrayList<Metric>();
+      }
+  }
+    
 
      @Override
     protected List<Metric> arrayJsonToList( ArrayNode arrayNode ) {

@@ -131,9 +131,7 @@ public class SonarAnalizer {
     for (RevisionPOJO revision : revisiones) {
       
       //Se realiza un checkout de la revision actual
-      // TODO en realidad anda con repo = "" pero habria que usar el otro
-      // scm.doCheckout(revSinEscanear[i].getRevision(), revSinEscanear[i].getRepository());
-      scm.doCheckout(revision.getRevision(), "", WORKSPACE);
+      scm.doCheckout(revision.getRevision(), revision.getRepository(), WORKSPACE);
       
       //Se analiza con sonar ejecutando una tarea ant
       analizar(BUILD_FILE);

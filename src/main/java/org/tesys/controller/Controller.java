@@ -1,5 +1,6 @@
 package org.tesys.controller;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.tesys.core.analysis.Analyzer;
 import org.tesys.core.db.ElasticsearchDao;
+import org.tesys.core.db.MetricDao;
 import org.tesys.core.estructures.Developer;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.MetricFactory;
@@ -29,6 +31,10 @@ import org.tesys.core.project.scm.ScmPreCommitDataPOJO;
 import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.recommendations.Recommendation;
 import org.tesys.core.recommendations.Recommender;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
 @Path("/controller")
@@ -120,11 +126,18 @@ public class Controller {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/developers")
-  public List<Developer> getDevelopers() {
+  public Response getDevelopers() {
     ElasticsearchDao<Developer> dao = 
         new ElasticsearchDao<Developer>(Developer.class, 
             ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
-    return dao.readAll();
+    List<Developer> developers = dao.readAll();
+    
+    GenericEntity<List<Developer>> entity = new GenericEntity<List<Developer>>(developers) {};
+    ResponseBuilder response = Response.ok();
+    response.entity(entity);
+    
+    return response.build();
+    
   }
   
   /**
@@ -137,21 +150,26 @@ public class Controller {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/metrics")
-  public List<String> getMetrics() {
-    ElasticsearchDao<Metric> dao = 
-        new ElasticsearchDao<Metric>(Metric.class, 
-            ElasticsearchDao.DEFAULT_RESOURCE_METRIC);
+  public Response getMetrics() {
+    MetricDao dao = new MetricDao();
     List<Metric> metrics = dao.readAll();
-    List<String> metricsJson = new LinkedList<String>();
+    List<ObjectNode> metricsJson = new LinkedList<ObjectNode>();
+   
+    
     for (Metric m : metrics) {
-      metricsJson.add( m.toString() );
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode = null;
+      try {
+        jsonNode = mapper.readTree(m.toString() );
+      } catch (IOException e) {}
+      metricsJson.add( (ObjectNode)jsonNode );
     }
     
-    GenericEntity<List<String>> entity = new GenericEntity<List<String>>(metricsJson) {};
+    GenericEntity<List<ObjectNode>> entity = new GenericEntity<List<ObjectNode>>(metricsJson) {};
     ResponseBuilder response = Response.ok();
     response.entity(entity);
     
-    return metricsJson;
+    return response.build();
     
   }
   
@@ -165,11 +183,19 @@ public class Controller {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/issuestype")
-  public List<IssueTypePOJO> getIssuesTypes() {
+  public Response getIssuesTypes() {
     ElasticsearchDao<IssueTypePOJO> dao = 
         new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, 
             ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_TYPE);
-    return dao.readAll();
+    List<IssueTypePOJO> issuesType = dao.readAll();
+    
+    GenericEntity<List<IssueTypePOJO>> entity = new GenericEntity<List<IssueTypePOJO>>(issuesType) {};
+    ResponseBuilder response = Response.ok();
+    response.entity(entity);
+    
+    return response.build();
+    
+    
   }
   
   /**
