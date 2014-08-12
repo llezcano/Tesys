@@ -1,5 +1,6 @@
 package org.tesys.controller;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -33,8 +34,11 @@ public class Controller {
   private static final String FAIL_CODE = "0";
   private static final String OK_CODE = "1";
   
+  //Componente encargado de las tareas relacionas con el SCM
   private SCMManager scmManager;
+  //Componenete encargado con las tareas de recolectar e interpretar datos
   private Analyzer analizer;
+  //Componenete que realiza recomandaciones en base a los datos obtenidos
   private Recommender recommender;
 
   @PostConstruct
@@ -45,6 +49,11 @@ public class Controller {
   }
 
 
+  /**
+   * Metodo que dada la informacion sobre un commit devuelve
+   * Si el sistema Tesys lo puede computar o no
+   */
+  
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.TEXT_PLAIN)
@@ -60,6 +69,14 @@ public class Controller {
     }
     return FAIL_CODE;
   }
+  
+  /**
+   * ALmacena en el sistema la informacion relacionada con un commit
+   * que debe ser previamente verificado por el metodo anterior
+   * (Estos dos se encuantran separados ya que por lo general no se
+   * dispone de toda la informacion necesaria para almacenar un commit
+   * antes de hacerlo)
+   */
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
@@ -77,6 +94,12 @@ public class Controller {
     return FAIL_CODE;
   }
   
+  /**
+   * Cuando se llama se recolectan todos los datos esparcidos a lo largo del sistema
+   * Este metodo no realiza ningun tipo de calculo solo junta toda la informacion existente
+   * en estructuras convenientes que luego se utilizaran para hacer recomandaciones
+   */
+  
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/analyzer")
@@ -84,34 +107,69 @@ public class Controller {
     return analizer.performAnalysis();
   }
   
+  /**
+   * Devuelve todos los developers que existen en el project tracking, una ves que se
+   * haya ejecutado un analisis, esta infoamcion es util para obserbar los issues
+   * que tiene cada developer y para poder conocer el conjunto por el cual se recomienda
+   */
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/developers")
   public List<Developer> getDevelopers() {
     ElasticsearchDao<Developer> dao = 
-        new ElasticsearchDao<>(Developer.class, ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
+        new ElasticsearchDao<Developer>(Developer.class, 
+            ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
     return dao.readAll();
   }
   
-  //TODO implementar todos estos
+  /**
+   * Este metodo devuelve los tipos de metricas que el programa maneja, esto es
+   * Las metrics que definene los programas (conocidas como simples, que son por
+   * ejemplo lineas de codigo) y las metricas definidas por el usuario ( conocidas
+   * como compuestas que son convinaciones de simples)
+   */
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/metrics")
   public List<String> getMetrics() {
-    //return db.getMetrics();
-    return null;
+    ElasticsearchDao<Metric> dao = 
+        new ElasticsearchDao<Metric>(Metric.class, 
+            ElasticsearchDao.DEFAULT_RESOURCE_METRIC);
+    List<Metric> metrics = dao.readAll();
+    List<String> metricsJson = new LinkedList<String>();
+    for (Metric m : metrics) {
+      metricsJson.add( m.toString() );
+    }
+    return metricsJson;
+    
   }
+  
+  
+  /**
+   * Devuleve los tipos de issues que existen en el project tracking, de esta
+   * forma se puede saber sobre el conjuto de restricciones que se puede ejecutar
+   * una recomendacion
+   */
   
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("/issuestype")
-  public List<String> getIssuesTypes() {
-    //return db.getIssuesTypes();
-    return null;
+  public List<IssueTypePOJO> getIssuesTypes() {
+    ElasticsearchDao<IssueTypePOJO> dao = 
+        new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, 
+            ElasticsearchDao.DEFAULT_RESOURCE_);
+    return dao.readAll();
   }
   
+  /**
+   * Define una nueva metrica compuesta, que el usaurio desee
+   * por ejemplo lines por hora como productividad
+   * o productividad dividido bugs como seguridad
+   */
+  
+  //TODO implementar todos estos
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -120,6 +178,11 @@ public class Controller {
     //TODO return db.addMetric(m);
     return null;
   }
+  
+  /**
+   * Elimina una metrica definida por el usuario, tambien pude eliminar una simple
+   * pero en el proximo analisis se volvera a crear
+   */
   
   @DELETE
   @Consumes(MediaType.APPLICATION_JSON)
@@ -130,6 +193,11 @@ public class Controller {
     return null;
   }
   
+  /**
+   * Dada una metrica particular y un tipo de issue devuelve todos los developers
+   * ordenados de mejor a peor, en caso de que no se cuente con informacion 
+   * el developer va a estar al final de la lista como no rankeado
+   */
   
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
@@ -141,6 +209,11 @@ public class Controller {
     return null;
   }
   
+  
+  /**
+   * Se utiliza para proporcionar feedback sobre una recomandacion realizada con
+   * anterioridad
+   */
   
   //TODO hacer por tipo de issue??
   @POST

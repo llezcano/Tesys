@@ -11,6 +11,12 @@ import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.SimpleValue;
 
+
+/**
+ * Clase encargada de recolectar todos los datos del sonar, dado que sonar
+ * almacena los analisis por tarea en la base de datos los obtiene desde ahi
+ */
+
 public class SonarAnalisisAggregator extends AggregatorDecorator {
 
   private ElasticsearchDao<AnalisisPOJO> dao;
@@ -19,6 +25,10 @@ public class SonarAnalisisAggregator extends AggregatorDecorator {
     super(aggregator);
     dao = new ElasticsearchDao<>(AnalisisPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_ANALYSIS);
   }
+  
+  /**
+   * Se obtiene las metricas con las que cuenta sonar desde la api del programa
+   */
   
   @Override
   public List<Metric> getMetricsID() {
@@ -34,15 +44,20 @@ public class SonarAnalisisAggregator extends AggregatorDecorator {
     return metrics;
   }
   
+  /**
+   * Se agregan los analisis que fueron realizados con anterioridad y estan almacenados
+   * en la base de datos
+   */
+  
   @Override
   public Issue agregateMetrics(Issue issueMetrics) {
     issueMetrics = super.agregateMetrics(issueMetrics);
     String key = issueMetrics.getIssueId();
     AnalisisPOJO analisis = dao.read(key);
-    
-    for (KeyValuePOJO value : analisis.getResults()) {
-      
-      issueMetrics.addMetric( value.getKey(), (Double)value.getValue() );
+    if ( analisis != null ) {
+      for (KeyValuePOJO value : analisis.getResults()) {
+        issueMetrics.addMetric( value.getKey(), (Double)value.getValue() );
+      }
     }
 
     return issueMetrics;

@@ -159,20 +159,11 @@ public class JiraConnector implements JiraAdaptor {
 
   
   @GET
-  @Path("/metric/")
+  @Path("/metric")
   @Produces(MediaType.APPLICATION_JSON)
   @Override
   public List<String> getMetrics() {
       return jira.getMetrics() ;
   }
 
-  // TODO analizar si realmente se necesita esta informacion en el modelo
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/priority
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/project
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
-
-  // TODO http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/issuetype
 }

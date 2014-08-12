@@ -60,10 +60,10 @@ public class SCMManager {
   private static final String SYNTAXERRORUSER = "SCMManager.syntaxerroruser";
   private static final String SCM_MANAGER_BASEDEDATOSCAIDA = "SCMManager.basededatoscaida";
 
-  private static final String INVALID_ISSUE = "#user='"; //$NON-NLS-1$
-  private static final String INVALID_USER = "#issue='"; //$NON-NLS-1$
-  private static final String USER_REGEX = "#user='(.*?)'"; //$NON-NLS-1$
-  private static final String ISSUE_REGEX = "#issue='(.*?)'"; //$NON-NLS-1$
+  private static final String INVALID_ISSUE = "user='"; //$NON-NLS-1$
+  private static final String INVALID_USER = "issue='"; //$NON-NLS-1$
+  private static final String USER_REGEX = "user='(.*?)'"; //$NON-NLS-1$
+  private static final String ISSUE_REGEX = "issue='(.*?)'"; //$NON-NLS-1$
   private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"; //$NON-NLS-1$
 
   private Pattern issuePattern;

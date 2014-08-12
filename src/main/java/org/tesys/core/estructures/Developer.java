@@ -5,11 +5,20 @@ import java.util.List;
 
 public class Developer {
   private String name;
+  private String DisplayName;
   private Double penalizador; //deberia ser entre 0 y 1
   private List<Issue> issues = new LinkedList<Issue>();
   
   public Developer() {
     //jackson
+  }
+  
+  public String getDisplayName() {
+    return DisplayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    DisplayName = displayName;
   }
   
   public String getName() {
