@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 import org.tesys.core.estructures.Metric;
+import org.tesys.core.estructures.MetricFactory;
 import org.tesys.util.RESTClient;
 
 /**
@@ -76,10 +77,15 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     @Override
     public List<Metric> getMetrics() {
         try {
-            return client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<Metric>>() {
-            } );
+            List<Metric> result = new ArrayList<Metric>() ;
+            List<String> metrics = client.GET( RESOURCE_METRIC ).readEntity( new GenericType<List<String>>() {} );
+            MetricFactory mf = new MetricFactory() ;
+            for ( String m: metrics) {
+                result.add( mf.getMetric( m ) );                
+            }
+            return result ;
         } catch (Exception e) {
-          e.printStackTrace();
+            LOG.log( Level.SEVERE, e.toString(), e );
             return new ArrayList<Metric>();
         }
     }

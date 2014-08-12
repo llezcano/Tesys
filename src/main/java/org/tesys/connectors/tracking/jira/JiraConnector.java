@@ -16,7 +16,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
-import org.tesys.core.estructures.Metric;
 import org.tesys.core.project.tracking.IssueInterface;
 import org.tesys.core.project.tracking.User;
 import org.tesys.util.Strings;
