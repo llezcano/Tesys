@@ -33,6 +33,7 @@ public class SonarAnalizer {
   private SonarAnalizer() {
     scm = SCMManager.getInstance();
     sonarExtractor = new SonarExtractor();
+    
   }
 
   public static SonarAnalizer getInstance() {
@@ -41,6 +42,7 @@ public class SonarAnalizer {
     }
     return instance;
   }
+
 
 
   /**
