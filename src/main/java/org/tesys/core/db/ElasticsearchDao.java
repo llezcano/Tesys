@@ -55,8 +55,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     protected RESTClient client;
 
     protected Class<T> inferedClass;
-
-    
+       
     /**
      * Debo pasar la clase como parametro debido a que los tipos genericos
      * desaparacen en tiempo de compilacion (Se usan como casteos implicitos).
@@ -122,7 +121,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
         Map<String, String> param = new HashMap<String, String>();
         param.put( "size", size.toString() );
         try {
-            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( QUERY ).toString(), param )
+            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( resource ).path( QUERY ).toString(), param )
                                                          .readEntity( JsonNode.class ).get( "hits" ).get( "hits" );
             return arrayJsonToList( jsonResponse );
         } catch (Exception e) {
@@ -137,7 +136,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
         param.put( "size", size.toString() );
         param.put( "fields", "" );
         try {
-            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( QUERY ).toString(), param )
+            ArrayNode jsonResponse = (ArrayNode) client.GET( UriBuilder.fromPath( resource ).path( QUERY ).toString(), param )
                                                          .readEntity( JsonNode.class ).get( "hits" ).get( "hits" );
             return extractKeys( jsonResponse );
         } catch (Exception e) {
