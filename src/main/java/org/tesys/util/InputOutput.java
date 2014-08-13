@@ -16,36 +16,40 @@ import java.nio.file.Files;
  * 
  */
 public class InputOutput {
-  
-  
-  private InputOutput() {
-    //to avoid the implicit one
-  }
 
-  /**
-   * Genera un String a partir de un archivo dado
-   * 
-   * @param path Ruta del archivo
-   * @param encoding Codificacion de caracteres
-   * @return El String correspondiente al archivo
-   * @throws IOException
-   */
-  public static String readFile(String path, Charset encoding) throws IOException {
-    byte[] encoded = Files.readAllBytes(Paths.get(path));
-    return new String(encoded, encoding);
-  }
+    private InputOutput() {
+	// to avoid the implicit one
+    }
 
-  /**
-   * Redirecciona la salida estandar del System.out.print a un archivo
-   * 
-   * @param path Ruta del archivo
-   * @throws FileNotFoundException
-   */
-  public static void systemOutToFile(String path) throws FileNotFoundException {
-    File file = new File(path);
-    FileOutputStream foStream = new FileOutputStream(file);
-    PrintStream out = new PrintStream(foStream);
-    System.setOut(out);
-  }
+    /**
+     * Genera un String a partir de un archivo dado
+     * 
+     * @param path
+     *            Ruta del archivo
+     * @param encoding
+     *            Codificacion de caracteres
+     * @return El String correspondiente al archivo
+     * @throws IOException
+     */
+    public static String readFile(String path, Charset encoding)
+	    throws IOException {
+	byte[] encoded = Files.readAllBytes(Paths.get(path));
+	return new String(encoded, encoding);
+    }
+
+    /**
+     * Redirecciona la salida estandar del System.out.print a un archivo
+     * 
+     * @param path
+     *            Ruta del archivo
+     * @throws FileNotFoundException
+     */
+    public static void systemOutToFile(String path)
+	    throws FileNotFoundException {
+	File file = new File(path);
+	FileOutputStream foStream = new FileOutputStream(file);
+	PrintStream out = new PrintStream(foStream);
+	System.setOut(out);
+    }
 
 }

@@ -7,28 +7,26 @@ import org.tesys.core.analysis.telemetry.ProcessData;
 
 public class Analyzer {
 
-  private static Analyzer instance = null;
+    private static Analyzer instance = null;
 
-  private Analyzer() {
+    private Analyzer() {
 
-  }
-
-  public static Analyzer getInstance() {
-    if (instance == null) {
-      instance = new Analyzer();
     }
-    return instance;
-  }
 
+    public static Analyzer getInstance() {
+	if (instance == null) {
+	    instance = new Analyzer();
+	}
+	return instance;
+    }
 
+    public Response performAnalysis() {
 
-  public Response performAnalysis() {
+	ProcessData pd = ProcessData.getInstance();
+	pd.executeProcessor();
 
-    ProcessData pd = ProcessData.getInstance();
-    pd.executeProcessor();
-
-    ResponseBuilder response = Response.ok("{\"analysis\":\"finished\"}");
-    return response.build();
-  }
+	ResponseBuilder response = Response.ok("{\"analysis\":\"finished\"}");
+	return response.build();
+    }
 
 }

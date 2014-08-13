@@ -18,7 +18,7 @@ public interface GenericDao<T> {
      * @param newInstance
      * @return
      */
-    void create( String id, T object );
+    void create(String id, T object);
 
     /**
      * Retrieve an object that was previously persisted to the database using
@@ -27,7 +27,7 @@ public interface GenericDao<T> {
      * @param id
      * @return
      */
-    T read( String id );
+    T read(String id);
 
     /**
      * Save changes made to a persistent object.
@@ -35,13 +35,13 @@ public interface GenericDao<T> {
      * @param id
      * @param object
      */
-    void update( String id, T object );
+    void update(String id, T object);
 
     /**
      * Remove an object from persistent storage in the database
      * 
      * @param object
      */
-    void delete( String id );
+    void delete(String id);
 
 }

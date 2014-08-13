@@ -4,56 +4,55 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class UserPOJO implements User {
-  
-  public String name;
 
-  public String emailAddress;
+    public String name;
 
-  public String displayName;
+    public String emailAddress;
 
-  public boolean active;
+    public String displayName;
 
-  @Override
-  public String toString() {
-    return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress + ", displayName="
-        + displayName + ", active=" + active + "]";
-  }
+    public boolean active;
 
-  @Override
-  public String getName() {
-    return name;
-  }
+    @Override
+    public String toString() {
+	return "UserPOJO [name=" + name + ", emailAddress=" + emailAddress
+		+ ", displayName=" + displayName + ", active=" + active + "]";
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    @Override
+    public String getName() {
+	return name;
+    }
 
-  @Override
-  public String getEmailAddress() {
-    return emailAddress;
-  }
+    public void setName(String name) {
+	this.name = name;
+    }
 
-  public void setEmailAddress(String emailAddress) {
-    this.emailAddress = emailAddress;
-  }
+    @Override
+    public String getEmailAddress() {
+	return emailAddress;
+    }
 
-  @Override
-  public String getDisplayName() {
-    return displayName;
-  }
+    public void setEmailAddress(String emailAddress) {
+	this.emailAddress = emailAddress;
+    }
 
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
+    @Override
+    public String getDisplayName() {
+	return displayName;
+    }
 
-  @Override
-  public boolean isActive() {
-    return active;
-  }
+    public void setDisplayName(String displayName) {
+	this.displayName = displayName;
+    }
 
-  public void setActive(boolean active) {
-    this.active = active;
-  }
+    @Override
+    public boolean isActive() {
+	return active;
+    }
 
+    public void setActive(boolean active) {
+	this.active = active;
+    }
 
 }

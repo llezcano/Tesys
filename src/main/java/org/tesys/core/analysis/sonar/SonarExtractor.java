@@ -2,7 +2,7 @@ package org.tesys.core.analysis.sonar;
 
 import java.util.LinkedList;
 import java.util.List;
- 
+
 import org.sonar.wsclient.Host;
 import org.sonar.wsclient.Sonar;
 import org.sonar.wsclient.connectors.HttpClient4Connector;
@@ -17,76 +17,78 @@ import org.tesys.core.project.scm.RevisionPOJO;
 
 public class SonarExtractor {
 
-  private Sonar sonar;
-  private List<Metric> metricList;
- 
+    private Sonar sonar;
+    private List<Metric> metricList;
 
-  //TODO hacer esto con variable asi se puede cambiar en vez de constantes
+    // TODO hacer esto con variable asi se puede cambiar en vez de constantes
 
-  public static final String HOST = "http://localhost:9000"; // de sonar
-  public static final String PROJECT_KEY = "temporal:test";
+    public static final String HOST = "http://localhost:9000"; // de sonar
+    public static final String PROJECT_KEY = "temporal:test";
 
-  private static final String USER = "admin";
-  private static final String PASS = "admin";
+    private static final String USER = "admin";
+    private static final String PASS = "admin";
 
-  public SonarExtractor() {
+    public SonarExtractor() {
 
-    sonar = new Sonar(new HttpClient4Connector(new Host(HOST, USER, PASS)));
-    metricList = sonar.findAll(MetricQuery.all());
+	sonar = new Sonar(new HttpClient4Connector(new Host(HOST, USER, PASS)));
+	metricList = sonar.findAll(MetricQuery.all());
 
-  }
-
-  public List< AnalisisPOJO > getResults( List<RevisionPOJO> revisions ) {
-
-    String[] met = new String[metricList.size()];
-    int index = 0;
-    for (Metric metric : metricList) {
-      met[index++] = metric.getKey();
     }
 
-    TimeMachine struts = sonar.find(TimeMachineQuery.createForMetrics(PROJECT_KEY, met));
-    TimeMachineCell[] tmc = struts.getCells();
-    TimeMachineColumn[] tmco = struts.getColumns();
+    public List<AnalisisPOJO> getResults(List<RevisionPOJO> revisions) {
 
-    List< AnalisisPOJO > resultados = new LinkedList< AnalisisPOJO >();
+	String[] met = new String[metricList.size()];
+	int index = 0;
+	for (Metric metric : metricList) {
+	    met[index++] = metric.getKey();
+	}
 
+	TimeMachine struts = sonar.find(TimeMachineQuery.createForMetrics(
+		PROJECT_KEY, met));
+	TimeMachineCell[] tmc = struts.getCells();
+	TimeMachineColumn[] tmco = struts.getColumns();
 
-    for (int j = 0; j < tmc.length; j++) {
+	List<AnalisisPOJO> resultados = new LinkedList<AnalisisPOJO>();
 
-      Object[] v = tmc[j].getValues();
+	for (int j = 0; j < tmc.length; j++) {
 
-      AnalisisPOJO resultadoDeRevision = new AnalisisPOJO(revisions.get(j));
+	    Object[] v = tmc[j].getValues();
 
-      for (int i = 0; i < tmco.length; i++) {
-        
-        if( v[i] != null ) {
-          resultadoDeRevision.add( new KeyValuePOJO(tmco[i].getMetricKey(), v[i].toString()) );
-        } else {
-          resultadoDeRevision.add( new KeyValuePOJO(tmco[i].getMetricKey(), "null") );
-        }
+	    AnalisisPOJO resultadoDeRevision = new AnalisisPOJO(
+		    revisions.get(j));
 
-      }
+	    for (int i = 0; i < tmco.length; i++) {
 
-      try {
-        sonar.delete(ProjectDeleteQuery.create(PROJECT_KEY));
-      } catch(Exception e) {}
-      
-      resultados.add(resultadoDeRevision);
+		if (v[i] != null) {
+		    resultadoDeRevision.add(new KeyValuePOJO(tmco[i]
+			    .getMetricKey(), v[i].toString()));
+		} else {
+		    resultadoDeRevision.add(new KeyValuePOJO(tmco[i]
+			    .getMetricKey(), "null"));
+		}
+
+	    }
+
+	    try {
+		sonar.delete(ProjectDeleteQuery.create(PROJECT_KEY));
+	    } catch (Exception e) {
+	    }
+
+	    resultados.add(resultadoDeRevision);
+	}
+
+	return resultados;
     }
 
-    return resultados;
-  }
+    public List<SonarMetricPOJO> getMetrics() {
 
+	List<SonarMetricPOJO> metrics = new LinkedList<SonarMetricPOJO>();
+	for (Metric m : metricList) {
+	    metrics.add(new SonarMetricPOJO(m.getKey(), m.getName(), m
+		    .getDescription(), m.getType(), m.getDomain()));
+	}
 
-  public List<SonarMetricPOJO> getMetrics() {
-
-    List<SonarMetricPOJO> metrics = new LinkedList<SonarMetricPOJO>();
-    for (Metric m : metricList) {
-      metrics.add(new SonarMetricPOJO(m.getKey(), m.getName(), m.getDescription(), m.getType(), m
-          .getDomain()));
+	return metrics;
     }
-
-    return metrics;
-  }
 
 }

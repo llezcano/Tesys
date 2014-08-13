@@ -1,6 +1,5 @@
 package org.tesys.core;
 
-
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -19,40 +18,44 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     final ObjectMapper combinedObjectMapper;
 
     public ObjectMapperProvider() {
-        defaultObjectMapper = createDefaultMapper();
-        combinedObjectMapper = createCombinedObjectMapper();
+	defaultObjectMapper = createDefaultMapper();
+	combinedObjectMapper = createCombinedObjectMapper();
     }
 
     @Override
     public ObjectMapper getContext(final Class<?> type) {
 
-        if (type == CombinedAnnotationBean.class) {
-            return combinedObjectMapper;
-        } else {
-            return defaultObjectMapper;
-        }
+	if (type == CombinedAnnotationBean.class) {
+	    return combinedObjectMapper;
+	} else {
+	    return defaultObjectMapper;
+	}
     }
 
     private static ObjectMapper createCombinedObjectMapper() {
-        return new ObjectMapper()
-                .configure(SerializationFeature.WRAP_ROOT_VALUE, true)
-                .configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
-                .setAnnotationIntrospector(createJaxbJacksonAnnotationIntrospector());
+	return new ObjectMapper()
+		.configure(SerializationFeature.WRAP_ROOT_VALUE, true)
+		.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true)
+		.setAnnotationIntrospector(
+			createJaxbJacksonAnnotationIntrospector());
     }
 
     private static ObjectMapper createDefaultMapper() {
-        final ObjectMapper result = new ObjectMapper();
-        result.enable(SerializationFeature.INDENT_OUTPUT);
-        result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);  
+	final ObjectMapper result = new ObjectMapper();
+	result.enable(SerializationFeature.INDENT_OUTPUT);
+	result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+		false);
 
-        return result;
+	return result;
     }
 
     private static AnnotationIntrospector createJaxbJacksonAnnotationIntrospector() {
 
-        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
-        final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
+	final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(
+		TypeFactory.defaultInstance());
+	final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
 
-        return AnnotationIntrospector.pair(jacksonIntrospector, jaxbIntrospector);
+	return AnnotationIntrospector.pair(jacksonIntrospector,
+		jaxbIntrospector);
     }
 }

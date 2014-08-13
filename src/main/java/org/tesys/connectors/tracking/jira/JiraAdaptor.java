@@ -12,12 +12,12 @@ public interface JiraAdaptor {
 
     User[] getUsers();
 
-    IssueInterface getIssue( String key );
+    IssueInterface getIssue(String key);
 
-    User getUser( String key );
+    User getUser(String key);
 
     List<String> getMetrics();
-    
-    List<IssueTypePOJO> getIssueTypes() ;
+
+    List<IssueTypePOJO> getIssueTypes();
 
 }

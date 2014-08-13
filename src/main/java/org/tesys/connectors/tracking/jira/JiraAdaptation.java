@@ -33,13 +33,15 @@ public class JiraAdaptation {
     private final static Integer MAX_SIZE_ISSUE_QUERY = 1000;
     private final static Integer MAX_SIZE_USER_QUERY = 49;
 
-    private static final Logger LOG = Logger.getLogger( JiraAdaptation.class.getName() );
+    private static final Logger LOG = Logger.getLogger(JiraAdaptation.class
+	    .getName());
 
-    public JiraAdaptation( JiraRESTClient jiraClient, String userJsonSchema, String issueJsonSchema ) throws JsonProcessingException, IOException {
-        client = jiraClient;
-        ObjectMapper mapper = new ObjectMapper();
-        issueSchema = mapper.readTree( issueJsonSchema );
-        userSchema = mapper.readTree( userJsonSchema );
+    public JiraAdaptation(JiraRESTClient jiraClient, String userJsonSchema,
+	    String issueJsonSchema) throws JsonProcessingException, IOException {
+	client = jiraClient;
+	ObjectMapper mapper = new ObjectMapper();
+	issueSchema = mapper.readTree(issueJsonSchema);
+	userSchema = mapper.readTree(userJsonSchema);
     }
 
     /**
@@ -49,17 +51,17 @@ public class JiraAdaptation {
      * @return Cantidad de Issues de Jira
      */
     public Integer getIssuesSize() {
-        String response_form_client = client.getIssues( "", 0, 1 ); 
-        // Esto es  para consultar el tamaño maximo de issues
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readTree( response_form_client ).path( "total" ).asInt();
-        } catch (JsonProcessingException e) {
-            LOG.log( Level.SEVERE, e.toString(), e );
-        } catch (IOException e) {
-            LOG.log( Level.SEVERE, e.toString(), e );
-        }
-        return 0;
+	String response_form_client = client.getIssues("", 0, 1);
+	// Esto es para consultar el tamaño maximo de issues
+	ObjectMapper mapper = new ObjectMapper();
+	try {
+	    return mapper.readTree(response_form_client).path("total").asInt();
+	} catch (JsonProcessingException e) {
+	    LOG.log(Level.SEVERE, e.toString(), e);
+	} catch (IOException e) {
+	    LOG.log(Level.SEVERE, e.toString(), e);
+	}
+	return 0;
     }
 
     /**
@@ -81,36 +83,40 @@ public class JiraAdaptation {
      * @throws IOException
      * @throws ClassCastException
      */
-    public IssueInterface[] getIssues( String jql, Integer start, Integer end ) throws JsonProcessingException, IOException, ClassCastException {
-        // TODO validate params
-        Integer size = (MAX_SIZE_ISSUE_QUERY < end) ? MAX_SIZE_ISSUE_QUERY : end;
-        // Init vars
-        Iterator<JsonNode> it;
-        JSONFilter jf = new JSONFilter();
-        boolean hasMore = true;
-        ObjectMapper mapper = new ObjectMapper();
-        IssueInterface[] issuesPOJO = new IssuePOJO[end - start];
-        int count = 0;
+    public IssueInterface[] getIssues(String jql, Integer start, Integer end)
+	    throws JsonProcessingException, IOException, ClassCastException {
+	// TODO validate params
+	Integer size = (MAX_SIZE_ISSUE_QUERY < end) ? MAX_SIZE_ISSUE_QUERY
+		: end;
+	// Init vars
+	Iterator<JsonNode> it;
+	JSONFilter jf = new JSONFilter();
+	boolean hasMore = true;
+	ObjectMapper mapper = new ObjectMapper();
+	IssueInterface[] issuesPOJO = new IssuePOJO[end - start];
+	int count = 0;
 
-        while (hasMore && count < end) {
-            String response_form_client = client.getIssues( jql, start, size );
-            ArrayNode issues = (ArrayNode) mapper.readTree( response_form_client ).path( "issues" );
-            it = issues.elements();
-            hasMore = it.hasNext();
-            JsonNode issue = null;
+	while (hasMore && count < end) {
+	    String response_form_client = client.getIssues(jql, start, size);
+	    ArrayNode issues = (ArrayNode) mapper
+		    .readTree(response_form_client).path("issues");
+	    it = issues.elements();
+	    hasMore = it.hasNext();
+	    JsonNode issue = null;
 
-            // Parsing response
-            while (it.hasNext()) {
-                issue = it.next();
-                JsonNode jsonIssue = jf.filter( issue, issueSchema );
-                JiraIssue i = mapper.readValue( jsonIssue.toString(), JiraIssue.class );
-                IssuePOJOAdaptor adaptor = new IssuePOJOAdaptor();
-                issuesPOJO[count++] = adaptor.adapt( i );
-                it.remove();
-            }
-            start += size; // NEXT SCROLL
-        }
-        return issuesPOJO;
+	    // Parsing response
+	    while (it.hasNext()) {
+		issue = it.next();
+		JsonNode jsonIssue = jf.filter(issue, issueSchema);
+		JiraIssue i = mapper.readValue(jsonIssue.toString(),
+			JiraIssue.class);
+		IssuePOJOAdaptor adaptor = new IssuePOJOAdaptor();
+		issuesPOJO[count++] = adaptor.adapt(i);
+		it.remove();
+	    }
+	    start += size; // NEXT SCROLL
+	}
+	return issuesPOJO;
     }
 
     /**
@@ -120,8 +126,9 @@ public class JiraAdaptation {
      * @throws JsonProcessingException
      * @throws IOException
      */
-    public IssueInterface[] getAllIssues() throws JsonProcessingException, IOException {
-        return getIssues( "", 0, getIssuesSize() );
+    public IssueInterface[] getAllIssues() throws JsonProcessingException,
+	    IOException {
+	return getIssues("", 0, getIssuesSize());
     }
 
     /**
@@ -134,8 +141,9 @@ public class JiraAdaptation {
      * @throws IOException
      * @throws ClassCastException
      */
-    public IssueInterface getIssue( String key ) throws JsonProcessingException, IOException, ClassCastException {
-        return getIssues( "key=" + key, 0, 1 )[0];
+    public IssueInterface getIssue(String key) throws JsonProcessingException,
+	    IOException, ClassCastException {
+	return getIssues("key=" + key, 0, 1)[0];
     }
 
     /**
@@ -145,70 +153,75 @@ public class JiraAdaptation {
      * @return Cantidad de usuarios de Jira
      */
     public Integer getUsersSize() {
-        String clientJsonResponse = client.getUsers( "jira-developers", 0, 1 );
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readTree( clientJsonResponse ).path( "users" ).path( "size" ).asInt();
-        } catch (JsonProcessingException e) {
-            LOG.log( Level.SEVERE, e.toString(), e );
-        } catch (IOException e) {
-            LOG.log( Level.SEVERE, e.toString(), e );
-        }
-        return 0;
+	String clientJsonResponse = client.getUsers("jira-developers", 0, 1);
+	ObjectMapper mapper = new ObjectMapper();
+	try {
+	    return mapper.readTree(clientJsonResponse).path("users")
+		    .path("size").asInt();
+	} catch (JsonProcessingException e) {
+	    LOG.log(Level.SEVERE, e.toString(), e);
+	} catch (IOException e) {
+	    LOG.log(Level.SEVERE, e.toString(), e);
+	}
+	return 0;
     }
 
-    public User getUser( String name ) throws JsonProcessingException, IOException {
-        JSONFilter jf = new JSONFilter();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode user = mapper.readTree( client.getUser( name ) );
-        JsonNode formatedUser = jf.filter( user, userSchema );
-        UserPOJO u = mapper.readValue( formatedUser.toString(), UserPOJO.class );
-        return (u.getName() == null) ? null : u;
+    public User getUser(String name) throws JsonProcessingException,
+	    IOException {
+	JSONFilter jf = new JSONFilter();
+	ObjectMapper mapper = new ObjectMapper();
+	JsonNode user = mapper.readTree(client.getUser(name));
+	JsonNode formatedUser = jf.filter(user, userSchema);
+	UserPOJO u = mapper.readValue(formatedUser.toString(), UserPOJO.class);
+	return (u.getName() == null) ? null : u;
 
     }
 
     public User[] getAllUsers() throws JsonProcessingException, IOException {
-        return getUsers( 0, getUsersSize() );
+	return getUsers(0, getUsersSize());
     }
 
-    public User[] getUsers( Integer start, Integer end ) throws JsonProcessingException, IOException {
-        Integer size = (end < MAX_SIZE_USER_QUERY) ? end : MAX_SIZE_USER_QUERY;
+    public User[] getUsers(Integer start, Integer end)
+	    throws JsonProcessingException, IOException {
+	Integer size = (end < MAX_SIZE_USER_QUERY) ? end : MAX_SIZE_USER_QUERY;
 
-        Iterator<JsonNode> it;
-        JSONFilter jf = new JSONFilter();
+	Iterator<JsonNode> it;
+	JSONFilter jf = new JSONFilter();
 
-        boolean hasMore = true;
+	boolean hasMore = true;
 
-        User[] usersPOJO = new UserPOJO[end - start];
+	User[] usersPOJO = new UserPOJO[end - start];
 
-        ObjectMapper mapper = new ObjectMapper();
+	ObjectMapper mapper = new ObjectMapper();
 
-        // Parseo y envio los users
+	// Parseo y envio los users
 
-        int count = 0;
-        while (hasMore && count < end) {
+	int count = 0;
+	while (hasMore && count < end) {
 
-            String clientJsonResponse = client.getUsers( "jira-developers", start, start + MAX_SIZE_USER_QUERY );
+	    String clientJsonResponse = client.getUsers("jira-developers",
+		    start, start + MAX_SIZE_USER_QUERY);
 
-            ArrayNode users = (ArrayNode) (mapper.readTree( clientJsonResponse ).path( "users" ).path( "items" ));
+	    ArrayNode users = (ArrayNode) (mapper.readTree(clientJsonResponse)
+		    .path("users").path("items"));
 
-            it = users.elements();
-            JsonNode user = null;
-            hasMore = it.hasNext();
-            while (it.hasNext()) {
+	    it = users.elements();
+	    JsonNode user = null;
+	    hasMore = it.hasNext();
+	    while (it.hasNext()) {
 
-                user = it.next();
-                JsonNode json = jf.filter( user, userSchema );
+		user = it.next();
+		JsonNode json = jf.filter(user, userSchema);
 
-                UserPOJO u = mapper.readValue( json.toString(), UserPOJO.class );
-                usersPOJO[count] = u;
-                count++;
+		UserPOJO u = mapper.readValue(json.toString(), UserPOJO.class);
+		usersPOJO[count] = u;
+		count++;
 
-            }
-            start += size + 1;
-        }
+	    }
+	    start += size + 1;
+	}
 
-        return usersPOJO;
+	return usersPOJO;
 
     }
 
@@ -221,14 +234,18 @@ public class JiraAdaptation {
      * @return
      */
     public List<String> getMetrics() {
-        List<String> metrics = new ArrayList<String>();
-        metrics.add( (new Metric( "progress", "Worked Time", "Tiempo que tardo en resolver el Issue", "jira", null )).toString() );
-        metrics.add( (new Metric( "estimated", "Estimated Time", "Tiempo que se estimo para resolver el Issue", "jira", null )).toString() );
-        return metrics;
+	List<String> metrics = new ArrayList<String>();
+	metrics.add((new Metric("progress", "Worked Time",
+		"Tiempo que tardo en resolver el Issue", "jira", null))
+		.toString());
+	metrics.add((new Metric("estimated", "Estimated Time",
+		"Tiempo que se estimo para resolver el Issue", "jira", null))
+		.toString());
+	return metrics;
     }
-    
-    public List<IssueTypePOJO> getIssueTypes(){
-        return client.getIssueTypes() ;
+
+    public List<IssueTypePOJO> getIssueTypes() {
+	return client.getIssueTypes();
     }
 
 }

@@ -28,7 +28,7 @@ public interface IssueInterface {
 
     public String getAssignee();
 
-    public void setResolutiondate( String resolutiondate );
+    public void setResolutiondate(String resolutiondate);
 
     public String getProject();
 

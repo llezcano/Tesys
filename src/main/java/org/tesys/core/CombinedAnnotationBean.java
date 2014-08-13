@@ -11,10 +11,10 @@ public class CombinedAnnotationBean {
     int x;
 
     public CombinedAnnotationBean(int x) {
-        this.x = x;
+	this.x = x;
     }
 
     public CombinedAnnotationBean() {
-        this(15);
+	this(15);
     }
 }

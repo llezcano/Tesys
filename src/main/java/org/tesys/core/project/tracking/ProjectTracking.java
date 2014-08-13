@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.tesys.core.estructures.Metric;
 
-
 /**
  * Interface para Connector de un Gestor de proyectos (Project Tracking). El
  * cual sera el proovedor de Issues y Users de un proyecto.
@@ -40,7 +39,7 @@ public interface ProjectTracking {
      *            Campo clave del issue.
      * @return Devuelve 'true' solo si existe un issue asociado a esa clave.
      */
-    public boolean existIssue( String key );
+    public boolean existIssue(String key);
 
     /**
      * Consulta al Gestor de proyectos por la existencia de un usuario con una
@@ -50,7 +49,7 @@ public interface ProjectTracking {
      *            Campo clave del usuario
      * @return Devuelve 'true' solo si existe un usuario con esa clave.
      */
-    public boolean existUser( String key );
+    public boolean existUser(String key);
 
     /**
      * Retorna un Issue del Gestor de Proyectos dada una key.
@@ -60,7 +59,7 @@ public interface ProjectTracking {
      * @return Devuelve el Issue con esa clave, o null si no existe Issue con
      *         dicha clave.
      */
-    public IssueInterface getIssue( String key );
+    public IssueInterface getIssue(String key);
 
     /**
      * Consulta las metricas brindadas del Gestor de Proyectos.
@@ -73,6 +72,6 @@ public interface ProjectTracking {
     public List<Metric> getMetrics();
 
     public abstract List<String> getIssuesKeys();
-    
-    public List<IssueTypePOJO> getIssueTypes() ;
+
+    public List<IssueTypePOJO> getIssueTypes();
 }

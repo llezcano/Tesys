@@ -33,210 +33,209 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-
 @Path("/controller")
 @Singleton
 public class Controller {
 
-  private static final String FAIL_CODE = "0";
-  private static final String OK_CODE = "1";
-  
-  //Componente encargado de las tareas relacionas con el SCM
-  private SCMManager scmManager;
-  //Componenete encargado con las tareas de recolectar e interpretar datos
-  private Analyzer analizer;
+    private static final String FAIL_CODE = "0";
+    private static final String OK_CODE = "1";
 
-  @PostConstruct
-  public void init() {
-    scmManager = SCMManager.getInstance();
-    analizer = Analyzer.getInstance();
-  }
+    // Componente encargado de las tareas relacionas con el SCM
+    private SCMManager scmManager;
+    // Componenete encargado con las tareas de recolectar e interpretar datos
+    private Analyzer analizer;
 
-
-  /**
-   * Metodo que dada la informacion sobre un commit devuelve
-   * Si el sistema Tesys lo puede computar o no
-   */
-  
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
-  @Path("/scm")
-  public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
-
-    try {
-      if( scmManager.isCommitAllowed(scmData) ) {
-        return OK_CODE;
-      }
-    } catch (Exception e) {
-      return e.getMessage();
+    @PostConstruct
+    public void init() {
+	scmManager = SCMManager.getInstance();
+	analizer = Analyzer.getInstance();
     }
-    return FAIL_CODE;
-  }
-  
-  /**
-   * ALmacena en el sistema la informacion relacionada con un commit
-   * que debe ser previamente verificado por el metodo anterior
-   * (Estos dos se encuantran separados ya que por lo general no se
-   * dispone de toda la informacion necesaria para almacenar un commit
-   * antes de hacerlo)
-   */
 
-  @PUT
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
-  @Path("/scm")
-  public String storeCommit(ScmPostCommitDataPOJO scmData) {
+    /**
+     * Metodo que dada la informacion sobre un commit devuelve Si el sistema
+     * Tesys lo puede computar o no
+     */
 
-    try {
-      if (scmManager.storeCommit(scmData) ) {
-        return OK_CODE;
-      }
-    } catch (RuntimeException e) {
-      return e.getMessage();
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/scm")
+    public String isCommitAllowed(ScmPreCommitDataPOJO scmData) {
+
+	try {
+	    if (scmManager.isCommitAllowed(scmData)) {
+		return OK_CODE;
+	    }
+	} catch (Exception e) {
+	    return e.getMessage();
+	}
+	return FAIL_CODE;
     }
-    return FAIL_CODE;
-  }
-  
-  /**
-   * Cuando se llama se recolectan todos los datos esparcidos a lo largo del sistema
-   * Este metodo no realiza ningun tipo de calculo solo junta toda la informacion existente
-   * en estructuras convenientes que luego se utilizaran para hacer recomandaciones
-   */
-  
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/analyzer")
-  public Response performAnalysis() {
-    return analizer.performAnalysis();
-  }
-  
-  /**
-   * Devuelve todos los developers que existen en el project tracking, una ves que se
-   * haya ejecutado un analisis, esta infoamcion es util para obserbar los issues
-   * que tiene cada developer y para poder conocer el conjunto por el cual se recomienda
-   */
-  
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/developers")
-  public Response getDevelopers() {
-    ElasticsearchDao<Developer> dao = 
-        new ElasticsearchDao<Developer>(Developer.class, 
-            ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
-    List<Developer> developers = dao.readAll();
-    
-    GenericEntity<List<Developer>> entity = new GenericEntity<List<Developer>>(developers) {};
-    ResponseBuilder response = Response.ok();
-    response.entity(entity);
-    
-    return response.build();
-    
-  }
-  
-  /**
-   * Este metodo devuelve los tipos de metricas que el programa maneja, esto es
-   * Las metrics que definene los programas (conocidas como simples, que son por
-   * ejemplo lineas de codigo) y las metricas definidas por el usuario ( conocidas
-   * como compuestas que son convinaciones de simples)
-   */
-  
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/metrics")
-  public Response getMetrics() {
-    MetricDao dao = new MetricDao();
-    List<Metric> metrics = dao.readAll();
-    List<ObjectNode> metricsJson = new LinkedList<ObjectNode>();
-   
-    
-    for (Metric m : metrics) {
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode jsonNode = null;
-      try {
-        jsonNode = mapper.readTree(m.toString() );
-      } catch (IOException e) {}
-      metricsJson.add( (ObjectNode)jsonNode );
+
+    /**
+     * ALmacena en el sistema la informacion relacionada con un commit que debe
+     * ser previamente verificado por el metodo anterior (Estos dos se
+     * encuantran separados ya que por lo general no se dispone de toda la
+     * informacion necesaria para almacenar un commit antes de hacerlo)
+     */
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/scm")
+    public String storeCommit(ScmPostCommitDataPOJO scmData) {
+
+	try {
+	    if (scmManager.storeCommit(scmData)) {
+		return OK_CODE;
+	    }
+	} catch (RuntimeException e) {
+	    return e.getMessage();
+	}
+	return FAIL_CODE;
     }
-    
-    GenericEntity<List<ObjectNode>> entity = new GenericEntity<List<ObjectNode>>(metricsJson) {};
-    ResponseBuilder response = Response.ok();
-    response.entity(entity);
-    
-    return response.build();
-    
-  }
-  
-  
-  /**
-   * Devuleve los tipos de issues que existen en el project tracking, de esta
-   * forma se puede saber sobre el conjuto de restricciones que se puede ejecutar
-   * una recomendacion
-   */
-  
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/issuestype")
-  public Response getIssuesTypes() {
-    ElasticsearchDao<IssueTypePOJO> dao = 
-        new ElasticsearchDao<IssueTypePOJO>(IssueTypePOJO.class, 
-            ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_TYPE);
-    List<IssueTypePOJO> issuesType = dao.readAll();
-    
-    GenericEntity<List<IssueTypePOJO>> entity = new GenericEntity<List<IssueTypePOJO>>(issuesType) {};
-    ResponseBuilder response = Response.ok();
-    response.entity(entity);
-    
-    return response.build();
-    
-    
-  }
-  
-  /**
-   * Define una nueva metrica compuesta, que el usaurio desee
-   * por ejemplo lines por hora como productividad
-   * o productividad dividido bugs como seguridad
-   */
-  
 
-  @PUT
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/newmetric")
-  public Response addMetric( String metric ) {
-    MetricFactory mf = new MetricFactory();
-    Metric m = mf.getMetric(metric);
-    
-    ElasticsearchDao<Metric> dao = 
-        new ElasticsearchDao<Metric>(Metric.class, 
-            ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
-    
-    dao.create(m.getKey(), m);
-    
-    ResponseBuilder response = Response.ok();
-    return response.build();
+    /**
+     * Cuando se llama se recolectan todos los datos esparcidos a lo largo del
+     * sistema Este metodo no realiza ningun tipo de calculo solo junta toda la
+     * informacion existente en estructuras convenientes que luego se utilizaran
+     * para hacer recomandaciones
+     */
 
-  }
-  
-  /**
-   * Elimina una metrica definida por el usuario, tambien pude eliminar una simple
-   * pero en el proximo analisis se volvera a crear
-   */
-  
-  @DELETE
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/deletemetric")
-  public Response deleteMetric( String metricKey ) {
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/analyzer")
+    public Response performAnalysis() {
+	return analizer.performAnalysis();
+    }
 
-    ElasticsearchDao<Metric> dao = 
-        new ElasticsearchDao<Metric>(Metric.class, 
-            ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
-    
-    dao.delete( metricKey );
-    
-    ResponseBuilder response = Response.ok();
-    return response.build();
-  }
+    /**
+     * Devuelve todos los developers que existen en el project tracking, una ves
+     * que se haya ejecutado un analisis, esta infoamcion es util para obserbar
+     * los issues que tiene cada developer y para poder conocer el conjunto por
+     * el cual se recomienda
+     */
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/developers")
+    public Response getDevelopers() {
+	ElasticsearchDao<Developer> dao = new ElasticsearchDao<Developer>(
+		Developer.class, ElasticsearchDao.DEFAULT_RESOURCE_DEVELOPERS);
+	List<Developer> developers = dao.readAll();
+
+	GenericEntity<List<Developer>> entity = new GenericEntity<List<Developer>>(
+		developers) {
+	};
+	ResponseBuilder response = Response.ok();
+	response.entity(entity);
+
+	return response.build();
+
+    }
+
+    /**
+     * Este metodo devuelve los tipos de metricas que el programa maneja, esto
+     * es Las metrics que definene los programas (conocidas como simples, que
+     * son por ejemplo lineas de codigo) y las metricas definidas por el usuario
+     * ( conocidas como compuestas que son convinaciones de simples)
+     */
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/metrics")
+    public Response getMetrics() {
+	MetricDao dao = new MetricDao();
+	List<Metric> metrics = dao.readAll();
+	List<ObjectNode> metricsJson = new LinkedList<ObjectNode>();
+
+	for (Metric m : metrics) {
+	    ObjectMapper mapper = new ObjectMapper();
+	    JsonNode jsonNode = null;
+	    try {
+		jsonNode = mapper.readTree(m.toString());
+	    } catch (IOException e) {
+	    }
+	    metricsJson.add((ObjectNode) jsonNode);
+	}
+
+	GenericEntity<List<ObjectNode>> entity = new GenericEntity<List<ObjectNode>>(
+		metricsJson) {
+	};
+	ResponseBuilder response = Response.ok();
+	response.entity(entity);
+
+	return response.build();
+
+    }
+
+    /**
+     * Devuleve los tipos de issues que existen en el project tracking, de esta
+     * forma se puede saber sobre el conjuto de restricciones que se puede
+     * ejecutar una recomendacion
+     */
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/issuestype")
+    public Response getIssuesTypes() {
+	ElasticsearchDao<IssueTypePOJO> dao = new ElasticsearchDao<IssueTypePOJO>(
+		IssueTypePOJO.class,
+		ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_TYPE);
+	List<IssueTypePOJO> issuesType = dao.readAll();
+
+	GenericEntity<List<IssueTypePOJO>> entity = new GenericEntity<List<IssueTypePOJO>>(
+		issuesType) {
+	};
+	ResponseBuilder response = Response.ok();
+	response.entity(entity);
+
+	return response.build();
+
+    }
+
+    /**
+     * Define una nueva metrica compuesta, que el usaurio desee por ejemplo
+     * lines por hora como productividad o productividad dividido bugs como
+     * seguridad
+     */
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/newmetric")
+    public Response addMetric(String metric) {
+	MetricFactory mf = new MetricFactory();
+	Metric m = mf.getMetric(metric);
+
+	ElasticsearchDao<Metric> dao = new ElasticsearchDao<Metric>(
+		Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+
+	dao.create(m.getKey(), m);
+
+	ResponseBuilder response = Response.ok();
+	return response.build();
+
+    }
+
+    /**
+     * Elimina una metrica definida por el usuario, tambien pude eliminar una
+     * simple pero en el proximo analisis se volvera a crear
+     */
+
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/deletemetric")
+    public Response deleteMetric(String metricKey) {
+
+	ElasticsearchDao<Metric> dao = new ElasticsearchDao<Metric>(
+		Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+
+	dao.delete(metricKey);
+
+	ResponseBuilder response = Response.ok();
+	return response.build();
+    }
 
 }
