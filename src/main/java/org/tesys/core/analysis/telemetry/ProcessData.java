@@ -97,7 +97,6 @@ public class ProcessData {
       List<Issue> dissues = new LinkedList<Issue>();
       d.setName( u.getName() ); //jperez = id
       d.setDisplayName( u.getDisplayName() ); //Juan Perez != id
-      d.setPenalizador(1.0);
       for (Issue i : issues) {
         if( i.getUser().equals(d.getName()) ) {
           dissues.add(i);

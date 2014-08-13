@@ -12,7 +12,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -29,8 +28,6 @@ import org.tesys.core.project.scm.SCMManager;
 import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 import org.tesys.core.project.scm.ScmPreCommitDataPOJO;
 import org.tesys.core.project.tracking.IssueTypePOJO;
-import org.tesys.core.recommendations.Recommendation;
-import org.tesys.core.recommendations.Recommender;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,14 +45,11 @@ public class Controller {
   private SCMManager scmManager;
   //Componenete encargado con las tareas de recolectar e interpretar datos
   private Analyzer analizer;
-  //Componenete que realiza recomandaciones en base a los datos obtenidos
-  private Recommender recommender;
 
   @PostConstruct
   public void init() {
     scmManager = SCMManager.getInstance();
     analizer = Analyzer.getInstance();
-    recommender = new Recommender();
   }
 
 
@@ -244,41 +238,5 @@ public class Controller {
     ResponseBuilder response = Response.ok();
     return response.build();
   }
-  
-  /**
-   * Dada una metrica particular y un tipo de issue devuelve todos los developers
-   * ordenados de mejor a peor, en caso de que no se cuente con informacion 
-   * el developer va a estar al final de la lista como no rankeado
-   */
-  
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/recommendate/{issuetype}")
-  public List<Recommendation> recommendate( String metric,
-      @PathParam("id") String issueType ) {
-    MetricFactory mf = new MetricFactory();
-    Metric m = mf.getMetric(metric);
-    return recommender.recommendate(m, issueType);
-  }
-  
-  
-  /**
-   * Se utiliza para proporcionar feedback sobre una recomandacion realizada con
-   * anterioridad
-   */
-  
-  //TODO hacer por tipo de issue??
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/puntrecommendation/{punt}")
-  public String puntRecommendation( Developer d, @PathParam("punt") Boolean b  ) {
-    //TODO getDeveloper, penalizar y guardar
-    return null;
-  }
-  
-  
-  
 
 }

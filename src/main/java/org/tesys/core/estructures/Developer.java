@@ -6,7 +6,6 @@ import java.util.List;
 public class Developer {
   private String name;
   private String DisplayName;
-  private Double penalizador; //deberia ser entre 0 y 1
   private List<Issue> issues = new LinkedList<Issue>();
   
   public Developer() {
@@ -26,12 +25,6 @@ public class Developer {
   }
   public void setName(String name) {
     this.name = name;
-  }
-  public Double getPenalizador() {
-    return penalizador;
-  }
-  public void setPenalizador(Double penalizador) {
-    this.penalizador = penalizador;
   }
   public List<Issue> getIssues() {
     return issues;

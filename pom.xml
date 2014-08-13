@@ -3,10 +3,10 @@
 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tesys</groupId>
-	<artifactId>core</artifactId>
+	<artifactId>tesys</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>core Maven Webapp</name>
+	<name>Tesys Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 
 
@@ -96,7 +96,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>core</finalName>
+		<finalName>tesys</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
