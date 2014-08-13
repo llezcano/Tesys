@@ -31,6 +31,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
     private static String RESOURCE_USERS = "users/";
     private static String RESOURCE_METRIC = "metric/";
     private static String RESOURCE_ISSUE_TYPE = "issues/types/";
+    private static String RESOURCE_ASSIGNED = "assigned/";
 
     public ProjectTrackingRESTClient() {
 	try {
@@ -123,5 +124,15 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 	    return new ArrayList<IssueTypePOJO>();
 	}
 
+    }
+
+    @Override
+    public boolean isIssueAssignedToUser(String issueKey, String userName) {
+	try {
+	    return client.GET(RESOURCE_ASSIGNED + userName + "/" + issueKey ).readEntity(boolean.class);
+	} catch (Exception e) {
+	    LOG.log(Level.SEVERE, e.toString(), e);
+	}
+	return false;
     }
 }

@@ -171,5 +171,15 @@ public class JiraConnector implements JiraAdaptor {
     public List<IssueTypePOJO> getIssueTypes() {
 	return jira.getIssueTypes();
     }
+    
+    
+    @GET
+    @Path("/assigned/{user}/{issue}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Override
+    public boolean isIssueAssignedToUser( @PathParam("issue") String issueKey, @PathParam("user") String userName ) {
+	return jira.isIssueAssignedToUser(issueKey, userName);
+    }
+    
 
 }

@@ -33,7 +33,7 @@ public class MappingPOJO {
     }
 
     public String getID() {
-	return MD5.generateId(projectTrackingUser + scmUser + repository);
+	return MD5.generateId(scmUser + repository);
     }
 
     @Override

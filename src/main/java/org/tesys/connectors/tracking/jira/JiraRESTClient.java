@@ -137,5 +137,11 @@ public class JiraRESTClient {
 	}
 
     }
+    
+    
+    public boolean isIssueAssignedToUser( String issueKey, String userName ) {
+	return userName.equals(restClient.getIssueClient().getIssue( issueKey ).claim().getAssignee().getName());
+    }
+    
 
 }

@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import org.tesys.core.project.scm.MappingPOJO;
 
-public class ValidDeveloperQuery implements GenericQuery<Boolean> {
+public class ValidDeveloperQuery implements GenericQuery<String> {
 
     private String repository = "";
     private String scmUser = "";
@@ -26,18 +26,22 @@ public class ValidDeveloperQuery implements GenericQuery<Boolean> {
 	;
     }
 
+    /**
+     * Devuelve el nombre del user del jira previamente mapeado o null si no se mapeo 
+     */
+    
     @Override
-    public Boolean execute() {
-	String query = "{ \"query\": { \"bool\": { \"must\": [ { \"match\": { \"scmUser\": \""
+    public String execute() {
+	String query = "{ \"query\": { \"bool\": { \"must\": [ { \"term\": { \"scmUser\": \""
 		+ scmUser
 		+ "\" }}, { \"match\": {\"repository\": \""
 		+ repository + "\" }} ] } } }";
 	try {
-	    return !dao.search(query).isEmpty();
+	    return dao.search(query).get(0).getProjectTrackingUser();
 	} catch (Exception e) {
 	    LOG.log(Level.SEVERE, e.toString(), e);
-	    return false;
 	}
+	return null;
     }
 
     public String getRepository() {

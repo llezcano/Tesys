@@ -74,4 +74,7 @@ public interface ProjectTracking {
     public abstract List<String> getIssuesKeys();
 
     public List<IssueTypePOJO> getIssueTypes();
+    
+    public boolean isIssueAssignedToUser( String issueKey , String userName );
+
 }

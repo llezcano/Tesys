@@ -104,8 +104,16 @@ public class SCMManager {
 	    throws Exception {
 	try {
 	    // cada uno de estos se puede hacer con un thread aparte
-	    getIssue(scmData.getMessage());
-	    mapUser(scmData);
+	    String issueKey = getIssue(scmData.getMessage());
+	    String jiraUser = mapUser(scmData);
+
+	    // si esta en la db, hay que ver que tenga asignado ese issue
+	    ProjectTracking pt = new ProjectTrackingRESTClient();
+	    if (!pt.isIssueAssignedToUser(issueKey, jiraUser)) {
+		throw new InvalidCommitException(
+			Messages.getString(SCM_MANAGER_USERINVALIDO));
+	    }
+
 	} catch (Exception e) {
 	    throw e;
 	}
@@ -253,24 +261,26 @@ public class SCMManager {
      * 
      * 
      * @param scmData
+     * @param issueKey
      * @throws Exception
      */
-    private void mapUser(ScmPreCommitDataPOJO scmData)
+    private String mapUser(ScmPreCommitDataPOJO scmData)
 	    throws InvalidCommitException {
 
-	boolean existeMapeo;
+	String jiraUser;
 
 	ValidDeveloperQuery query = new ValidDeveloperQuery(
 		scmData.getAuthor(), scmData.getRepository());
 
 	try {
-	    existeMapeo = query.execute();
+	    jiraUser = query.execute();
 	} catch (Exception e) {
 	    throw new InvalidCommitException(
 		    Messages.getString(SCM_MANAGER_BASEDEDATOSCAIDA), e);
 	}
-
-	if (!existeMapeo) {
+	// si no esta en la db, se mapea desde el commit message
+	if (jiraUser == null) {
+	    // se extrae el nombre y valida
 	    matcher = userPattern.matcher(scmData.getMessage());
 	    if (matcher.find()) {
 		String user = matcher.group(1);
@@ -284,13 +294,7 @@ public class SCMManager {
 		    throw new InvalidCommitException(
 			    Messages.getString(SYTAXERRORMULTIPLECOMMANDS));
 		}
-
-		ProjectTracking pt = new ProjectTrackingRESTClient();
-		if (!pt.existUser(user)) {
-		    throw new InvalidCommitException(
-			    Messages.getString(SCM_MANAGER_USERINVALIDO));
-		}
-
+		// se guarda el nombre
 		MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(),
 			scmData.getRepository());
 
@@ -300,12 +304,39 @@ public class SCMManager {
 
 		dao.create(mp.getID(), mp);
 
+		jiraUser = user;
+
 	    } else {
 		throw new InvalidCommitException(
 			Messages.getString(SYNTAXERRORUSER));
 	    }
-	}
+	} else {
+	    // si esta mapeado pero igual esta el comando del user, se interpreta que quiere
+	    // remapearse (quizas se equivoco al mapear al principio)
+	    //esta parte no devuelve ningun error dado que es solo un agregado
+	    matcher = userPattern.matcher(scmData.getMessage());
+	    if (matcher.find()) {
+		String user = matcher.group(1);
 
+		if (!user.contains(INVALID_USER) && !matcher.find()) {
+		    // se guarda el nombre
+		    MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(),
+			    scmData.getRepository());
+
+		    ElasticsearchDao<MappingPOJO> dao = new ElasticsearchDao<MappingPOJO>(
+			    MappingPOJO.class,
+			    ElasticsearchDao.DEFAULT_RESOURCE_MAPPING);
+
+		    dao.create(mp.getID(), mp);
+
+		    jiraUser = user;
+
+		}
+
+	    }
+
+	}
+	return jiraUser;
     }
 
 }

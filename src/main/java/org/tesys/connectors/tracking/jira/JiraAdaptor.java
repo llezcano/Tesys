@@ -19,5 +19,7 @@ public interface JiraAdaptor {
     List<String> getMetrics();
 
     List<IssueTypePOJO> getIssueTypes();
+    
+    boolean isIssueAssignedToUser( String issueKey , String userName );
 
 }

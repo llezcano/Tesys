@@ -247,5 +247,9 @@ public class JiraAdaptation {
     public List<IssueTypePOJO> getIssueTypes() {
 	return client.getIssueTypes();
     }
+    
+    public boolean isIssueAssignedToUser( String issueKey , String userName ) {
+	return client.isIssueAssignedToUser(issueKey, userName);
+    }
 
 }
