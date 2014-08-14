@@ -1,19 +1,20 @@
 package org.tesys.connectors.scm.svn;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 
 @Path("/connectors/svn")
 public class SVNConnector {
@@ -21,15 +22,6 @@ public class SVNConnector {
     private static final Logger LOG = Logger.getLogger(SVNConnector.class
 	    .getName());
 
-    private long checkout(SVNURL url, SVNRevision revision, File destPath,
-	    boolean isRecursive) throws SVNException {
-	SVNClientManager clientManager = SVNClientManager.newInstance();
-	SVNUpdateClient updateClient = clientManager.getUpdateClient();
-	updateClient.setIgnoreExternals(false);
-
-	return updateClient.doCheckout(url, destPath, revision, revision,
-		SVNDepth.INFINITY, false);
-    }
 
     /**
      * Servicio REST para hacer checkouts del SVN
@@ -59,7 +51,9 @@ public class SVNConnector {
      */
 
     @PUT
-    @Path("{revision}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("checkout/{revision}")
     public long checkout(@PathParam("revision") String revision,
 	    SvnCheckoutPOJO svnco) {
 
@@ -74,11 +68,25 @@ public class SVNConnector {
 	final File destPath = new File(svnco.getWorkspace());
 
 	try {
-	    return checkout(location, svnr, destPath, false);
+	    return SVNImplementation.checkout(location, svnr, destPath, false);
 	} catch (SVNException e) {
 	    LOG.log(Level.SEVERE, e.toString(), e);
 	}
 	return 0;
 
     }
+    
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("diff/{revision1}/{revision2}")
+    public List<String> diff( @PathParam("revision1") Integer rev1, 
+	    @PathParam("revision2") Integer rev2, String url ) {
+	
+	return SVNImplementation.diff(url, rev1, rev2);
+    }
+    
+    
+    
+    
 }

@@ -45,7 +45,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 	result.enable(SerializationFeature.INDENT_OUTPUT);
 	result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
 		false);
-
+	
 	return result;
     }
 

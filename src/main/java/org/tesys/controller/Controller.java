@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,6 +25,7 @@ import org.tesys.core.db.MetricDao;
 import org.tesys.core.estructures.Developer;
 import org.tesys.core.estructures.Metric;
 import org.tesys.core.estructures.MetricFactory;
+import org.tesys.core.estructures.Puntuacion;
 import org.tesys.core.project.scm.SCMManager;
 import org.tesys.core.project.scm.ScmPostCommitDataPOJO;
 import org.tesys.core.project.scm.ScmPreCommitDataPOJO;
@@ -194,6 +196,8 @@ public class Controller {
 
     }
 
+    
+    //TODO analizar si estos dos metodos no se tiene que hacer con metricdao
     /**
      * Define una nueva metrica compuesta, que el usaurio desee por ejemplo
      * lines por hora como productividad o productividad dividido bugs como
@@ -237,5 +241,31 @@ public class Controller {
 	ResponseBuilder response = Response.ok();
 	return response.build();
     }
+    
+    
+    /**
+     * Almacena una puntuacion de un usuario a la tarea de otro
+     */
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/punt")
+    public Response storePuntuation( @QueryParam("puntuador") String puntuador,
+	    @QueryParam("puntuado") String puntuado, 
+	    @QueryParam("issue") String issue,
+	    @QueryParam("puntuacion") String puntuacion) {
+
+	ElasticsearchDao<Puntuacion> dao = new ElasticsearchDao<Puntuacion>(
+		Puntuacion.class, ElasticsearchDao.DEFAULT_RESOURCE_PUNTUATION);
+
+	Puntuacion p = new Puntuacion(puntuador, puntuado, issue, puntuacion);
+	dao.create( p.getId(),  p );
+
+	ResponseBuilder response = Response.ok();
+	return response.build();
+    }
+    
+    
+    
 
 }

@@ -54,7 +54,7 @@ public class SCMFacade {
 	data.put("repository", repository);
 	data.put("workspace", workspace.getAbsolutePath());
 
-	if (client.PUT(revision, data.toString()).getStatus() / 100 == 2) {
+	if (client.PUT( "checkout/"+revision, data.toString()).getStatus() / 100 == 2) {
 	    return true;
 	}
 	return false;
