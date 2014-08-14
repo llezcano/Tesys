@@ -1,6 +1,8 @@
 package org.tesys.core.estructures;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +18,7 @@ public class Issue {
     private String issueType;
 
     Map<String, Double> measures;
+    List<Puntuacion> puntuaciones;
 
     public Issue() {
 	// for jackson
@@ -25,6 +28,7 @@ public class Issue {
 	super();
 	this.issueId = issueId;
 	measures = new HashMap<String, Double>();
+	puntuaciones = new LinkedList<Puntuacion>();
     }
 
     public String getIssueId() {
@@ -65,6 +69,18 @@ public class Issue {
 
     public void addMetric(String k, Integer v) {
 	this.addMetric(k, v.doubleValue());
+    }
+    
+    public List<Puntuacion> getPuntuaciones() {
+        return puntuaciones;
+    }
+
+    public void setPuntuaciones(List<Puntuacion> puntuaciones) {
+        this.puntuaciones = puntuaciones;
+    }
+    
+    public void addPuntuation(Puntuacion p) {
+	this.puntuaciones.add(p);
     }
 
 }
