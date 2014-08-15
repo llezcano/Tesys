@@ -19,7 +19,7 @@ public class ConcreteAggregatorFactory implements AggregatorFactory {
 
   @Override
   public Aggregator getAggregator() {
-    return  new SonarAnalisisAggregator( new ProjectTrackingAggregator() ) ;
+    return new ActivityAggregator( new SonarAnalisisAggregator( new ProjectTrackingAggregator() ) ) ;
   }
 
 }
