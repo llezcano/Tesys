@@ -5,6 +5,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +51,7 @@ import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
  * 
  */
 
-public class SCMManager {
+public class SCMManager extends Observable {
 
   private static final String SCM_MANAGER_FORMATOFECHAINVALIDO = "SCMManager.formatofechainvalido";
   private static final String SCM_MANAGER_ISSUEINVALIDO = "SCMManager.issueinvalido";
@@ -79,7 +80,7 @@ public class SCMManager {
     scmFacade = SCMFacade.getInstance();
   }
 
-  public static SCMManager getInstance() {
+  public static synchronized SCMManager getInstance() {
     if (instance == null) {
       instance = new SCMManager();
     }
@@ -148,6 +149,8 @@ public class SCMManager {
         ElasticsearchDao.DEFAULT_RESOURCE_REVISION  );
     
     dao.create(revision.getID(), revision);
+    
+    notifyObservers( revision );
 
     return true;
   }

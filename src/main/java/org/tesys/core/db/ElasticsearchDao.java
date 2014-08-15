@@ -49,7 +49,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_ISSUE_TYPE = "/analyzer/issuetype" ;
 
     
-    protected static final String ES_URL = "http://192.168.0.2:9200/";
+    protected static final String ES_URL = "http://localhost:9200/";
 
     protected String resource;
 
@@ -110,7 +110,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     @Override
     public void delete( String id ) {
         try {
-            client.DELETE( UriBuilder.fromPath( id ).toString() );
+            client.DELETE( UriBuilder.fromPath( resource ).path( id ).toString() );
         } catch ( Exception e ) {
             LOG.log( Level.SEVERE, e.toString(), e );
         }

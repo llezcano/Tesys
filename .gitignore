@@ -1,6 +1,8 @@
 /target
-/*.pom
+/pom.xml
 /.classpath
 /.project
 /.settings
-/.gitignore
+/userSchema
+/issueSchema
+*~
