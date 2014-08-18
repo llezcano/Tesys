@@ -177,11 +177,14 @@ public class SonarAnalizer {
      * 
      */
     private void analizar(File buildFile) {
-	Process p;
+	Process p = null;
 	try {
-	    p = Runtime.getRuntime().exec("sonar-runner", new String[0],
-		    buildFile);
+
+	    ProcessBuilder pb = new ProcessBuilder("./analizar.sh");
+	    pb.directory(buildFile);
+	    p = pb.start();
 	    p.waitFor();
+
 	} catch (Exception e) {
 	    LOG.log(Level.SEVERE, e.toString(), e);
 	}
