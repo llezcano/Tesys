@@ -193,7 +193,7 @@ public class SCMManager {
      * 
      * La url final en del estilo:
      * 
-     * http://localhost:8080/core/rest/connectors/svn/1
+     * http://localhost:8080/tesys/rest/connectors/svn/1
      * 
      * @param revision
      *            la revision que se quiere hacer checkout

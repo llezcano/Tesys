@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SCMFacade {
 
-    private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
+    private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/tesys/rest/connectors/svn/"; //$NON-NLS-1$
 
     private static final Logger LOG = Logger.getLogger(SCMFacade.class
 	    .getName());
