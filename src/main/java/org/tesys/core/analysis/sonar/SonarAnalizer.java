@@ -1,10 +1,12 @@
 package org.tesys.core.analysis.sonar;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,6 +20,8 @@ public class SonarAnalizer {
 
     private static final Logger LOG = Logger.getLogger(SonarAnalizer.class
 	    .getName());
+    
+    private static FileHandler handler;
 
     private static final String USER_HOME = "user.home";
 
@@ -35,6 +39,10 @@ public class SonarAnalizer {
     private SonarAnalizer() {
 	scm = SCMManager.getInstance();
 	sonarExtractor = new SonarExtractor();
+	try {
+	    handler = new FileHandler("tesys-log.%u.%g.txt", 1024 * 1024, 10);
+	} catch (SecurityException | IOException e) {}
+	LOG.addHandler(handler);
 
     }
 
@@ -69,6 +77,8 @@ public class SonarAnalizer {
      */
     public synchronized void executeSonarAnalysis() {
 
+	LOG.log(Level.INFO, "Se solicito una analisis de sonar");
+	
 	List<AnalisisPOJO> analisisAcumulados = getAnalisisAcumulados();
 
 	/*
@@ -76,6 +86,7 @@ public class SonarAnalizer {
 	 * comparar con nada
 	 */
 	if (analisisAcumulados.size() == 0) {
+	    LOG.log(Level.INFO, "El analisis fue cancelado por falta de commits");
 	    return;
 	}
 
@@ -91,6 +102,7 @@ public class SonarAnalizer {
 	List<AnalisisPOJO> analisisPorTarea = getAnalisisPorTarea(
 		analisisPorCommit, analisisPorTareaAlmacenados, metricas);
 
+	LOG.log(Level.INFO, "Se almacenaran los analisis de sonar");
 	this.storeAnalysis(analisisPorTarea, dao);
 
     }
@@ -130,6 +142,8 @@ public class SonarAnalizer {
 	if (revisiones.size() < 2) {
 	    return new LinkedList<AnalisisPOJO>();
 	}
+	
+	LOG.log(Level.INFO, "Se van a analizar " + revisiones.size() + " revisiones");
 
 	for (RevisionPOJO revision : revisiones) {
 
@@ -137,6 +151,8 @@ public class SonarAnalizer {
 	    scm.doCheckout(revision.getRevision(), revision.getRepository(),
 		    WORKSPACE);
 
+	    
+	    LOG.log(Level.INFO, "Analizando " + revision.getRevision());
 	    // Se analiza con sonar ejecutando una tarea ant
 	    analizar(BUILD_FILE);
 
@@ -174,6 +190,7 @@ public class SonarAnalizer {
      * Dado un directorio elimina el contenido pero no el directorio
      */
     private void purgeDirectory(File dir) {
+	LOG.log(Level.INFO, "Se limpia el directorio de trabajo");
 	for (File file : dir.listFiles()) {
 	    if (file.isDirectory()) {
 		purgeDirectory(file);
@@ -214,6 +231,10 @@ public class SonarAnalizer {
 	    // que se le van a restar valores
 	    AnalisisPOJO nuevoAnalisisPorCommit = new AnalisisPOJO(
 		    analisisAcumuladoActual.getRevision());
+	    
+	    LOG.log(Level.INFO, "Juntando los analisis de " + 
+		    analisisAcumuladoPrevio.getRevision().getRevision() +
+		    analisisAcumuladoActual.getRevision().getRevision() );
 
 	    List<KeyValuePOJO> resultadosPrevios = analisisAcumuladoPrevio
 		    .getResults();
@@ -329,6 +350,9 @@ public class SonarAnalizer {
 
 	for (AnalisisPOJO commitAnalisis : analisisPorCommit) {
 
+	    LOG.log(Level.INFO, "Procesando el analisis de " + 
+		    commitAnalisis.getRevision().getProjectTrackingTask() );
+	    
 	    AnalisisPOJO guardado = Searcher.searchIssue(
 		    analisisPorTareaGuardados, commitAnalisis.getRevision()
 			    .getProjectTrackingTask());

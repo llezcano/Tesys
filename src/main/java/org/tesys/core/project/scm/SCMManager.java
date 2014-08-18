@@ -1,13 +1,18 @@
 package org.tesys.core.project.scm;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Observable;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.tesys.connectors.scm.svn.SVNConnector;
 import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.db.ValidDeveloperQuery;
@@ -73,12 +78,21 @@ public class SCMManager extends Observable {
     private SCMFacade scmFacade;
     private static SCMManager instance = null;
     
+    
+    private static final Logger LOG = Logger.getLogger(SVNConnector.class
+	    .getName());
+    
+    private static FileHandler handler;
    
 
     private SCMManager() {
 	issuePattern = Pattern.compile(ISSUE_REGEX);
 	userPattern = Pattern.compile(USER_REGEX);
 	scmFacade = SCMFacade.getInstance();
+	try {
+	    handler = new FileHandler("tesys-log.%u.%g.txt", 1024 * 1024, 10);
+	} catch (SecurityException | IOException e) {}
+	LOG.addHandler(handler);
 	
     }
 
@@ -102,6 +116,8 @@ public class SCMManager extends Observable {
      */
     public boolean isCommitAllowed(ScmPreCommitDataPOJO scmData)
 	    throws Exception {
+	LOG.log(Level.INFO, "Se recibio una validacion de commit " + scmData.getAuthor() +
+		"  " + scmData.getRepository() + "  " + scmData.getMessage() );
 	try {
 	    // cada uno de estos se puede hacer con un thread aparte
 	    String issueKey = getIssue(scmData.getMessage());
@@ -109,10 +125,12 @@ public class SCMManager extends Observable {
 	    // si esta en la db, hay que ver que tenga asignado ese issue
 	    ProjectTracking pt = new ProjectTrackingRESTClient();
 	    if (!pt.isIssueAssignedToUser(issueKey, jiraUser)) {
+		LOG.log(Level.SEVERE, "El commit no estab bien asociado al project tracking");
 		throw new InvalidCommitException(
 			Messages.getString(SCM_MANAGER_USERINVALIDO));
 	    }
 	} catch (Exception e) {
+	    LOG.log(Level.SEVERE, e.getMessage());
 	    throw e;
 	}
 	return true;
@@ -136,6 +154,8 @@ public class SCMManager extends Observable {
     public boolean storeCommit(ScmPostCommitDataPOJO scmData)
 	    throws InvalidCommitException {
 
+	LOG.log(Level.INFO, "Se solicito guardar un commit");
+	
 	SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	String issue = null;
 	Date formatDate = null;
@@ -278,6 +298,10 @@ public class SCMManager extends Observable {
 	}
 	// si no esta en la db, se mapea desde el commit message
 	if (jiraUser == null) {
+	    
+	    LOG.log(Level.INFO, "Un user nuevo esta intentando ser mappeado " +
+		    scmData.getAuthor() + "  " + scmData.getMessage() + "  " + scmData.getRepository());
+	    
 	    // se extrae el nombre y valida
 	    matcher = userPattern.matcher(scmData.getMessage());
 	    if (matcher.find()) {
@@ -307,6 +331,10 @@ public class SCMManager extends Observable {
 	    // interpreta que quiere
 	    // remapearse (quizas se equivoco al mapear al principio)
 	    // esta parte no devuelve ningun error dado que es solo un agregado
+	    
+	    LOG.log(Level.INFO, "Se esta remappeando un user" +
+		    scmData.getAuthor() + "  " + scmData.getMessage() + "  " + scmData.getRepository());
+	    
 	    matcher = userPattern.matcher(scmData.getMessage());
 	    if (matcher.find()) {
 		String user = matcher.group(1);

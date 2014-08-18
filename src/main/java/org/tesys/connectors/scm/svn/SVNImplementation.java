@@ -1,8 +1,10 @@
 package org.tesys.connectors.scm.svn;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,13 +24,25 @@ public class SVNImplementation {
 
     private static final Logger LOG = Logger.getLogger(SVNConnector.class
 	    .getName());
+    
+    private static FileHandler handler;
+
+    public SVNImplementation() {
+	try {
+	    handler = new FileHandler("tesys-log.%u.%g.txt", 1024 * 1024, 10);
+	} catch (SecurityException | IOException e) {}
+	LOG.addHandler(handler);
+	
+    }
 
     public static long checkout(SVNURL url, SVNRevision revision,
 	    File destPath, boolean isRecursive) throws SVNException {
 	SVNClientManager clientManager = SVNClientManager.newInstance();
 	SVNUpdateClient updateClient = clientManager.getUpdateClient();
 	updateClient.setIgnoreExternals(false);
-
+	
+	LOG.log(Level.INFO, "Realizando checkout de "+ url.toString() + " -> " + revision.toString());
+	
 	return updateClient.doCheckout(url, destPath, revision, revision,
 		SVNDepth.INFINITY, false);
     }
@@ -42,6 +56,9 @@ public class SVNImplementation {
 	
 	SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
 	SVNDiffClient diffClient = new SVNDiffClient(svnOperationFactory);
+	
+	LOG.log(Level.INFO, "Realizando diff de "+ url.toString() + " -> " +
+		initRevision.toString() + ":" + lastRevision.toString() );
 
 	try {
 	diffClient.doDiffStatus(
