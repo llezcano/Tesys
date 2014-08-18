@@ -12,7 +12,6 @@ import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.db.ValidDeveloperQuery;
 import org.tesys.core.messages.Messages;
-import org.tesys.core.plugins.activity.Activity;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
