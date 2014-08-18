@@ -211,9 +211,8 @@ public class Controller {
     public Response addMetric(String metric) {
 	MetricFactory mf = new MetricFactory();
 	Metric m = mf.getMetric(metric);
-
-	ElasticsearchDao<Metric> dao = new ElasticsearchDao<Metric>(
-		Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+	
+	MetricDao dao = new MetricDao();
 
 	dao.create(m.getKey(), m);
 
@@ -233,8 +232,7 @@ public class Controller {
     @Path("/deletemetric")
     public Response deleteMetric(String metricKey) {
 
-	ElasticsearchDao<Metric> dao = new ElasticsearchDao<Metric>(
-		Metric.class, ElasticsearchDao.DEFAULT_RESOURCE_ISSUE_METRIC);
+	MetricDao dao = new MetricDao();
 
 	dao.delete(metricKey);
 
