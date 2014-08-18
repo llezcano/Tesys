@@ -8,6 +8,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.tesys.core.TesysPath;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
@@ -29,7 +30,7 @@ public class SVNImplementation {
 
     public SVNImplementation() {
 	try {
-	    handler = new FileHandler("tesys-log.%u.%g.txt", 1024 * 1024, 10);
+	    handler = new FileHandler(TesysPath.Path +"logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
 	} catch (SecurityException | IOException e) {}
 	LOG.addHandler(handler);
 	

@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.tesys.connectors.scm.svn.SVNConnector;
+import org.tesys.core.TesysPath;
 import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.db.ValidDeveloperQuery;
@@ -90,7 +91,7 @@ public class SCMManager extends Observable {
 	userPattern = Pattern.compile(USER_REGEX);
 	scmFacade = SCMFacade.getInstance();
 	try {
-	    handler = new FileHandler("tesys-log.%u.%g.txt", 1024 * 1024, 10);
+	    handler = new FileHandler(TesysPath.Path +"logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
 	} catch (SecurityException | IOException e) {}
 	LOG.addHandler(handler);
 	
@@ -331,12 +332,13 @@ public class SCMManager extends Observable {
 	    // interpreta que quiere
 	    // remapearse (quizas se equivoco al mapear al principio)
 	    // esta parte no devuelve ningun error dado que es solo un agregado
-	    
-	    LOG.log(Level.INFO, "Se esta remappeando un user" +
-		    scmData.getAuthor() + "  " + scmData.getMessage() + "  " + scmData.getRepository());
-	    
+
 	    matcher = userPattern.matcher(scmData.getMessage());
 	    if (matcher.find()) {
+		
+		LOG.log(Level.INFO, "Se esta remappeando un user" +
+			    scmData.getAuthor() + "  " + scmData.getMessage() + "  " + scmData.getRepository());
+		
 		String user = matcher.group(1);
 		if (!user.contains(INVALID_USER) && !matcher.find()) {
 		    // se guarda el nombre

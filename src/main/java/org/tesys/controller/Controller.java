@@ -108,7 +108,10 @@ public class Controller {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/analyzer")
     public Response performAnalysis() {
-	return analizer.performAnalysis();
+	analizer.performAnalysis();
+	
+	ResponseBuilder response = Response.ok("{\"status\":\"200\"}");
+	return response.build();
     }
 
     /**
@@ -259,7 +262,7 @@ public class Controller {
 	Puntuacion p = new Puntuacion(puntuador, puntuado, issue, puntuacion);
 	dao.create( p.getId(),  p );
 
-	ResponseBuilder response = Response.ok();
+	ResponseBuilder response = Response.ok("{\"status\":\"200\"}");
 	return response.build();
     }
     

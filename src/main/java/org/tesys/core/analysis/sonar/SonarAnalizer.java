@@ -10,6 +10,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.tesys.core.TesysPath;
 import org.tesys.core.analysis.sonar.metricsdatatypes.Metrics;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.project.scm.RevisionPOJO;
@@ -40,7 +41,7 @@ public class SonarAnalizer {
 	scm = SCMManager.getInstance();
 	sonarExtractor = new SonarExtractor();
 	try {
-	    handler = new FileHandler("tesys-log.%u.%g.txt", 1024 * 1024, 10);
+	    handler = new FileHandler(TesysPath.Path +"logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
 	} catch (SecurityException | IOException e) {}
 	LOG.addHandler(handler);
 
@@ -290,6 +291,7 @@ public class SonarAnalizer {
 		     * solo agregar la clase nueva que sea el handler ya
 		     * andaria.
 		     */
+		    
 
 		    Object object = null;
 
@@ -308,6 +310,8 @@ public class SonarAnalizer {
 			    nuevoAnalisisPorCommit.add(new KeyValuePOJO(
 				    metricName, metricHandler
 					    .getDifferenceBetweenAnalysis()));
+			    
+			    
 			}
 
 		    } catch (InstantiationException | IllegalAccessException
@@ -384,6 +388,7 @@ public class SonarAnalizer {
 
 		    Double valorPrevio = Searcher.searchMetricValue(
 			    resultadosPrevios, metricName);
+		    
 
 		    if (valorPrevio != null) {
 			SonarMetricPOJO metric = Searcher.searchMetric(
@@ -413,6 +418,8 @@ public class SonarAnalizer {
 			    nuevoAnalisisPorTarea.add(new KeyValuePOJO(
 				    metricName, metricHandler
 					    .getNewAnalysisPerTask()));
+
+			    
 			}
 
 		    }
