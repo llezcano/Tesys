@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,7 @@ import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.db.ValidDeveloperQuery;
 import org.tesys.core.messages.Messages;
+import org.tesys.core.plugins.activity.Activity;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 
@@ -50,10 +52,8 @@ import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
  * que luego el sistema analizara.
  * 
  * 
- * 
  */
-
-public class SCMManager {
+public class SCMManager extends Observable {
 
     private static final String SCM_MANAGER_FORMATOFECHAINVALIDO = "SCMManager.formatofechainvalido";
     private static final String SCM_MANAGER_ISSUEINVALIDO = "SCMManager.issueinvalido";
@@ -62,7 +62,6 @@ public class SCMManager {
     private static final String SCM_MANAGER_USERINVALIDO = "SCMManager.userinvalido";
     private static final String SYNTAXERRORUSER = "SCMManager.syntaxerroruser";
     private static final String SCM_MANAGER_BASEDEDATOSCAIDA = "SCMManager.basededatoscaida";
-
     private static final String INVALID_ISSUE = "user='"; //$NON-NLS-1$
     private static final String INVALID_USER = "issue='"; //$NON-NLS-1$
     private static final String USER_REGEX = "user='(.*?)'"; //$NON-NLS-1$
@@ -73,16 +72,18 @@ public class SCMManager {
     private Pattern userPattern;
     private Matcher matcher;
     private SCMFacade scmFacade;
-
     private static SCMManager instance = null;
+    
+   
 
     private SCMManager() {
 	issuePattern = Pattern.compile(ISSUE_REGEX);
 	userPattern = Pattern.compile(USER_REGEX);
 	scmFacade = SCMFacade.getInstance();
+	
     }
 
-    public static SCMManager getInstance() {
+    public static synchronized SCMManager getInstance() {
 	if (instance == null) {
 	    instance = new SCMManager();
 	}
@@ -106,18 +107,15 @@ public class SCMManager {
 	    // cada uno de estos se puede hacer con un thread aparte
 	    String issueKey = getIssue(scmData.getMessage());
 	    String jiraUser = mapUser(scmData);
-
 	    // si esta en la db, hay que ver que tenga asignado ese issue
 	    ProjectTracking pt = new ProjectTrackingRESTClient();
 	    if (!pt.isIssueAssignedToUser(issueKey, jiraUser)) {
 		throw new InvalidCommitException(
 			Messages.getString(SCM_MANAGER_USERINVALIDO));
 	    }
-
 	} catch (Exception e) {
 	    throw e;
 	}
-
 	return true;
     }
 
@@ -144,10 +142,8 @@ public class SCMManager {
 	Date formatDate = null;
 
 	try {
-
 	    issue = getIssue(scmData.getMessage());
 	    formatDate = dateFormat.parse(scmData.getDate());
-
 	} catch (InvalidCommitException e) {
 	    throw e;
 	} catch (ParseException e1) {
@@ -163,6 +159,9 @@ public class SCMManager {
 		RevisionPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_REVISION);
 
 	dao.create(revision.getID(), revision);
+	//TODO tratar de juntar
+	setChanged();
+	notifyObservers(revision);
 
 	/**
 	 * Una vez guardado el commit se programa un analisis del sonar
@@ -193,7 +192,7 @@ public class SCMManager {
      * 
      * La url final en del estilo:
      * 
-     * http://localhost:8080/tesys/rest/connectors/svn/1
+     * http://localhost:8080/core/rest/connectors/svn/1
      * 
      * @param revision
      *            la revision que se quiere hacer checkout
@@ -217,8 +216,11 @@ public class SCMManager {
      * @throws Exception
      */
     private String getIssue(String message) throws InvalidCommitException {
+
 	String issue;
+
 	matcher = issuePattern.matcher(message);
+
 	if (matcher.find()) {
 	    issue = matcher.group(1);
 	    if (issue.contains(INVALID_ISSUE)) {
@@ -238,6 +240,7 @@ public class SCMManager {
 	    throw new InvalidCommitException(
 		    Messages.getString(SYNTAXERRORISSUE)); //$NON-NLS-1$
 	}
+
 	return issue;
     }
 
@@ -261,17 +264,13 @@ public class SCMManager {
      * 
      * 
      * @param scmData
-     * @param issueKey
      * @throws Exception
      */
     private String mapUser(ScmPreCommitDataPOJO scmData)
 	    throws InvalidCommitException {
-
 	String jiraUser;
-
 	ValidDeveloperQuery query = new ValidDeveloperQuery(
 		scmData.getAuthor(), scmData.getRepository());
-
 	try {
 	    jiraUser = query.execute();
 	} catch (Exception e) {
@@ -284,12 +283,10 @@ public class SCMManager {
 	    matcher = userPattern.matcher(scmData.getMessage());
 	    if (matcher.find()) {
 		String user = matcher.group(1);
-
 		if (user.contains(INVALID_USER)) {
 		    throw new InvalidCommitException(
 			    Messages.getString(SYNTAXERRORUSER));
 		}
-
 		if (matcher.find()) {
 		    throw new InvalidCommitException(
 			    Messages.getString(SYTAXERRORMULTIPLECOMMANDS));
@@ -297,46 +294,35 @@ public class SCMManager {
 		// se guarda el nombre
 		MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(),
 			scmData.getRepository());
-
 		ElasticsearchDao<MappingPOJO> dao = new ElasticsearchDao<MappingPOJO>(
 			MappingPOJO.class,
 			ElasticsearchDao.DEFAULT_RESOURCE_MAPPING);
-
 		dao.create(mp.getID(), mp);
-
 		jiraUser = user;
-
 	    } else {
 		throw new InvalidCommitException(
 			Messages.getString(SYNTAXERRORUSER));
 	    }
 	} else {
-	    // si esta mapeado pero igual esta el comando del user, se interpreta que quiere
+	    // si esta mapeado pero igual esta el comando del user, se
+	    // interpreta que quiere
 	    // remapearse (quizas se equivoco al mapear al principio)
-	    //esta parte no devuelve ningun error dado que es solo un agregado
+	    // esta parte no devuelve ningun error dado que es solo un agregado
 	    matcher = userPattern.matcher(scmData.getMessage());
 	    if (matcher.find()) {
 		String user = matcher.group(1);
-
 		if (!user.contains(INVALID_USER) && !matcher.find()) {
 		    // se guarda el nombre
 		    MappingPOJO mp = new MappingPOJO(user, scmData.getAuthor(),
 			    scmData.getRepository());
-
 		    ElasticsearchDao<MappingPOJO> dao = new ElasticsearchDao<MappingPOJO>(
 			    MappingPOJO.class,
 			    ElasticsearchDao.DEFAULT_RESOURCE_MAPPING);
-
 		    dao.create(mp.getID(), mp);
-
 		    jiraUser = user;
-
 		}
-
 	    }
-
 	}
 	return jiraUser;
     }
-
 }

@@ -49,6 +49,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_ISSUE_TYPE = "/analyzer/issuetype";
     public static final String DEFAULT_RESOURCE_PUNTUATION = "/userinput/puntuation";
 
+
     protected static final String ES_URL = "http://localhost:9200/";
 
     protected String resource;
@@ -111,12 +112,12 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     }
 
     @Override
-    public void delete(String id) {
-	try {
-	    client.DELETE(UriBuilder.fromPath(id).toString());
-	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
-	}
+    public void delete( String id ) {
+        try {
+            client.DELETE( UriBuilder.fromPath( resource ).path( id ).toString() );
+        } catch ( Exception e ) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        }
     }
 
     public List<T> readAll() {

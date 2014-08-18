@@ -7,50 +7,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MetricFactory {
 
-    /*
-     * public static void main(String[] args) { new MetricFactory();
-     * 
-     * 
-     * }
-     * 
-     * public MetricFactory() { IValue mul = new Division( new Multiplicacion(
-     * new SimpleValue("lines"), new SimpleValue("bugs")),
-     * 
-     * new Multiplicacion( new SimpleValue("lines"), new SimpleValue("bugs")));
-     * 
-     * 
-     * Metric lineasPorBugs = new Metric("linbug", "lineas por bugs",
-     * "lineas de codigo por cantidad de bugs", "User Made", mul);
-     * 
-     * 
-     * System.out.println( getMetric(lineasPorBugs.toString()) );
-     * 
-     * }
-     */
+  
+  public Metric getMetric(String jsonFormat) {
+    ObjectMapper mapper = new ObjectMapper();
 
-    public Metric getMetric(String jsonFormat) {
-	ObjectMapper mapper = new ObjectMapper();
-
-	JsonNode o = null;
-	try {
-	    o = mapper.readTree(jsonFormat);
-	} catch (IOException e) {
-	}
-
-	IValue v = getValue(o.get("value"));
-
-	return new Metric(o.get("key").asText(), o.get("nombre").asText(), o
-		.get("descripcion").asText(), o.get("procedencia").asText(), v);
-
+    JsonNode o = null;
+    Metric m ;
+    try {
+      o = mapper.readTree(jsonFormat);
+      IValue v = getValue(o.get("value"));
+      m = new Metric(o.get("key").asText(), o.get("nombre").asText(), o.get("descripcion").asText(), 
+              o.get("procedencia").asText(), v);
+    } catch (IOException e) {
+        return null ;
     }
-
-    public Metric getMetric(JsonNode jsonFormat) {
-
-	IValue v = getValue(jsonFormat.get("value"));
-
-	return new Metric(jsonFormat.get("key").asText(), jsonFormat.get(
-		"nombre").asText(), jsonFormat.get("descripcion").asText(),
-		jsonFormat.get("procedencia").asText(), v);
+    
+    return m ;
+    
+  }
+  
+  public Metric getMetric(JsonNode jsonFormat) {
+     
+      IValue v = getValue(jsonFormat.get("value"));
+      
+      return new Metric(jsonFormat.get("key").asText(), 
+                        jsonFormat.get("nombre").asText(),
+                        jsonFormat.get("descripcion").asText(), 
+                        jsonFormat.get("procedencia").asText(), v);
 
     }
 
