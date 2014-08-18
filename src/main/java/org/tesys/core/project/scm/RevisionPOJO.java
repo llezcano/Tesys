@@ -14,16 +14,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RevisionPOJO implements Comparable<RevisionPOJO> {
 
+    /**
+     * Fecha en millis en la cual fue realizado el commit, o almacenada la revision
+     */
     protected long date;
 
+    
+    /**
+     * El usuario del scm que realizo el commit
+     */
     @JsonProperty("scm_user")
     protected String scmUser;
 
+    
+    /**
+     * La tarea del project tracking que debe estar especificada en el mensaje
+     * del commit ya parseada
+     */
     @JsonProperty("project_tracking_task")
     protected String projectTrackingTask;
 
+    /**
+     * Identificador de commit o revision
+     */
     protected String revision;
+    
+    /**
+     * Repositorio al que pertenece el usuario y commit
+     */
     protected String repository;
+    
+    /**
+     * Variable interna para saber si esta revision fue escaneada con sonar o no
+     */
     private boolean scaned;
 
     public RevisionPOJO() {

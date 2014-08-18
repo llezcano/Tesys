@@ -67,7 +67,7 @@ public class JiraRESTClient {
 	    restClient = factory.createWithBasicHttpAuthentication(
 		    jiraServerUri, "grodriguez", "654321");
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    LOG.log(Level.SEVERE, e.toString(), e);
 	}
     }
 

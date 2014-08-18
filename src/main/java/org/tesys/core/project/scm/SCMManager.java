@@ -92,7 +92,10 @@ public class SCMManager extends Observable {
 	scmFacade = SCMFacade.getInstance();
 	try {
 	    handler = new FileHandler(TesysPath.Path +"logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
-	} catch (SecurityException | IOException e) {}
+	} catch (SecurityException | IOException e) {
+	    LOG.log(Level.SEVERE, e.getMessage());
+	    handler = null;
+	}
 	LOG.addHandler(handler);
 	
     }

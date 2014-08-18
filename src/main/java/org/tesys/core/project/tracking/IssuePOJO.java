@@ -2,7 +2,6 @@ package org.tesys.core.project.tracking;
 
 import java.util.Arrays;
 
-// import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement

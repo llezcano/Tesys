@@ -9,7 +9,7 @@ import org.tesys.util.MD5;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Esta clase es para el mapeo SCM - Jira
+ * Esta clase es para el mapeo SCM - Project tracking
  * 
  */
 @XmlRootElement
@@ -17,7 +17,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MappingPOJO {
 
+    /**
+     * Usuario en el project tracking que normalmemte se consigue desde el mensaje del commit
+     */
     private String projectTrackingUser;
+    
+    /**
+     * Usuario de scm y repositorio, ya que puede haber dos usaurio con mismo nombre en 
+     * diferentes repos que son distintos
+     */
     private String scmUser;
     private String repository;
 

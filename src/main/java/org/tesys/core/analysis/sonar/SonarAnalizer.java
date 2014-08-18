@@ -26,9 +26,15 @@ public class SonarAnalizer {
 
     private static final String USER_HOME = "user.home";
 
+    /**
+     * Carpeta en el sistema donde se guardan los datos generales de tesys
+     */
     public static final File BUILD_FILE = new File(
 	    System.getProperty(USER_HOME), ".tesys");
 
+    /**
+     * workspace, donde se hacen los checkouts para recuperar codigo viejo y analizarlo
+     */
     public static final File WORKSPACE = new File(
 	    System.getProperty(USER_HOME), ".tesys/workspace");
 
@@ -42,7 +48,10 @@ public class SonarAnalizer {
 	sonarExtractor = new SonarExtractor();
 	try {
 	    handler = new FileHandler(TesysPath.Path +"logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
-	} catch (SecurityException | IOException e) {}
+	} catch (SecurityException | IOException e) {
+	    LOG.log(Level.SEVERE, e.getMessage());
+	    handler = null;
+	}
 	LOG.addHandler(handler);
 
     }
@@ -86,7 +95,7 @@ public class SonarAnalizer {
 	 * Caso del primer commit, no es necesario analizar porque no se puede
 	 * comparar con nada
 	 */
-	if (analisisAcumulados.size() == 0) {
+	if (analisisAcumulados.isEmpty()) {
 	    LOG.log(Level.INFO, "El analisis fue cancelado por falta de commits");
 	    return;
 	}
