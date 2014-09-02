@@ -1,6 +1,7 @@
 package org.tesys.core.analysis.telemetry;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.tesys.core.project.tracking.IssueTypePOJO;
 import org.tesys.core.project.tracking.ProjectTracking;
 import org.tesys.core.project.tracking.ProjectTrackingRESTClient;
 import org.tesys.core.project.tracking.User;
+import org.tesys.util.MD5;
 
 /**
  * Esta clase, y en particular todo este pquete, es el encargado de recolectar
@@ -102,7 +104,8 @@ public class ProcessData {
 		}
 	    }
 	    d.setIssues(dissues);
-	    daod.create(d.getName(), d);
+	    d.setTimestamp(new Date());
+	    daod.create( MD5.generateId(d.getName()+d.getTimestamp().toString()) , d);
 	}
 
     }

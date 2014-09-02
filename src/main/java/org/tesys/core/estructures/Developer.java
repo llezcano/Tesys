@@ -1,11 +1,19 @@
 package org.tesys.core.estructures;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Developer {
+    
     private String name;
     private String DisplayName;
+    
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:00", timezone="ART")
+    private Date timestamp;
+
     private List<Issue> issues = new LinkedList<Issue>();
 
     public Developer() {
@@ -34,6 +42,14 @@ public class Developer {
 
     public void setIssues(List<Issue> issues) {
 	this.issues = issues;
+    }
+    
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
 }
