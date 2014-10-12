@@ -68,25 +68,31 @@ public class SVNConnector {
 	final File destPath = new File(svnco.getWorkspace());
 
 	try {
-	    return SVNImplementation.checkout(location, svnr, destPath, false);
+	    return SVNImplementation.getInstance().checkout(location, svnr, destPath, false);
 	} catch (SVNException e) {
 	    LOG.log(Level.SEVERE, e.toString(), e);
 	}
 	return 0;
 
     }
-    
+
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("diff/{revision1}/{revision2}")
-    public List<String> diff( @PathParam("revision1") Integer rev1, 
-	    @PathParam("revision2") Integer rev2, String url ) {
+    public String diff( @PathParam("revision1") String rev1, 
+	    @PathParam("revision2") String rev2, SvnPathPOJO url ) {
 	
-	return SVNImplementation.diff(url, rev1, rev2);
+	return SVNImplementation.getInstance().diff(url.getRepository(), Integer.valueOf( rev1 ), Integer.valueOf( rev2 ));
     }
     
-    
-    
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("path/{revision}")
+    public String path( @PathParam("revision") String rev, SvnPathPOJO repo ) {
+        return SVNImplementation.getInstance().getSvnBasePath( repo.getRepository(), Integer.parseInt( rev ) ) ;
+    }
+       
     
 }

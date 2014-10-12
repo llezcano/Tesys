@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.core.Response;
+
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -21,43 +23,74 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SCMFacade {
 
-    private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/tesys/rest/connectors/svn/"; //$NON-NLS-1$
+    private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
 
-    private static final Logger LOG = Logger.getLogger(SCMFacade.class
-	    .getName());
+    private static final Logger LOG = Logger.getLogger( SCMFacade.class.getName() );
 
     private RESTClient client;
 
     private static SCMFacade instance = null;
 
     private SCMFacade() {
-	try {
-	    client = new RESTClient(DEFAULT_URL_SCM_CONNECTOR);
-	} catch (MalformedURLException e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
-	}
+        try {
+            client = new RESTClient( DEFAULT_URL_SCM_CONNECTOR );
+        } catch (MalformedURLException e) {
+            LOG.log( Level.SEVERE, e.toString(), e );
+        }
     }
 
     public static SCMFacade getInstance() {
-	if (instance == null) {
-	    instance = new SCMFacade();
-	}
-	return instance;
+        if (instance == null) {
+            instance = new SCMFacade();
+        }
+        return instance;
     }
 
-    public boolean doCheckout(String revision, String repository, File workspace) {
+    public boolean doCheckout( String revision, String repository, File workspace ) {
+        
+        String pathToCheckOut = getPath( revision, repository );
+        
+        JsonFactory factory = new JsonFactory();
+        ObjectMapper om = new ObjectMapper( factory );
+        factory.setCodec( om );
+        ObjectNode data = om.createObjectNode();
+        data.put( "repository", pathToCheckOut );
+        data.put( "workspace", workspace.getAbsolutePath() );
 
-	JsonFactory factory = new JsonFactory();
-	ObjectMapper om = new ObjectMapper(factory);
-	factory.setCodec(om);
-	ObjectNode data = om.createObjectNode();
-	data.put("repository", repository);
-	data.put("workspace", workspace.getAbsolutePath());
-
-	if (client.PUT( "checkout/"+revision, data.toString()).getStatus() / 100 == 2) {
-	    return true;
-	}
-	return false;
+        if (client.PUT( "checkout/" + revision, data.toString() ).getStatus() / 100 == 2) {
+            return true;
+        }
+        return false;
     }
+    
+    public String getPath(String revision, String repository ) {
+        JsonFactory factory = new JsonFactory();
+        ObjectMapper om = new ObjectMapper( factory );
+        factory.setCodec( om );
+        ObjectNode data = om.createObjectNode();
+        data.put( "repository", repository );
 
+        Response resp = client.PUT( "path/" + revision, data.toString() ) ;
+        if (resp.getStatus() / 100 == 2) {
+            return resp.readEntity(String.class);
+        }
+        return null; 
+    }
+    
+    public String getDiff( String revision1, String revision2, String repository  ) {
+        JsonFactory factory = new JsonFactory();
+        ObjectMapper om = new ObjectMapper( factory );
+        factory.setCodec( om );
+        ObjectNode data = om.createObjectNode();
+        data.put( "repository", repository );
+
+        Response resp = client.PUT( "diff/" + revision1 + "/" + revision2, data.toString() ) ;
+        if (resp.getStatus() / 100 == 2) {
+            return resp.readEntity(String.class);
+        }
+        return null; 
+        
+        
+    }
+    
 }

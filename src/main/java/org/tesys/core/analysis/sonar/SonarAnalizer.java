@@ -56,7 +56,7 @@ public class SonarAnalizer {
 
     }
 
-    public static SonarAnalizer getInstance() {
+    public static synchronized SonarAnalizer getInstance() {
 	if (instance == null) {
 	    instance = new SonarAnalizer();
 	}
@@ -194,6 +194,11 @@ public class SonarAnalizer {
 	return sonarExtractor.getResults(revisiones);
 
     }
+    
+    public static void main( String[] args ) {
+        SonarAnalizer s = SonarAnalizer.getInstance();
+        s.analizar( BUILD_FILE );
+    }
 
     /**
      * Executa sonar runner
@@ -202,15 +207,22 @@ public class SonarAnalizer {
     private void analizar(File buildFile) {
 	Process p = null;
 	try {
-
-	    ProcessBuilder pb = new ProcessBuilder("./analizar.sh");
+	    
+	    p = Runtime.getRuntime().exec( "/etc/sonar-runner-2.4/bin/sonar-runner", new String[0], buildFile );
+	    
+	    /*ProcessBuilder pb = new ProcessBuilder("./analizar.sh");
 	    pb.directory(buildFile);
 	    p = pb.start();
+
+*/
+	    
 	    p.waitFor();
+	   
 
 	} catch (Exception e) {
 	    LOG.log(Level.SEVERE, e.toString(), e);
 	}
+	
     }
 
     /**
