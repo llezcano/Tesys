@@ -223,7 +223,7 @@ public class SCMManager extends Observable {
      *            , repositorio que va por ejemplo: svn://localhost/<aca>
      * @return si se pudo hacer o no
      */
-    public boolean doCheckout(String revision, String repository, File workspace) {
+    public String doCheckout(String revision, String repository, File workspace) {
 	return scmFacade.doCheckout(revision, repository, workspace);
     }
 

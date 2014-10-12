@@ -44,7 +44,7 @@ public class ProjectTrackingRESTClient implements ProjectTracking {
 
     public String getConnectorLocation() {
 	// RESEARCH Discovery Services
-	return "http://localhost:8080/core/rest/connectors/jira";
+	return "http://localhost:8080/tesys/rest/connectors/jira";
     }
 
     @Override

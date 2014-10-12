@@ -48,6 +48,14 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
      * Variable interna para saber si esta revision fue escaneada con sonar o no
      */
     private boolean scaned;
+    
+    /**
+     * Path que fue modificado dentro de el repositorio 
+     * (se refiere el mas general que abarca todos los cambios)
+     */
+    protected String path;
+    
+    
 
     public RevisionPOJO() {
 	// needed for jackson
@@ -61,6 +69,15 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
 	this.revision = revision;
 	this.repository = repository;
 	this.scaned = false;
+	this.path = null;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getID() {

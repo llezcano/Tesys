@@ -1,11 +1,10 @@
 package org.tesys.connectors.scm.svn;
 
-import java.io.ByteArrayOutputStream;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.List;
+
 import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -18,12 +17,10 @@ import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
-import org.tmatesoft.svn.core.SVNNodeKind;
+
 import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.wc.ISVNDiffStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
-import org.tmatesoft.svn.core.wc.SVNDiffStatus;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc2.SvnLog;
@@ -32,6 +29,12 @@ import org.tmatesoft.svn.core.wc2.SvnRevisionRange;
 import org.tmatesoft.svn.core.wc2.SvnTarget;
 
 public class SVNImplementation {
+    
+    //TODO analizar si las expresiones andan bien para todas los casos
+    //por ejemplo las del trunk permite que se termine sin / pero el branch no
+    //TODO si no tiene ni trunk ni branch se rompe todo
+    //TODO ver bien lo de los group de las regex porque por ahi estan mal 
+    //(lea puso 1 y no andaba y yo puse 0 para que ande pero no se que matchea)
     
     private static String TRUNKPATTERN = "[(.*/trunk)/|(.*/trunk)]" ;
     
@@ -74,11 +77,6 @@ public class SVNImplementation {
 		SVNDepth.INFINITY, false);
     }
     
-    
-    public static void main( String[] args ) {
-        String ret = SVNImplementation.getInstance().diff( "svn://localhost", 4, 5 );
-        System.out.println(ret);
-    }
 
     /**
      * Devuelve una lista de paths, archivos modificados eliminados o agregados
@@ -127,6 +125,8 @@ public class SVNImplementation {
     public String getSvnBasePath( String url, int rev ) {
         String changedPath = "/";
         String basePath = null ;
+        
+        LOG.log(Level.INFO, "Calculando ruta de "+url+" en "+rev );
 
         // from 'stackoverflow.com/questions/11029968/svn-log-using-svnkit'
         final SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
@@ -148,12 +148,12 @@ public class SVNImplementation {
                 Pattern trunkPattern = Pattern.compile( TRUNKPATTERN );
                 Matcher m = trunkPattern.matcher( changedPath );
                 if (m.find()) {
-                    basePath = m.group( 1 );
+                    basePath = m.group( 0 );
                 } else {
                     Pattern branchPattern = Pattern.compile( BRANCHPATTERN );
                     m = branchPattern.matcher( changedPath );
                     if (m.find()) {
-                        basePath = m.group( 1 );
+                        basePath = m.group( 0 );
                     }
                 }
                 return SVNURL.parseURIEncoded( url ).setPath( basePath, true ).toString() ;

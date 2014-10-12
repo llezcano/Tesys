@@ -77,8 +77,7 @@ public class SonarAnalizer {
      * Devuelve true cuando se termina de hacer los analisis.
      * 
      * Esta clase trabaja en la carpeta .tesys del home por defecto, y espera
-     * que en dicha carpeta alla un archivo que sea una tarea ant para ejecutar
-     * analisis (build.xml)
+     * que en dicha carpeta alla un archivo que sea pra ejecuatr sonar
      * 
      * Como asi tambien guarda los resultados de los checkouts en
      * .tesys/workspace el archivo ant debe estar correctamente configurado para
@@ -106,10 +105,6 @@ public class SonarAnalizer {
             LOG.log(Level.INFO, "El analisis fue cancelado por falta de commits");
             return;
         }
-	
-	System.out.println(analisisAcumulados.size());
-	System.out.println(analisisAcumulados.get(0).getRevision().getRevision());
-	System.out.println(analisisAcumulados.get(1).getRevision().getRevision());
 
 	/*
 	 * El ultimo analisis se actualiza
@@ -169,10 +164,12 @@ public class SonarAnalizer {
 	
 	LOG.log(Level.INFO, "Se van a analizar " + revisiones.size() + " revisiones");
 
+	String ruta;
+	
 	for (RevisionPOJO revision : revisiones) {
 
 	    // Se realiza un checkout de la revision actual
-	    scm.doCheckout(revision.getRevision(), revision.getRepository(),
+	    ruta = scm.doCheckout(revision.getRevision(), revision.getRepository(),
 		    WORKSPACE);
 
 	    
@@ -183,6 +180,7 @@ public class SonarAnalizer {
 	    // Se indica que dicha revision ya fue escaneada asi mas adelante no
 	    // se vuelve a escanear
 	    revision.setScaned(true);
+	    revision.setPath(ruta);
 	    dao.update(revision.getID(), revision);
 
 	}
@@ -194,11 +192,6 @@ public class SonarAnalizer {
 	return sonarExtractor.getResults(revisiones);
 
     }
-    
-    public static void main( String[] args ) {
-        SonarAnalizer s = SonarAnalizer.getInstance();
-        s.analizar( BUILD_FILE );
-    }
 
     /**
      * Executa sonar runner
@@ -207,14 +200,11 @@ public class SonarAnalizer {
     private void analizar(File buildFile) {
 	Process p = null;
 	try {
-	    
-	    p = Runtime.getRuntime().exec( "/etc/sonar-runner-2.4/bin/sonar-runner", new String[0], buildFile );
-	    
-	    /*ProcessBuilder pb = new ProcessBuilder("./analizar.sh");
+
+	    ProcessBuilder pb = new ProcessBuilder("./analizar.sh");
 	    pb.directory(buildFile);
 	    p = pb.start();
 
-*/
 	    
 	    p.waitFor();
 	   

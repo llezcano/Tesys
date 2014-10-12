@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SCMFacade {
 
-    private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/core/rest/connectors/svn/"; //$NON-NLS-1$
+    private static final String DEFAULT_URL_SCM_CONNECTOR = "http://localhost:8080/tesys/rest/connectors/svn/"; //$NON-NLS-1$
 
     private static final Logger LOG = Logger.getLogger( SCMFacade.class.getName() );
 
@@ -45,11 +45,18 @@ public class SCMFacade {
         }
         return instance;
     }
-
-    public boolean doCheckout( String revision, String repository, File workspace ) {
+    
+    
+    /**
+     * 
+     * @param revision el numero de revision que se quiere hacer checkout
+     * @param repository el repositorio general (luego se analiza que parte especifica es la que cambio)
+     * @param workspace (donde se guardaran los archivos)
+     * @return el directorio que se hizo checkout p.e. si repo es svn://localhost -> svn://localhost/branches/test
+     */
+    public String doCheckout( String revision, String repository, File workspace ) {
         
         String pathToCheckOut = getPath( revision, repository );
-        
         JsonFactory factory = new JsonFactory();
         ObjectMapper om = new ObjectMapper( factory );
         factory.setCodec( om );
@@ -58,9 +65,9 @@ public class SCMFacade {
         data.put( "workspace", workspace.getAbsolutePath() );
 
         if (client.PUT( "checkout/" + revision, data.toString() ).getStatus() / 100 == 2) {
-            return true;
+            return pathToCheckOut;
         }
-        return false;
+        return null;
     }
     
     public String getPath(String revision, String repository ) {
