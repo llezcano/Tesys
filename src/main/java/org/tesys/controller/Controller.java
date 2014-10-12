@@ -199,8 +199,6 @@ public class Controller {
 
     }
 
-    
-    //TODO analizar si estos dos metodos no se tiene que hacer con metricdao
     /**
      * Define una nueva metrica compuesta, que el usaurio desee por ejemplo
      * lines por hora como productividad o productividad dividido bugs como

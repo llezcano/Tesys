@@ -90,15 +90,31 @@ public class SonarAnalizer {
 	LOG.log(Level.INFO, "Se solicito una analisis de sonar");
 	
 	List<AnalisisPOJO> analisisAcumulados = getAnalisisAcumulados();
+	
+	/**
+	 * Se intenta recuperar el ultimo analisis acumulado para poder comparar con una
+	 * base
+	 */
+	ElasticsearchDao<AnalisisPOJO> ultimoAnalisisDAO = new ElasticsearchDao<AnalisisPOJO>(
+		AnalisisPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_LAST_ANALYSIS);
+
+	if( ultimoAnalisisDAO.exists("0") ) {
+	    LOG.log(Level.INFO, "Se recupera analisis anterior");
+	    analisisAcumulados.add( 0, ultimoAnalisisDAO.read("0") );
+        } else if (analisisAcumulados.isEmpty()) {
+            //caso del primer commit que no hay con que compararlo
+            LOG.log(Level.INFO, "El analisis fue cancelado por falta de commits");
+            return;
+        }
+	
+	System.out.println(analisisAcumulados.size());
+	System.out.println(analisisAcumulados.get(0).getRevision().getRevision());
+	System.out.println(analisisAcumulados.get(1).getRevision().getRevision());
 
 	/*
-	 * Caso del primer commit, no es necesario analizar porque no se puede
-	 * comparar con nada
+	 * El ultimo analisis se actualiza
 	 */
-	if (analisisAcumulados.isEmpty()) {
-	    LOG.log(Level.INFO, "El analisis fue cancelado por falta de commits");
-	    return;
-	}
+	ultimoAnalisisDAO.update("0", analisisAcumulados.get( analisisAcumulados.size() - 1 ));
 
 	List<SonarMetricPOJO> metricas = getMetrics();
 	List<AnalisisPOJO> analisisPorCommit = getAnalisisPorCommit(
@@ -140,13 +156,11 @@ public class SonarAnalizer {
 
 	// Se sacan todas las escaneadas menos la ultima (que va a servir de
 	// referencia)
-	for (int i = 1; i < revisiones.size(); i++) {
+	for (int i = 0; i < revisiones.size(); i++) {
 	    if (!revisiones.get(i).isScaned()) {
+		revisiones = revisiones.subList(i, revisiones.size());
 		break;
 	    }
-	    revisiones.remove(i - 1);
-	    i = i - 1;
-
 	}
 
 	if (revisiones.size() < 2) {
@@ -163,7 +177,7 @@ public class SonarAnalizer {
 
 	    
 	    LOG.log(Level.INFO, "Analizando " + revision.getRevision());
-	    // Se analiza con sonar ejecutando una tarea ant
+	    // Se analiza con sonar
 	    analizar(BUILD_FILE);
 
 	    // Se indica que dicha revision ya fue escaneada asi mas adelante no
