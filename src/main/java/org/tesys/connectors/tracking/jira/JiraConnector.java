@@ -29,15 +29,6 @@ import org.tesys.util.Strings;
  * 
  */
 
-/*
- * TODO analizar si realmente se necesita esta informacion en el modelo
- * http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/priority
- * http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/project
- * http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/status
- * http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/rest/api/2/issuetype
- * definir con un Schema REST la definicion con la cual debe cumplir dicho
- * Servicio.
- */
 
 @Path("/connectors/jira")
 @Singleton

@@ -50,13 +50,12 @@ public class SCMFacade {
     /**
      * 
      * @param revision el numero de revision que se quiere hacer checkout
-     * @param repository el repositorio general (luego se analiza que parte especifica es la que cambio)
+     * @param pathToCheckOut el path dentro del repositorio a escanear
      * @param workspace (donde se guardaran los archivos)
-     * @return el directorio que se hizo checkout p.e. si repo es svn://localhost -> svn://localhost/branches/test
+     * @return si fue correcto
      */
-    public String doCheckout( String revision, String repository, File workspace ) {
+    public boolean doCheckout( String revision, String pathToCheckOut, File workspace ) {
         
-        String pathToCheckOut = getPath( revision, repository );
         JsonFactory factory = new JsonFactory();
         ObjectMapper om = new ObjectMapper( factory );
         factory.setCodec( om );
@@ -65,9 +64,9 @@ public class SCMFacade {
         data.put( "workspace", workspace.getAbsolutePath() );
 
         if (client.PUT( "checkout/" + revision, data.toString() ).getStatus() / 100 == 2) {
-            return pathToCheckOut;
+            return true;
         }
-        return null;
+        return false;
     }
     
     public String getPath(String revision, String repository ) {

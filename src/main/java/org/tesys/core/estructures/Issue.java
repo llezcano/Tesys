@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.tesys.core.analysis.skilltraceability.Skill;
+
 /**
  * Esta clase representa un Issue final. Es decir, tiene un par de atributos
  * para poder identificarlo y un mapa con cad valor que los programas
@@ -19,6 +21,7 @@ public class Issue {
 
     Map<String, Double> measures;
     List<Puntuacion> puntuaciones;
+    List<Skill> skills;
 
     public Issue() {
 	// for jackson
@@ -31,7 +34,15 @@ public class Issue {
 	puntuaciones = new LinkedList<Puntuacion>();
     }
 
-    public String getIssueId() {
+	public List<Skill> getSkills() {
+		return skills;
+	}
+
+	public void setSkills(List<Skill> skills) {
+		this.skills = skills;
+	}
+
+	public String getIssueId() {
 	return issueId;
     }
 

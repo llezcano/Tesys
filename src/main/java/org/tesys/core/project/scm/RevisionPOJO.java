@@ -56,8 +56,12 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     protected String path;
     
     
+    /**
+     * svn diff sobre esta revision con la inmediata anterior
+     */
+    protected String diff;
 
-    public RevisionPOJO() {
+	public RevisionPOJO() {
 	// needed for jackson
     }
 
@@ -71,6 +75,14 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
 	this.scaned = false;
 	this.path = null;
     }
+    
+    public String getDiff() {
+		return diff;
+	}
+
+	public void setDiff(String diff) {
+		this.diff = diff;
+	}
 
     public String getPath() {
         return path;

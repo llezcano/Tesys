@@ -129,7 +129,7 @@ public class SCMManager extends Observable {
 	    // si esta en la db, hay que ver que tenga asignado ese issue
 	    ProjectTracking pt = new ProjectTrackingRESTClient();
 	    if (!pt.isIssueAssignedToUser(issueKey, jiraUser)) {
-		LOG.log(Level.SEVERE, "El commit no estab bien asociado al project tracking");
+		LOG.log(Level.SEVERE, "El commit no estaba bien asociado al project tracking");
 		throw new InvalidCommitException(
 			Messages.getString(SCM_MANAGER_USERINVALIDO));
 	    }
@@ -173,10 +173,25 @@ public class SCMManager extends Observable {
 	    throw new InvalidCommitException(
 		    Messages.getString(SCM_MANAGER_FORMATOFECHAINVALIDO)); //$NON-NLS-1$
 	}
+	
+	/*
+	 * Se obtiene la ruta que afecta este commit, por ejemplo el trunk o un branch
+	 */
+	String path = scmFacade.getPath(scmData.getRevision(), scmData.getRepository());
 
 	RevisionPOJO revision = new RevisionPOJO(formatDate.getTime(),
 		scmData.getAuthor(), issue, scmData.getRevision(),
 		scmData.getRepository());
+	
+	revision.setPath(path);
+	
+	String diff = scmFacade.getDiff(
+			String.valueOf(Integer.parseInt(scmData.getRevision())-1), 
+			scmData.getRevision(), 
+			scmData.getRepository());
+	
+	revision.setDiff(diff);
+	
 
 	ElasticsearchDao<RevisionPOJO> dao = new ElasticsearchDao<RevisionPOJO>(
 		RevisionPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_REVISION);
@@ -196,7 +211,7 @@ public class SCMManager extends Observable {
 		} catch (InterruptedException e) {
 		}
 		SonarAnalizer sa = SonarAnalizer.getInstance();
-		sa.executeSonarAnalysis();
+		//TODO sacar comentario cuando se arregle sonar - sa.executeSonarAnalysis();
 	    }
 	});
 	t.start();
@@ -223,7 +238,7 @@ public class SCMManager extends Observable {
      *            , repositorio que va por ejemplo: svn://localhost/<aca>
      * @return si se pudo hacer o no
      */
-    public String doCheckout(String revision, String repository, File workspace) {
+    public boolean doCheckout(String revision, String repository, File workspace) {
 	return scmFacade.doCheckout(revision, repository, workspace);
     }
 

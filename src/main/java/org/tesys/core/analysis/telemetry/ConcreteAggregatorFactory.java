@@ -17,11 +17,13 @@ public class ConcreteAggregatorFactory implements AggregatorFactory {
 
   @Override
   public Aggregator getAggregator() {
-    return new PuntuacionAggregator(
+    return new SkillsAggregator(
+    new PuntuacionAggregator(
 	    new ActivityAggregator(
-		    new SonarAnalisisAggregator(
+		   new SonarAnalisisAggregator(
 			    new ProjectTrackingAggregator() 
 			    ) 
+			    )
 		    ) 
 	    );
   }

@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.tesys.core.analysis.Analyzer;
+import org.tesys.core.analysis.skilltraceability.SkillIndicator;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.db.MetricDao;
 import org.tesys.core.estructures.Developer;
@@ -261,6 +262,29 @@ public class Controller {
 	dao.create( p.getId(),  p );
 
 	ResponseBuilder response = Response.ok("{\"status\":\"200\"}");
+	return response.build();
+    }
+    
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/newskill")
+    public Response addSkill( @QueryParam("name") String skillName,
+	    @QueryParam("ind") String skillIndicator) {
+
+	ElasticsearchDao<SkillIndicator> dao = new ElasticsearchDao<SkillIndicator>(
+			SkillIndicator.class, ElasticsearchDao.DEFAULT_RESOURCE_SKILL);
+	
+	ResponseBuilder response;
+	
+	if(skillName==null || skillIndicator == null ) {
+		response = Response.ok("{\"error\":\"null not expected\"}");
+	} else {
+		SkillIndicator si = new SkillIndicator(skillName, skillIndicator);
+		dao.create( si.getId(),  si );
+		response = Response.ok("{\"status\":\"200\"}");
+	}
+
 	return response.build();
     }
     

@@ -16,6 +16,7 @@ import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.domain.IssueType;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 
+
 public class JiraRESTClient {
 
     private static final String API = "rest/api/2/";
@@ -46,12 +47,6 @@ public class JiraRESTClient {
     // JRJA
     private JiraRestClient restClient;
 
-    public static void main(String[] args) {
-	JiraRESTClient jrc = new JiraRESTClient(
-		"http://ing.exa.unicen.edu.ar:8086/atlassian-jira-6.0/",
-		"grodriguez", "654321");
-	jrc.getIssueTypes();
-    }
 
     public JiraRESTClient(String url, String user, String pass) {
 	try {
@@ -138,10 +133,8 @@ public class JiraRESTClient {
 
     }
     
-    
     public boolean isIssueAssignedToUser( String issueKey, String userName ) {
 	return userName.equals(restClient.getIssueClient().getIssue( issueKey ).claim().getAssignee().getName());
     }
-    
 
 }
