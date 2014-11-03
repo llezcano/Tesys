@@ -10,7 +10,6 @@ import org.tesys.core.analysis.skilltraceability.SkillUtils;
 import org.tesys.core.db.ElasticsearchDao;
 import org.tesys.core.estructures.Issue;
 import org.tesys.core.estructures.Metric;
-import org.tesys.core.estructures.Puntuacion;
 import org.tesys.core.project.scm.RevisionPOJO;
 
 public class SkillsAggregator extends AggregatorDecorator {

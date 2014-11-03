@@ -92,6 +92,15 @@ public class SVNConnector {
     public String path( @PathParam("revision") String rev, SvnPathPOJO repo ) {
         return SVNImplementation.getInstance().getSvnBasePath( repo.getRepository(), Integer.parseInt( rev ) ) ;
     }
+    
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("ancestry/{revision}")
+    public SvnPathRevisionPOJO getAncestry( @PathParam("revision") String rev, SvnPathPOJO repo ) {
+        return SVNImplementation.getInstance().getAncestry( repo.getRepository(), Integer.parseInt( rev ) ) ;
+    }
+    
        
     
 }

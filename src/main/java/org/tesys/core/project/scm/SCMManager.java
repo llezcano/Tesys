@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.tesys.connectors.scm.svn.SVNConnector;
+import org.tesys.connectors.scm.svn.SvnPathRevisionPOJO;
 import org.tesys.core.TesysPath;
 import org.tesys.core.analysis.sonar.SonarAnalizer;
 import org.tesys.core.db.ElasticsearchDao;
@@ -67,11 +68,12 @@ public class SCMManager extends Observable {
     private static final String SCM_MANAGER_USERINVALIDO = "SCMManager.userinvalido";
     private static final String SYNTAXERRORUSER = "SCMManager.syntaxerroruser";
     private static final String SCM_MANAGER_BASEDEDATOSCAIDA = "SCMManager.basededatoscaida";
-    private static final String INVALID_ISSUE = "user='"; //$NON-NLS-1$
-    private static final String INVALID_USER = "issue='"; //$NON-NLS-1$
-    private static final String USER_REGEX = "user='(.*?)'"; //$NON-NLS-1$
-    private static final String ISSUE_REGEX = "issue='(.*?)'"; //$NON-NLS-1$
+    private static final String INVALID_ISSUE = "user"; //$NON-NLS-1$
+    private static final String INVALID_USER = " "; //$NON-NLS-1$
+    private static final String USER_REGEX = "#user=([a-zA-Z]+)"; //$NON-NLS-1$
+    private static final String ISSUE_REGEX = "#([a-zA-Z]+-[0-9]+)"; //$NON-NLS-1$
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"; //$NON-NLS-1$
+
 
     private Pattern issuePattern;
     private Pattern userPattern;
@@ -124,6 +126,7 @@ public class SCMManager extends Observable {
 		"  " + scmData.getRepository() + "  " + scmData.getMessage() );
 	try {
 	    // cada uno de estos se puede hacer con un thread aparte
+		
 	    String issueKey = getIssue(scmData.getMessage());
 	    String jiraUser = mapUser(scmData);
 	    // si esta en la db, hay que ver que tenga asignado ese issue
@@ -178,6 +181,7 @@ public class SCMManager extends Observable {
 	 * Se obtiene la ruta que afecta este commit, por ejemplo el trunk o un branch
 	 */
 	String path = scmFacade.getPath(scmData.getRevision(), scmData.getRepository());
+	
 
 	RevisionPOJO revision = new RevisionPOJO(formatDate.getTime(),
 		scmData.getAuthor(), issue, scmData.getRevision(),
@@ -185,13 +189,26 @@ public class SCMManager extends Observable {
 	
 	revision.setPath(path);
 	
-	String diff = scmFacade.getDiff(
-			String.valueOf(Integer.parseInt(scmData.getRevision())-1), 
-			scmData.getRevision(), 
-			scmData.getRepository());
+	
+	String diff = null;
+	try {
+		diff = scmFacade.getDiff(
+				String.valueOf(Integer.parseInt(scmData.getRevision())-1), 
+				scmData.getRevision(), 
+				scmData.getRepository());
+	} catch (NumberFormatException e1) {
+		throw new InvalidCommitException(
+			    Messages.getString(SYNTAXERRORISSUE));
+	}
 	
 	revision.setDiff(diff);
 	
+	
+	SvnPathRevisionPOJO ancestry = scmFacade.getAncestry(scmData.getRepository(),
+			scmData.getRevision());
+	
+	revision.setAncestry(ancestry.getPath());
+	revision.setAncestryRevision(String.valueOf(ancestry.getLastRevision()));
 
 	ElasticsearchDao<RevisionPOJO> dao = new ElasticsearchDao<RevisionPOJO>(
 		RevisionPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_REVISION);
@@ -211,7 +228,7 @@ public class SCMManager extends Observable {
 		} catch (InterruptedException e) {
 		}
 		SonarAnalizer sa = SonarAnalizer.getInstance();
-		//TODO sacar comentario cuando se arregle sonar - sa.executeSonarAnalysis();
+		sa.executeSonarAnalysis();
 	    }
 	});
 	t.start();

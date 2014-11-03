@@ -47,7 +47,7 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     /**
      * Variable interna para saber si esta revision fue escaneada con sonar o no
      */
-    private boolean scaned;
+    protected boolean scaned;
     
     /**
      * Path que fue modificado dentro de el repositorio 
@@ -60,7 +60,20 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
      * svn diff sobre esta revision con la inmediata anterior
      */
     protected String diff;
-
+    
+    /**
+     * path con el que se debe comparar este
+     */
+    
+    protected String ancestry;
+    
+    
+    /**
+     * Revision con la que se debe comparar esta
+     */
+    protected String ancestryRevision;
+    
+  
 	public RevisionPOJO() {
 	// needed for jackson
     }
@@ -74,6 +87,9 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
 	this.repository = repository;
 	this.scaned = false;
 	this.path = null;
+	this.diff = null;
+	this.ancestry = null;
+	this.ancestryRevision = null;
     }
     
     public String getDiff() {
@@ -103,6 +119,23 @@ public class RevisionPOJO implements Comparable<RevisionPOJO> {
     public void setDate(long date) {
 	this.date = date;
     }
+    
+	public String getAncestry() {
+		return ancestry;
+	}
+
+	public void setAncestry(String ancestry) {
+		this.ancestry = ancestry;
+	}
+
+	public String getAncestryRevision() {
+		return ancestryRevision;
+	}
+
+	public void setAncestryRevision(String ancestryRevision) {
+		this.ancestryRevision = ancestryRevision;
+	}
+
 
     public String getScmUser() {
 	return scmUser;

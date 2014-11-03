@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.Response;
 
+import org.tesys.connectors.scm.svn.SvnPathRevisionPOJO;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -97,6 +98,20 @@ public class SCMFacade {
         return null; 
         
         
+    }
+    
+    public SvnPathRevisionPOJO getAncestry(String url, String revision) {
+    	 JsonFactory factory = new JsonFactory();
+         ObjectMapper om = new ObjectMapper( factory );
+         factory.setCodec( om );
+         ObjectNode data = om.createObjectNode();
+         data.put( "repository", url );
+
+         Response resp = client.PUT( "ancestry/" + revision, data.toString() ) ;
+         if (resp.getStatus() / 100 == 2) {
+             return resp.readEntity(SvnPathRevisionPOJO.class);
+         }
+         return null; 
     }
     
 }
