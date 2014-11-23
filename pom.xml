@@ -70,11 +70,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>2.11</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.codehaus.sonar-plugins</groupId>
-			<artifactId>sonar-ant-task</artifactId>
-			<version>2.1</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
