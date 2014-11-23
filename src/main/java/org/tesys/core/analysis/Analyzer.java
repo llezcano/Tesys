@@ -1,5 +1,6 @@
 package org.tesys.core.analysis;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ public class Analyzer {
 
     private Analyzer() {
 	try {
-	    handler = new FileHandler(TesysPath.Path +"logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
+	    handler = new FileHandler(TesysPath.Path +"logs"+File.separator+"tesys-log.xml", 1024 * 1024, 10);
 	} catch (SecurityException | IOException e) {
 	    LOG.log(Level.SEVERE, e.getMessage());
 	    handler = null;

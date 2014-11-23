@@ -39,7 +39,7 @@ public class SVNImplementation {
 	private SVNImplementation() {
 		try {
 			handler = new FileHandler(TesysPath.Path
-					+ "logs/tesys-log.%u.%g.xml", 1024 * 1024, 10);
+					+ "logs"+ File.separator +"tesys-log.xml", 1024 * 1024, 10);
 		} catch (SecurityException | IOException e) {
 			LOG.log(Level.SEVERE, e.getMessage());
 			handler = null;

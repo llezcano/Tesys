@@ -15,17 +15,20 @@ package org.tesys.core.analysis.telemetry;
 
 public class ConcreteAggregatorFactory implements AggregatorFactory {
 
-  @Override
-  public Aggregator getAggregator() {
-    return new SkillsAggregator(
-    new PuntuacionAggregator(
-	    new ActivityAggregator(
-		   new SonarAnalisisAggregator(
-			    new ProjectTrackingAggregator() 
-			    ) 
-			    )
-		    ) 
-	    );
-  }
+	@Override
+	public Aggregator getAggregator() {
+		return 
+			 new ComplexMetricsAggregator(
+			   new SkillsAggregator(
+			   new PuntuacionAggregator(
+			//   new ActivityAggregator(
+			   new SonarAnalisisAggregator(
+			   new ProjectTrackingAggregator()	
+			)
+	    //  )
+			)
+			)
+			);
+	}
 
 }

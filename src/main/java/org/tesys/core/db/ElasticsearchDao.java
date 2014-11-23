@@ -45,14 +45,14 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_ANALYSIS = "/analyzer/analysis";
     public static final String DEFAULT_RESOURCE_METRIC = "/analyzer/metric";
     public static final String DEFAULT_RESOURCE_ISSUE_METRIC = "/analyzer/issuemetric";
-    public static final String DEFAULT_RESOURCE_DEVELOPERS = "/analyzer/developers";
+    public static final String DEFAULT_RESOURCE_DEVELOPERS = "/analysis/";
     public static final String DEFAULT_RESOURCE_ISSUE_TYPE = "/analyzer/issuetype";
     public static final String DEFAULT_RESOURCE_PUNTUATION = "/userinput/puntuation";
     public static final String DEFAULT_RESOURCE_LAST_ANALYSIS = "/analyzer/lastanalysis";
     public static final String DEFAULT_RESOURCE_SKILL = "/analyzer/skills";
 
 
-    protected static final String ES_URL = "http://localhost:9200/";
+    public static final String ES_URL = "http://localhost:9200/";
 
 	
 
@@ -79,7 +79,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 	try {
 	    client = new RESTClient(ES_URL);
 	} catch (MalformedURLException e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	}
     }
 
@@ -89,7 +89,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 	    client.PUT(UriBuilder.fromPath(resource).path(id).toString(),
 		    object);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	}
     }
 
@@ -99,7 +99,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 	    client.POST(UriBuilder.fromPath(resource).path(id).toString(),
 		    object);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	}
     }
 
@@ -110,7 +110,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 		    UriBuilder.fromPath(resource).path(id).path(SOURCE)
 			    .toString()).readEntity(inferedClass);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return null;
 	}
     }
@@ -120,7 +120,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
         try {
             client.DELETE( UriBuilder.fromPath( resource ).path( id ).toString() );
         } catch ( Exception e ) {
-            LOG.log( Level.SEVERE, e.toString(), e );
+            LOG.log( Level.SEVERE, e.toString() );
         }
     }
 
@@ -136,7 +136,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 		    .get("hits");
 	    return arrayJsonToList(jsonResponse);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return new ArrayList<T>();
 	}
     }
@@ -153,7 +153,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 		    .get("hits");
 	    return extractKeys(jsonResponse);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return null;
 	}
     }
@@ -164,7 +164,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 		    UriBuilder.fromPath(resource).path(id).path(SOURCE)
 			    .toString()).getStatus() == RESP_OK);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return false;
 	}
     }
@@ -177,7 +177,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 		    .get("hits");
 	    return arrayJsonToList(arrayNode);
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return new ArrayList<T>();
 	}
     }
@@ -193,7 +193,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 			    param).readEntity(JsonNode.class);
 	    return jsonResponse.get("hits").get("total").asInt();
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return 0;
 	}
     }
@@ -208,7 +208,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 			    param).readEntity(JsonNode.class);
 	    return jsonResponse.get("_scroll_id").asText();
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return null;
 	}
     }
@@ -220,7 +220,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 	try {
 	    it = arrayNode.elements();
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return null;
 	}
 
@@ -228,7 +228,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 	    try {
 		keys.add(((JsonNode) it.next()).get("_id").asText());
 	    } catch (Exception e) {
-		LOG.log(Level.SEVERE, e.toString(), e);
+		LOG.log(Level.SEVERE, e.toString());
 		return null;
 	    }
 	    it.remove();
@@ -255,7 +255,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 	try {
 	    it = arrayNode.elements();
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.SEVERE, e.toString());
 	    return new ArrayList<T>();
 	}
 
@@ -265,7 +265,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 		T elem = mapper.readValue(j.toString(), inferedClass);
 		elements.add(elem);
 	    } catch (Exception e) {
-		LOG.log(Level.SEVERE, e.toString(), e);
+		LOG.log(Level.SEVERE, e.toString());
 		return new ArrayList<T>();
 	    }
 	    it.remove();

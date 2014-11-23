@@ -18,6 +18,7 @@ public class Issue {
     private String issueId;
     private String user;
     private String issueType;
+    private String[] labels;
 
     Map<String, Double> measures;
     List<Puntuacion> puntuaciones;
@@ -94,4 +95,13 @@ public class Issue {
 	this.puntuaciones.add(p);
     }
 
+	public String[] getLabels() {
+		return labels;
+	}
+
+	public void setLabels(String[] labels) {
+		this.labels = labels;
+	}
+    
+    
 }

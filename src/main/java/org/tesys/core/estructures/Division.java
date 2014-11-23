@@ -13,6 +13,9 @@ public class Division extends CompositeValue {
 
     @Override
     public Double evaluate(Issue issue) {
+    	if( der.evaluate(issue) == 0.0 ){
+    		return 0.0;
+    	}
 	return (izq.evaluate(issue) / der.evaluate(issue));
     }
 

@@ -30,14 +30,14 @@ public class RevisionByOriginalIdentifierQuery implements GenericQuery<RevisionP
     
     @Override
     public RevisionPOJO execute() {
-	String query = "{ \"query\": { \"bool\": { \"must\": [ { \"term\": { \"path\": \""
+	String query = "{ \"query\": { \"bool\": { \"must\": [ { \"term\": { \"revision\": \""
 		+ originalID
 		+ "\" }}, { \"match\": {\"repository\": \""
 		+ repository + "\" }} ] } } }";
 	try {
 	    return dao.search(query).get(0);
-	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	} catch (IndexOutOfBoundsException e) {
+	    LOG.log(Level.SEVERE, e.toString());
 	}
 	return null;
     }

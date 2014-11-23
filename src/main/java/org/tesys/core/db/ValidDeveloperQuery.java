@@ -39,7 +39,7 @@ public class ValidDeveloperQuery implements GenericQuery<String> {
 	try {
 	    return dao.search(query).get(0).getProjectTrackingUser();
 	} catch (Exception e) {
-	    LOG.log(Level.SEVERE, e.toString(), e);
+	    LOG.log(Level.INFO, e.getMessage());
 	}
 	return null;
     }

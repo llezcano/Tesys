@@ -227,9 +227,6 @@ public class JiraAdaptation {
 
     /**
      * Consulta la descripcion de las metricas asociadas al Issue desde el Jira
-     * TODO el connector quizas no debe tener que depender de la estructura
-     * final, sino generar una estructura mas amigable y la estructura final la
-     * arma el core
      * 
      * @return
      */
