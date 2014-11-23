@@ -2,6 +2,16 @@ package org.tesys.connectors.tracking.jira.model;
 
 import org.tesys.core.project.tracking.IssuePOJO;
 
+/**
+ * Adapta un JiraIssue a un IssuePOJO.
+ *  
+ * Un JiraIssue sigue la estructura del JSON original del Issue 
+ * que devuelve la API de Jira y el IssuePOJO es el que se usa 
+ * en nuestro proyecto.
+ * 
+ * @author leandro
+ *
+ */
 public class IssuePOJOAdaptor {
 
     public IssuePOJOAdaptor() {
@@ -33,6 +43,8 @@ public class IssuePOJOAdaptor {
 	issue.setUpdated(jIssue.getFields().getUpdated());
 	issue.setProject(jIssue.getFields().getProject().getKey());
 	issue.setWorkratio(jIssue.getFields().getWorkratio());
+	issue.setLabels( jIssue.getFields().getLabels() );
+	
 	return issue;
     }
 

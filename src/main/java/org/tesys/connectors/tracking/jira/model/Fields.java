@@ -32,6 +32,8 @@ public class Fields {
     private String created;
 
     private Id priority;
+    
+    private String[] labels ;
 
     public Progress getProgress() {
 	return progress;
@@ -158,5 +160,13 @@ public class Fields {
 		+ aggregatetimeoriginalestimate + ", project=" + project
 		+ ", updated=" + updated + ", created=" + created
 		+ ", priority=" + priority + "]";
+    }
+
+    public String[] getLabels() {
+        return labels;
+    }
+
+    public void setLabels( String[] labels ) {
+        this.labels = labels;
     }
 }

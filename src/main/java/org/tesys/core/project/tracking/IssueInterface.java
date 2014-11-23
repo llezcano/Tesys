@@ -33,4 +33,6 @@ public interface IssueInterface {
     public String getProject();
 
     public String getPriority();
+    
+    public String[] getLabels() ;
 }

@@ -36,6 +36,8 @@ public class IssuePOJO implements IssueInterface {
     private String created;
 
     private String priority;
+    
+    private String[] labels;
 
     public void setKey(String key) {
 	this.key = key;
@@ -186,5 +188,15 @@ public class IssuePOJO implements IssueInterface {
 		+ ", updated=" + updated + ", created=" + created
 		+ ", priority=" + priority + "]";
     }
+
+    @Override
+    public String[] getLabels() {
+        return labels;
+    }
+    
+    public void setLabels(String[] labels) {
+        this.labels = labels;
+    }
+
 
 }

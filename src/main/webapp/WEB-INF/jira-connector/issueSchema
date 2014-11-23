@@ -19,6 +19,7 @@
     "assignee":{"name":"mcabrera"},
     "subtasks":[
         { "key":"PYT-101"}
-     ]
+     ],
+     "labels":["documentacion"]
      }
 }

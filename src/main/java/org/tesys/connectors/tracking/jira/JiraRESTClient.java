@@ -86,6 +86,7 @@ public class JiraRESTClient {
 	return client.GET(this.path(RESOURCE_USER), params).readEntity(
 		String.class);
     }
+    
 
     /**
      * Consulta las Issues que cumplen con un determinado criterio, dicho
