@@ -43,6 +43,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_MAPPING = "/scm/user";
     public static final String DEFAULT_RESOURCE_REVISION = "/scm/revision";
     public static final String DEFAULT_RESOURCE_ANALYSIS = "/analyzer/analysis";
+    public static final String DEFAULT_RESOURCE_ANALYSIS_COMMIT = "/analyzer/commmits";
     public static final String DEFAULT_RESOURCE_METRIC = "/analyzer/metric";
     public static final String DEFAULT_RESOURCE_ISSUE_METRIC = "/analyzer/issuemetric";
     public static final String DEFAULT_RESOURCE_DEVELOPERS = "/analysis/";

@@ -115,6 +115,13 @@ public class SonarAnalizer {
 			return false;
 		}
 		
+		//Se guarda el analisis por commit acumulado por si se quiere usar para otra cosa en el futuro
+		ElasticsearchDao<AnalisisPOJO> daoac = new ElasticsearchDao<AnalisisPOJO>(
+				AnalisisPOJO.class, ElasticsearchDao.DEFAULT_RESOURCE_ANALYSIS_COMMIT);
+		
+		daoac.create(analisisAcumulado.getID(), analisisAcumulado);
+		
+		
 		List<SonarMetricPOJO> metricas = getMetrics();
 		List<AnalisisPOJO> analisisPorCommit = getAnalisisPorCommit(
 				analisisAcumulado, metricas);
