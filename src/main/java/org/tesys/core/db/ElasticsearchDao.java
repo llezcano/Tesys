@@ -53,7 +53,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_SKILL = "/analyzer/skills";
 
 
-    public static final String ES_URL = "http://localhost:9200/";
+    public static final String ES_URL = "http://192.168.0.6:9200/";
 
 	
 

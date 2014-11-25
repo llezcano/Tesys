@@ -94,17 +94,6 @@ public class SonarAnalizer {
 			LOG.log(Level.INFO, "La revision habia sido previamente escaneada");
 			return false;
 		}
-		
-		
-		daor = new RevisionByOriginalIdentifierQuery(
-				String.valueOf(Integer.parseInt(sar.getRevision())-1), sar.getRepository());
-		
-		RevisionPOJO rev1 = daor.execute();
-		
-		if( rev1 != null && rev1.isScaned()) {
-			LOG.log(Level.INFO, "Es necesario escanear revisiones previas");
-			return false;
-		}
 
 
 		sonarExtractor = new SonarExtractor(sar.getUrl(), sar.getUrl(), sar.getPass());
@@ -200,8 +189,7 @@ public class SonarAnalizer {
 				LOG.log(Level.INFO, "La revision en "+ path + "no pareciera tener un antencesor por lo que sera tomada como base para los siguintes analisis");
 		}
 
-		ultimoAnalisisDAO.update(MD5.generateId(analisiAcumulado.getRevision().getPath()),
-				analisiAcumulado);
+		ultimoAnalisisDAO.update(MD5.generateId(analisiAcumulado.getRevision().getPath()),analisiAcumulado);
 		
 		return analisisPorCommit;
 	}
@@ -353,10 +341,6 @@ public class SonarAnalizer {
 				List<KeyValuePOJO> resultadosActuales = commitAnalisis
 						.getResults();
 				
-				for (KeyValuePOJO keyValuePOJO : resultadosPrevios) {
-					System.out.println(keyValuePOJO.getKey());
-				}
-
 				analisisPorTareaGuardados.remove(guardado);
 
 				for (int j = 0; j < resultadosActuales.size(); j++) {
@@ -380,9 +364,12 @@ public class SonarAnalizer {
 							object = Class.forName(
 									"org.tesys.core.analysis.sonar.metricsdatatypes"
 											+ "." + metricType)
-									.getConstructors()[0].newInstance(
+									.getConstructors()[1].newInstance(
 									valorActual, valorPrevio);
+
 						} catch (Exception e) {
+							System.out.println(valorActual + " " + valorPrevio);
+
 							LOG.log(Level.SEVERE, e.toString(), e);
 						}
 

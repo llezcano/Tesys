@@ -3,7 +3,16 @@ package org.tesys.connectors.scm.svn;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,9 +24,12 @@ import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
+import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.wc.ISVNDiffStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNDiffClient;
+import org.tmatesoft.svn.core.wc.SVNDiffStatus;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc2.SvnLog;
@@ -38,8 +50,8 @@ public class SVNImplementation {
 
 	private SVNImplementation() {
 		try {
-			handler = new FileHandler(TesysPath.Path
-					+ "logs"+ File.separator +"tesys-log.xml", 1024 * 1024, 10);
+			handler = new FileHandler(TesysPath.Path + "logs" + File.separator
+					+ "tesys-log.xml", 1024 * 1024, 10);
 		} catch (SecurityException | IOException e) {
 			LOG.log(Level.SEVERE, e.getMessage());
 			handler = null;
@@ -72,31 +84,96 @@ public class SVNImplementation {
 	 * Devuelve una lista de paths, archivos modificados eliminados o agregados
 	 */
 	public String diff(String url, Integer initRevision, Integer lastRevision) {
-
-		final StringBuilder string = new StringBuilder();
-
+		final List<String> ret = new LinkedList<String>();
 		SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
 		SVNDiffClient diffClient = new SVNDiffClient(svnOperationFactory);
-
 		LOG.log(Level.INFO, "Realizando diff de " + url.toString() + " -> "
 				+ initRevision.toString() + ":" + lastRevision.toString());
-
 		try {
-			diffClient.doDiff(SVNURL.parseURIEncoded(url),
+			diffClient.doDiffStatus(SVNURL.parseURIEncoded(url),
 					SVNRevision.create(initRevision),
 					SVNURL.parseURIEncoded(url),
 					SVNRevision.create(lastRevision), SVNDepth.INFINITY, false,
-					new OutputStream() {
-						@Override
-						public void write(int b) throws IOException {
-							string.append((char) b);
+					new ISVNDiffStatusHandler() {
+						public void handleDiffStatus(SVNDiffStatus diffStatus)
+								throws SVNException {
+							if (diffStatus.getKind() == SVNNodeKind.FILE) {
+									ret.add(diffStatus.getFile().getPath());
+							}
 						}
 					});
 		} catch (Exception e) {
 			LOG.log(Level.SEVERE, e.toString(), e);
 		}
+		
+		StringBuilder result = new StringBuilder();
+		for (String string : ret) {
+			result.append(string);
+			result.append("\n");
+		}
+		
+		return result.toString();
+	}
 
-		return string.toString();
+	/**
+	 * Devuelve una lista de paths, archivos modificados eliminados o agregados
+	 */
+	public String diff2(final String url, final Integer initRevision,
+			final Integer lastRevision) {
+
+		LOG.log(Level.INFO, "Realizando diff de " + url.toString() + " -> "
+				+ initRevision.toString() + ":" + lastRevision.toString());
+
+		final StringBuffer string = new StringBuffer();
+
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Callable<Object> task = new Callable<Object>() {
+			public Object call() {
+
+				SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
+				SVNDiffClient diffClient = new SVNDiffClient(
+						svnOperationFactory);
+
+				try {
+					diffClient.doDiff(SVNURL.parseURIEncoded(url),
+							SVNRevision.create(initRevision),
+							SVNURL.parseURIEncoded(url),
+							SVNRevision.create(lastRevision),
+							SVNDepth.INFINITY, false, new OutputStream() {
+								@Override
+								public void write(int b) throws IOException {
+									string.append((char) b);
+									if (Thread.currentThread().isInterrupted()) {
+										throw new IOException();
+									}
+								}
+							});
+				} catch (Exception e) {
+					LOG.log(Level.SEVERE, e.toString());
+				}
+
+				return string.toString();
+			}
+		};
+
+		Future<Object> future = executor.submit(task);
+		Object result = "";
+		try {
+			result = future.get(2, TimeUnit.MINUTES);
+		} catch (TimeoutException ex) {
+			return string.toString();
+		} catch (InterruptedException e) {
+			// handle the interrupts
+		} catch (ExecutionException e) {
+			// handle other exceptions
+		} finally {
+			future.cancel(true);
+			executor.shutdownNow();
+			executor.shutdown();
+		}
+
+		return result.toString();
+
 	}
 
 	/**
@@ -152,9 +229,10 @@ public class SVNImplementation {
 			if (m.find()) {
 				basePath = m.group(0);
 			} else {
-				//no corresponde (se hizo commit obre un lugar que no se analiza)
-				//como el trunk o un branch de branch o tag
-				return null; 
+				// no corresponde (se hizo commit obre un lugar que no se
+				// analiza)
+				// como el trunk o un branch de branch o tag
+				return null;
 			}
 			basePath = url + basePath;
 			basePath = basePath.replaceAll("//", "/");
