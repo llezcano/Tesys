@@ -10,8 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Skill {
-	private String skillName;
-	private Integer skillWeight;
+	
+	public String skillName;
+	public Integer skillWeight;
 
 	public Skill() {
 		//empty

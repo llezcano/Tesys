@@ -37,7 +37,8 @@ public class SonarAnalisisAggregator extends AggregatorDecorator {
 	List<Metric> metrics = super.aggregator.getMetricsID();
 	// se agregan las de este
 	SonarAnalizer sa = SonarAnalizer.getInstance();
-	for (SonarMetricPOJO metric : sa.getMetrics()) {
+	List<SonarMetricPOJO> ml = sa.getMetrics();
+	for (SonarMetricPOJO metric : ml) {
 	    metrics.add(new Metric(metric.getKey(), metric.getName(), metric
 		    .getDescription(), "SonarQube", new SimpleValue(metric
 		    .getKey())));
@@ -58,8 +59,10 @@ public class SonarAnalisisAggregator extends AggregatorDecorator {
 	AnalisisPOJO analisis = dao.read(key);
 	if (analisis != null) {
 	    for (KeyValuePOJO value : analisis.getResults()) {
-		issueMetrics.addMetric(value.getKey(),
-			(Double) value.getValue());
+	    	if( value != null && value.getValue() != null  ) {
+	    		issueMetrics.addMetric(value.getKey(),
+	    				Double.valueOf( value.getValue().toString() )  );
+	    	}
 	    }
 	}
 

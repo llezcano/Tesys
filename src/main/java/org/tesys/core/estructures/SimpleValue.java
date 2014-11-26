@@ -24,7 +24,13 @@ public class SimpleValue implements IValue {
 
     @Override
     public Double evaluate(Issue issue) {
-	return issue.getMetrics().get(key);
+    	Double i = issue.getMetrics().get(key);
+    	
+    	if( i == null ){
+    		return null;
+    	}
+    	
+    	return issue.getMetrics().get(key);
     }
 
 }

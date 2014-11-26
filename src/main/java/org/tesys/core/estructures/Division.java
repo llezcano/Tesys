@@ -13,10 +13,19 @@ public class Division extends CompositeValue {
 
     @Override
     public Double evaluate(Issue issue) {
-    	if( der.evaluate(issue) == 0.0 ){
-    		return 0.0;
+    	
+    	Double i = izq.evaluate(issue);
+    	Double d = der.evaluate(issue);
+    	
+    	if( i==null || d == null ) {
+    		return null;
     	}
-	return (izq.evaluate(issue) / der.evaluate(issue));
+    	
+    	if( d == 0.0 ){
+    		d = d + 0.1;
+    	}
+    	
+    	return (i / d);
     }
 
 }

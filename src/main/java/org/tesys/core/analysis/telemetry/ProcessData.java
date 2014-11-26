@@ -91,6 +91,16 @@ public class ProcessData {
 	 * pera esto es necesario que primero se computen los issues sino se van a
 	 * guardar issues de un analisis anterior
 	 */
+	
+	
+	public static void main(String[] args) {
+		ProjectTracking pt = new ProjectTrackingRESTClient();
+		
+		ProcessData.getInstance().processDevelopers(pt);;
+		
+
+		
+	}
 
 	private void processDevelopers(ProjectTracking pt) {
 		List<User> user = Arrays.asList(pt.getUsers());
@@ -153,6 +163,7 @@ public class ProcessData {
 			issueActual.setIssueType(i.getIssuetype());
 			issueActual.setLabels( i.getLabels() );
 			issueActual.setUser(i.getAssignee());
+
 			issueActual.addMetric("progress",
 					Double.valueOf(i.getProgress().getProgress()));
 			issueActual.addMetric("estimated",

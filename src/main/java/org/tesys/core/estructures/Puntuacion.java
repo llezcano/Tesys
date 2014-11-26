@@ -12,10 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Puntuacion {
-    private String puntuador;
-    private String puntuado;
-    private String issue;
-    private String puntuacion;
+	public String puntuador;
+	public String puntuado;
+	public String issue;
+	public String puntuacion;
 
     public Puntuacion(String puntuador, String puntuado, String issue,
 	    String puntuacion) {

@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.json.simple.JSONArray;
+import org.tesys.core.estructures.Issue;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -262,8 +264,12 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
 
 	while (it.hasNext()) {
 	    JsonNode j = ((JsonNode) it.next()).get("_source");
+	    
+
 	    try {
-		T elem = mapper.readValue(j.toString(), inferedClass);
+	    	
+	    	T elem = mapper.readValue(j.toString(), inferedClass);
+		
 		elements.add(elem);
 	    } catch (Exception e) {
 		LOG.log(Level.SEVERE, e.toString());

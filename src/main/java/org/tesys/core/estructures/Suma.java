@@ -13,7 +13,14 @@ public class Suma extends CompositeValue {
 
     @Override
     public Double evaluate(Issue issue) {
-	return (izq.evaluate(issue) + der.evaluate(issue));
+    	Double i = izq.evaluate(issue);
+    	Double d = der.evaluate(issue);
+    	
+    	if( i==null || d == null ) {
+    		return null;
+    	}
+    	
+    	return (i + d);
     }
 
 }
