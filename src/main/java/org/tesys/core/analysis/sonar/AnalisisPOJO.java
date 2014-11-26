@@ -27,6 +27,7 @@ public class AnalisisPOJO implements Comparable<AnalisisPOJO> {
     public AnalisisPOJO(RevisionPOJO rev) {
 	results = new ArrayList<KeyValuePOJO>();
 	this.revision = rev;
+	this.revision.setDiff("");
 	scaned = false;
     }
 

@@ -130,7 +130,7 @@ public class Controller {
 	 * para hacer recomandaciones
 	 */
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/analyzer")
 	public Response performAnalysis() {
@@ -281,7 +281,7 @@ public class Controller {
 	 * Almacena una puntuacion de un usuario a la tarea de otro
 	 */
 
-	@GET
+	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/punt")
 	public Response storePuntuation(@QueryParam("puntuador") String puntuador,
