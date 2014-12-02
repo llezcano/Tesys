@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.json.simple.JSONArray;
-import org.tesys.core.estructures.Issue;
 import org.tesys.util.RESTClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -55,7 +53,7 @@ public class ElasticsearchDao<T extends Object> implements GenericDao<T> {
     public static final String DEFAULT_RESOURCE_SKILL = "/analyzer/skills";
 
 
-    public static final String ES_URL = "http://192.168.0.6:9200/";
+    public static final String ES_URL = "http://localhost:9200/";
 
 	
 
