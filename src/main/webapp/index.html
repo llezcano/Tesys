@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+   		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
+        <title>Telemetric System</title>
+        <link rel="stylesheet" href="css/styles.css" />
+    </head>
+
+    <body>
+
+		<div class="issueArea">	
+			<label>Select Issue: </label>
+			<select id="users"></select>
+			<select id="issues"></select>
+		</div>
+		
+		<div class="mainArea">
+			<label>Select metrics: </label>
+			<select id="metrics"></select>
+			<button type="button" id="btnAddMetric">>></button>
+			<button type="button" id="btnPlot">Plot Metrics</button>
+			<textarea id="metricContainer" class="list"></textarea>
+		</div>
+
+		<div id="barChartDiv" class="chartArea"></div>       		
+
+
+		<div class="mainArea">	
+			<label>Select skills: </label>
+			<select id="skills"></select>
+			<button type="button" id="btnAddSkill">>></button>
+			<button type="button" id="btnPlotSkills">Plot Skills</button>
+			<textarea id="skillContainer" class="list"></textarea>
+
+		</div>
+		
+		<div id="chartdiv" class="chartArea"></div>       		
+
+
+	    <script src="js/jquery-1.7.1.min.js"></script>
+	    
+	    <script src="js/amcharts/amcharts.js"></script>
+        <script src="js/amcharts/radar.js"></script>
+        <script src="js/amcharts/serial.js"></script>
+
+        <script src="js/amcharts/themes/none.js"></script>
+
+	    <script src="js/handlers.js"></script>		
+
+	    <script src="js/chartAdaptor.js"></script>
+	   	<script src="js/radarPlotter.js"></script>
+	   	<script src="js/barPlotter.js"></script>
+	  	<script src="js/dataExtractor.js"></script>		
+
+	    <script src="js/main.js"></script>		
+
+    </body>
+</html>
