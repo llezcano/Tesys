@@ -241,19 +241,27 @@ public class Controller {
 	 * seguridad
 	 */
 
-	@PUT
+	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/newmetric")
 	public Response addMetric(String metric) {
+		
+		
 		MetricFactory mf = new MetricFactory();
-		Metric m = mf.getMetric(metric);
+		Metric m;
+		try {
+			m = mf.getMetric(metric);
+		} catch (IOException e) {
+			ResponseBuilder response = Response.ok("{\"status\":\"500\"}");
+			return response.build();
+		}
 
 		MetricDao dao = new MetricDao();
 
 		dao.create(m.getKey(), m);
 
-		ResponseBuilder response = Response.ok();
+		ResponseBuilder response = Response.ok("{\"status\":\"200\"}");
 		return response.build();
 
 	}
