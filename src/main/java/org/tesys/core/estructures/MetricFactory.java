@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MetricFactory {
 
   
-  public Metric getMetric(String jsonFormat) {
+  public Metric getMetric(String jsonFormat) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
 
     JsonNode o = null;
@@ -19,7 +19,7 @@ public class MetricFactory {
       m = new Metric(o.get("key").asText(), o.get("nombre").asText(), o.get("descripcion").asText(), 
               o.get("procedencia").asText(), v);
     } catch (IOException e) {
-        return null ;
+        throw e;
     }
     
     return m ;
