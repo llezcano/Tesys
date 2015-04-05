@@ -5,12 +5,14 @@ define(function () {
     /*
         Adapta los datos a mostrar con la interfaz de amCharts 
     */
+
     function ChartAdaptor() {
     }
 
     /** functions for normalize data **/
     ChartAdaptor.prototype.generateDataProvider = function (set) {
-        var dataProvider = []
+
+        var dataProvider = [] ;
         for (i = 0; i < set.length; i++) {
             dataProvider.push( { "skill": set[i] } ) ;
         }    

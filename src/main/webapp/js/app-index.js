@@ -12,9 +12,7 @@ define(["jquery", "extractor", "parser"], function($, extractor, Parser) {
 		//Busco los issues del primer item seleccionado
 		extractor.getIssuesByUser($('#users').find('option:selected').val(), '#issues') ;
 
-		p = new Parser() ;
-		console.log("hola mundo") ;
-	}
+	};
 
 	return { 
 		'start': start 
